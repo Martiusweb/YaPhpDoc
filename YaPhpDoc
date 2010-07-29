@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Configurable vars
+script_name=YaPhpDoc.php
+
+# Where is PHP binary ?
+exe=`which php`
+
+if [ ! -x "$exe" ]
+then
+	echo 'Unable to find or run PHP, aborting'
+	exit 1
+fi
+
+# echo 'Found PHP Binary : '$exe
+
+# Where am I ?
+script_path=$(dirname `which $0`)
+# echo 'Script path is : '$script_path
+
+# Ready !
+# echo 'Running '$scriptname
+$exe -f $script_path/$script_name -- $@
