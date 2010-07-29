@@ -6,3 +6,11 @@ Martin Richard
 Abstract:
 A simple PHP documentor tool, designed for PHP, written in PHP.
 Supports with classic documentation generator features and PHP 5.3.
+
+License:
+This software is released under the New BSD License.
+Zend Framework code is under copyright from Zend, and distributed under its own
+license (New BSD License).
+
+Usage:
+Execute YaPhpDoc to learn more

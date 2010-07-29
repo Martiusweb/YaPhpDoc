@@ -21,8 +21,11 @@ require 'Zend/Loader/Autoloader.php';
 $loader = Zend_Loader_Autoloader::getInstance();
 $loader->registerNamespace(array('YaPhpDoc', 'Ypd'));
 
+# utility classes
+$ypd = Ypd::getInstance();
+	
 # Parse cli options
-$options = Ypd::getInstance()->getGetopt();
+$options = $ypd->getGetopt();
 
 try
 {
@@ -33,9 +36,41 @@ try
 		echo $options->getUsageMessage();
 		exit();
 	}
+	
+	# Output options
+	if($options->getOption('disable-output'))
+		$ypd->setEnableOutput(false);
+	if($options->getOption('verbose'))
+	{
+		$ypd->setVerbose();
+		$ypd->verbose('Verbose mode is enabled');
+	}
+	if($options->getOption('disable-error'))
+		$ypd->setOutputErrors(false);
+	if($options->getOption('disable-warning'))
+		$ypd->setOutputWarnings(false);
+	if($options->getOption('disable-notice'))
+		$ypd->setOutputNotices(false);
+	
 }
 catch(Zend_Console_Getopt_Exception $e)
 {
 	echo $e->getUsageMessage();
 	exit();
+}
+
+try
+{
+	throw new YaPhpDoc_Core_Exception(
+		$ypd->getTranslation()
+			->_('YaPhpDoc does not support this feature yet.')
+	);
+}
+catch(YaPhpDoc_Core_Exception $e)
+{
+	$ypd->error($e);
+}
+catch(Exception $e)
+{
+	$ypd->phpException($e);
 }
