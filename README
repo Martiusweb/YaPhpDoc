@@ -1,0 +1,8 @@
+YaPhpDoc "Yet another Php Documentor"
+
+Author:
+Martin Richard
+
+Abstract:
+A simple PHP documentor tool, designed for PHP, written in PHP.
+Supports with classic documentation generator features and PHP 5.3.
