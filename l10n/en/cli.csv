@@ -1,3 +1,16 @@
+"YaPhpDoc : Yet Another PHP Documentator
+By Martin Richard - www.martiusweb.net
+
+
+Usage : YaPhpDoc [path] ... [options]
+
+Options are :","YaPhpDoc : Yet Another PHP Documentator
+By Martin Richard - www.martiusweb.net
+
+
+Usage : YaPhpDoc [path] ... [options]
+
+Options are :"
 "Enable verbose output","Enable verbose output"
 "Name of file(s) to parse, coma-separated","Name of file(s) to parse, coma-separated"
 "Name of directory(ies) to parse, coma-separated","Name of directory(ies) to parse, coma-separated"
@@ -6,3 +19,8 @@
 "Disable notices output","Disable notices output"
 "Disable warning messages output","Disable warning messages output"
 "Disable fatal errors output","Disable fatal errors output"
+"Don't parse, just display files to parse list","Don't parse, just display files to parse list"
+"Exclude files matching the given Regex pattern","Exclude files matching the given Regex pattern"
+"Include files matching the given Regex pattern","Include files matching the given Regex pattern"
+"No source given, using pwd instead","No source given, using pwd instead"
+"No target given, using pwd instead","No target given, using pwd instead"

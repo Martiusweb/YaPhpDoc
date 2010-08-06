@@ -28,6 +28,9 @@ class Ypd
 			'disable-notice|nn'		=> 'Disable notices output',
 			'disable-warning|nw'	=> 'Disable warning messages output',
 			'disable-error|ne'		=> 'Disable fatal errors output',
+			'list|l'				=> 'Don\'t parse, just display files to parse list',
+			'exclude|e=s'			=> 'Exclude files matching the given Regex pattern',
+			'include|i=s'			=> 'Include files matching the given Regex pattern',
 		);
 	}
 	
@@ -48,9 +51,15 @@ class Ypd
 	
 	/**
 	 * Getopt cli option parser object.
-	 * @var Zend_Console_Getopt
+	 * @var YaPhpDoc_Console_Getopt
 	 */
 	protected $_getopt;
+	
+	/**
+	 * PHP Documents parser object.
+	 * @var YaPhpDoc_Core_Parser
+	 */
+	protected $_parser;
 	
 	/**
 	 * Locale code
@@ -63,6 +72,12 @@ class Ypd
 	 * @var Zend_Translate
 	 */
 	protected $_translation;
+	
+	/**
+	 * Loaded translation dictionaries
+	 * @var array
+	 */
+	protected $_loadedTranslations = array(); 
 	
 	/**
 	 * True if output is enabled
@@ -95,6 +110,18 @@ class Ypd
 	protected $_verbose = false;
 	
 	/**
+	 * Warning alerts counter
+	 * @var int
+	 */
+	protected $_warnings = 0;
+	
+	/**
+	 * Notices counter
+	 * @var int
+	 */
+	protected $_notices = 0;
+	
+	/**
 	 * Constructor is private, use getInstance() instead.
 	 * 
 	 * Try to find the current locale according to YPD_LOCALE constant and
@@ -106,11 +133,13 @@ class Ypd
 			$this->_locale = 'en';
 		else
 			$this->_locale = YPD_LOCALE;
+		
+		$this->_parser = new YaPhpDoc_Core_Parser();
 	}
 	
 	/**
 	 * Return the Getopt object allowing to parse cli options.
-	 * @return Zend_Console_Getopt
+	 * @return YaPhpDoc_Console_Getopt
 	 */
 	public function getGetopt()
 	{
@@ -124,10 +153,19 @@ class Ypd
 				$options[$option] = $translator->_($desc);
 			
 			# Create getopt object
-			$this->_getopt = new Zend_Console_Getopt($options);
+			$this->_getopt = new YaPhpDoc_Console_Getopt($options);
 		}
 		
 		return $this->_getopt;
+	}
+	
+	/**
+	 * Returns the document parser object.
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	public function getParser()
+	{
+		return $this->_parser;
 	}
 	
 	/**
@@ -137,23 +175,32 @@ class Ypd
 	 */
 	public function getTranslation($key = 'core')
 	{
-		$options = array('disableNotices' => true);
+		$options = array(
+			'delimiter' => ',',
+			'disableNotices' => true
+		);
+		
 		if(null === $this->_translation)
 		{
+			var_dump(YPD_ROOT.DIRECTORY_SEPARATOR.'l10n'.DIRECTORY_SEPARATOR
+				.self::$this->_locale.DIRECTORY_SEPARATOR.$key.'.csv');
 			$this->_translation = new Zend_Translate(
 				'csv',
-				YPD_ROOT.DIRECTORY_SEPARATOR.'l10n'.DIRECTORY_SEPARATOR.self::$this->_locale.DIRECTORY_SEPARATOR.$key.'.csv',
+				YPD_ROOT.DIRECTORY_SEPARATOR.'l10n'.DIRECTORY_SEPARATOR
+				.self::$this->_locale.DIRECTORY_SEPARATOR.$key.'.csv',
 				$this->_locale,
 				$options
 			);
 			$this->_translation->setLocale($this->_locale);
+			array_push($this->_loadedTranslations, $key);
 		}
-		else
+		elseif(!in_array($key, $this->_loadedTranslations))
 		{
 			$this->_translation->addTranslation(
-				YPD_ROOT.DIRECTORY_SEPARATOR.'l10n'.DIRECTORY_SEPARATOR.self::$this->_locale.DIRECTORY_SEPARATOR.$key.'.csv',
+				YPD_ROOT.DIRECTORY_SEPARATOR.'l10n'.DIRECTORY_SEPARATOR
+				.self::$this->_locale.DIRECTORY_SEPARATOR.$key.'.csv',
 				$this->_locale, $options);
-			
+			array_push($this->_loadedTranslations, $key);	
 		}
 		return $this->_translation;
 	}
@@ -284,6 +331,7 @@ class Ypd
 			else
 				$this->out($txt.' : '.$warning);
 		}
+		++$this->_warning;
 		return $this;
 	}
 	
@@ -303,6 +351,7 @@ class Ypd
 			else
 				$this->out($txt.' : '.$notice);
 		}
+		++$this->_notices;
 		return $this;
 	}
 	
@@ -327,6 +376,24 @@ class Ypd
 	}
 	
 	/**
+	 * Returns the number of warning alerts caught during execution.
+	 * @return int
+	 */
+	public function getWarningCount()
+	{
+		return $this->_warnings;
+	}
+	
+	/**
+	 * Returns the number of notices caught during execution.
+	 * @return int
+	 */
+	public function getNoticeCount()
+	{
+		return $this->_notices;
+	}
+	
+	/**
 	 * Display an information when non-handled exception is caught, and exit
 	 * the program.
 	 * 
@@ -343,5 +410,99 @@ class Ypd
 		);
 		
 		exit();
+	}
+	
+	/**
+	 * Add file(s) to parse, coma separated.
+	 * 
+	 * @param string $file
+	 * @return Ypd
+	 */
+	public function addFileFromOption($file)
+	{
+		if(!empty($file))
+		{
+			$file = explode(',', $file);
+			if(count($file))
+				$this->_parser->addFile($file);
+		}
+		return $this;
+	}
+	
+	/**
+	 * Add directory(ies) to parse, coma separated.
+	 * 
+	 * @param string $directory
+	 * @return Ypd
+	 */
+	public function addDirectoryFromOption($directory)
+	{
+		if(!empty($directory))
+		{
+			$directory = explode(',', $directory);
+				if(count($directory))
+					$this->_parser->addDirectory($directory);
+		}
+		return $this;
+	}
+	
+	/**
+	 * Add paths to parse, in an array. Each path will be analyzed and tested
+	 * in order to determine if the path matches an existing file or a
+	 * directory.
+	 * 
+	 * @param array $paths
+	 * @return Ypd
+	 */
+	public function addPathsFromOption(array $paths)
+	{
+		foreach($paths as $path)
+		{
+			if(is_file($path))
+				$this->_parser->addFile($path);
+			elseif(is_dir($path))
+				$this->_parser->addDirectory($path);
+			else
+				$this->warning(sprintf($this->getTranslation()->_(
+					'%s does not seem to be a file or a directory, ignoring'
+				), $path));
+		}
+		return $this;
+	}
+	
+	/**
+	 * Set filenames include pattern from option.
+	 * 
+	 * @param string $pattern
+	 * @return Ypd
+	 */
+	public function setIncludePatternFromOption($pattern)
+	{
+		$this->_parser->setIncludePattern($pattern);
+		return $this;
+	}
+	
+	/**
+	 * Set filenames exclude pattern from option.
+	 * 
+	 * @param string $pattern
+	 * @return Ypd
+	 */
+	public function setExcludePatternFromOption($pattern)
+	{
+		$this->_parser->setExcludePattern($pattern);
+		return $this;
+	}
+	
+	/**
+	 * Display the list of file to be parsed.
+	 * @return Ypd
+	 */
+	public function outputFilesToParse()
+	{
+		$this->out($this->getTranslation()->_('Files to parse :'));
+		foreach($this->getParser()->getFilesToParse() as $file)
+			$this->out($file);
+		return $this;
 	}
 }

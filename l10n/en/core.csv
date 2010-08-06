@@ -3,3 +3,5 @@
 "Notice","Notice"
 "Warning","Warning"
 "Fatal error","Fatal error"
+"Files to parse :","Files to parse :"
+"%s does not seem to be a file or a directory, ignoring","%s does not seem to be a file or a directory, ignoring"

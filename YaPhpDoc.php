@@ -23,6 +23,7 @@ $loader->registerNamespace(array('YaPhpDoc', 'Ypd'));
 
 # utility classes
 $ypd = Ypd::getInstance();
+$ypd->getTranslation('cli');
 	
 # Parse cli options
 $options = $ypd->getGetopt();
@@ -52,15 +53,49 @@ try
 	if($options->getOption('disable-notice'))
 		$ypd->setOutputNotices(false);
 	
+	# Target options
+	if($file = $options->getOption('file'))
+		$ypd->addFileFromOption($file);
+	if($directory = $options->getOption('directory'))
+		$ypd->addDirectoryFromOption($directory);
+	if($paths = $options->getOtherPaths())
+		$ypd->addPathsFromOption($paths);
+	if(!$file && !$directory && !$paths)
+	{
+		$ypd->addDirectoryFromOption($_SERVER['PWD']);
+		$ypd->notice($ypd->getTranslation()
+			->_('No source given, using pwd instead'));
+	}
+	
+	# Include/Exclude patterns
+	if($pattern = $options->getOption('exclude'))
+		$ypd->setExcludePatternFromOption($pattern);
+	if($pattern = $options->getOption('include'))
+		$ypd->setIncludePatternFromOption($pattern);
 }
 catch(Zend_Console_Getopt_Exception $e)
 {
 	echo $e->getUsageMessage();
 	exit();
 }
+catch(YaPhpDoc_Core_Exception $e)
+{
+	$ypd->error($e);
+}
+catch(Exception $e)
+{
+	$ypd->phpException($e);
+}
 
+# Begin the job
 try
 {
+	if($options->getOption('list'))
+	{
+		$ypd->outputFilesToParse();
+		exit();
+	}
+	
 	throw new YaPhpDoc_Core_Exception(
 		$ypd->getTranslation()
 			->_('YaPhpDoc does not support this feature yet.')
