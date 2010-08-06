@@ -182,8 +182,6 @@ class Ypd
 		
 		if(null === $this->_translation)
 		{
-			var_dump(YPD_ROOT.DIRECTORY_SEPARATOR.'l10n'.DIRECTORY_SEPARATOR
-				.self::$this->_locale.DIRECTORY_SEPARATOR.$key.'.csv');
 			$this->_translation = new Zend_Translate(
 				'csv',
 				YPD_ROOT.DIRECTORY_SEPARATOR.'l10n'.DIRECTORY_SEPARATOR
