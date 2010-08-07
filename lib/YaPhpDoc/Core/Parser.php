@@ -261,7 +261,7 @@ class YaPhpDoc_Core_Parser
 		}
 		
 		# Create the root node
-		$this->_root = new YaPhpDoc_Token_Document('Root', 0);
+		$this->_root = new YaPhpDoc_Token_Document();
 		
 		# Start parsing
 		foreach($files as $file)
@@ -297,13 +297,19 @@ class YaPhpDoc_Core_Parser
 			));
 		}
 		
-		# Parse file content
-		$tokens = token_get_all($file_content);
+		# New file
+		$file = new YaPhpDoc_Token_File($filename);
+		$this->_root->addChild($file);
 		
-		throw new YaPhpDoc_Core_Exception(
-			Ypd::getInstance()->getTranslation()
-			->_('YaPhpDoc does not support this feature yet.')
-		);
+		# Parse file content
+		$tokens = new YaPhpDoc_Tokenizer($file_content);
+		$tokensIterator = $tokens->getIterator();
+		
+		$inPhp = false;
+		if($tokensIterator->valid())
+		{
+			$file->parse($tokensIterator);
+		}
 		
 		return $this;
 	}

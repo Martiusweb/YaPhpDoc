@@ -14,6 +14,18 @@
 abstract class YaPhpDoc_Token_Abstract
 {
 	/**
+	 * Root token type identifier
+	 * @var int
+	 */
+	const ROOT = 0;
+	
+	/**
+	 * File token type identifier
+	 * @var file
+	 */
+	const FILE = 1;
+	
+	/**
 	 * Name of the token
 	 * @var string
 	 */
@@ -55,5 +67,20 @@ abstract class YaPhpDoc_Token_Abstract
 	public function getTokenType()
 	{
 		$this->_tokenType;
+	}
+	
+	/**
+	 * Parse a token using the token iterator. A non overriden
+	 * parser will throw a YaPhpDoc_Core_Parser_Exception.
+	 * 
+	 * @param ArrayIterator $tokensIterator
+	 * @throw YaPhpDoc_Core_Parser_Exception
+	 * @return YaPhpDoc_Token_Abstract 
+	 */
+	public function parse(ArrayIterator $tokensIterator)
+	{
+		throw new YaPhpDoc_Core_Parser_Exception(
+			Ypd::getInstance()->getTranslation('parser')
+				->_('This token type is not parsable'));
 	}
 }

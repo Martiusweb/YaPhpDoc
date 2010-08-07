@@ -526,8 +526,8 @@ class Ypd
 		$timer->stop();
 		
 		$msg = sprintf($this->getTranslation()
-			->_('Stop parsing (time : %f, memory: %s)'), $timer->getTimeUsage(),
-			$timer->getMemoryUsage()
+			->_('Stop parsing (time : %.4f sec, memory: %s, max: %s)'), $timer->getTimeUsage(),
+			$timer->getMemoryUsage(), $timer->getMemoryPeak()
 		);
 		$this->verbose($msg, false);
 		

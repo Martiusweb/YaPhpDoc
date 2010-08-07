@@ -126,6 +126,25 @@ class YaPhpDoc_Tool_Timer
 	public function getMemoryUsage()
 	{
 		$memory = $this->memory_end - $this->memory_start;
+		return $this->_formatMemory($memory);
+	}
+	
+	/**
+	 * Returns the memory peak during execution.
+	 * @return string
+	 */
+	public function getMemoryPeak()
+	{
+		return $this->_formatMemory(memory_get_peak_usage());
+	}
+	
+	/**
+	 * Rerturns the memory value in human readable format.
+	 * @param int $memory
+	 * @return string
+	 */
+	protected function _formatMemory($memory)
+	{
 		$unit = 'B';
 		if($memory >= 1024)
 		{
@@ -138,8 +157,7 @@ class YaPhpDoc_Tool_Timer
 				$unit = 'MB';
 			}
 		}
-		
-		return $memory.' '.$unit;
+		return sprintf('%.3f', $memory).' '.$unit;
 	}
 	
 	/**
