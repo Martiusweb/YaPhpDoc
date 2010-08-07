@@ -96,10 +96,7 @@ try
 		exit();
 	}
 	
-	throw new YaPhpDoc_Core_Exception(
-		$ypd->getTranslation()
-			->_('YaPhpDoc does not support this feature yet.')
-	);
+	$ypd->parse();
 }
 catch(YaPhpDoc_Core_Exception $e)
 {

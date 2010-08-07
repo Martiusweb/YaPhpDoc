@@ -503,4 +503,37 @@ class Ypd
 			$this->out($file);
 		return $this;
 	}
+	
+	/**
+	 * Start parsing.
+	 * 
+	 * @return Ypd
+	 */
+	public function parse()
+	{
+		$this->verbose('Start parsing');
+		
+		$timer = new YaPhpDoc_Tool_Timer();
+		$timer->start();
+		
+		$e = null;
+		try {
+			$this->_parser->parseAll();
+		}
+		catch(Exception $e)
+		{}
+		
+		$timer->stop();
+		
+		$msg = sprintf($this->getTranslation()
+			->_('Stop parsing (time : %f, memory: %s)'), $timer->getTimeUsage(),
+			$timer->getMemoryUsage()
+		);
+		$this->verbose($msg, false);
+		
+		if(null !== $e)
+			throw $e;
+		
+		return $this;
+	}
 }
