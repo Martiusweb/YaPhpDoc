@@ -2,3 +2,5 @@
 "Directory %s is not readable","Directory %s is not readable"
 "Wrong Include Pattern : %s","Wrong Include Pattern : %s"
 "Wrong Exclude Pattern : %s","Wrong Exclude Pattern : %s"
+"Can not read file %s","Can not read file %s"
+"Parsing %s","Parsing %s"

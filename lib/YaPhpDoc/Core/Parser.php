@@ -28,13 +28,19 @@ class YaPhpDoc_Core_Parser
 	 * Only files matching this pattern will be parsed
 	 * @var string
 	 */
-	protected $_includePattern = '.*\.(php[3-5]?|phtml|phps)';
+	protected $_includePattern;
 	
 	/**
 	 * Files matching this pattern will be excluded
 	 * @var string
 	 */
-	protected $_excludePattern = '';
+	protected $_excludePattern;
+	
+	/**
+	 * Root element
+	 * @var YaPhpDoc_Token_Document
+	 */
+	private $_root;
 	
 	/**
 	 * Constructor of the parser.
@@ -52,8 +58,12 @@ class YaPhpDoc_Core_Parser
 			$this->addFile($files);
 		if(null !== $include_pattern)
 			$this->_includePattern = $include_pattern;
+		else
+			$this->_includePattern = '.*\.(php[3-5]?|phtml|phps)$';
 		if(null !== $exclude_pattern)
 			$this->_excludePattern = $exclude_pattern;
+		else
+			$this->_excludePattern = '('.DIRECTORY_SEPARATOR.'|^)\..*';
 	}
 	
 	/**
@@ -160,7 +170,9 @@ class YaPhpDoc_Core_Parser
 	}
 	
 	/**
-	 * Explore recursivly directories and find files to parse.
+	 * Explore recursivly directories and find files to parse. Hidden
+	 * directories (begining with ".") are excluded.
+	 * 
 	 * @param string $dirname
 	 * @return array
 	 */
@@ -168,33 +180,38 @@ class YaPhpDoc_Core_Parser
 	{
 		$files = array();
 		
-		if(!($dir = @opendir($dirname)))
+		if(!$this->_isHidden($dirname))
 		{
-			throw new YaPhpDoc_Core_Parser_Exception(
-				sprintf(Ypd::getInstance()->getTranslation('parser')
-					->_('Directory %s is not readable'),  $dirname)
-			);
-		}
-		
-		while(false !== ($current = readdir($dir)))
-		{
-			if($current == '.' || $current == '..')
-				continue;
-			if(is_dir($current))
+			if(!($dir = @opendir($dirname)))
 			{
-				$files = array_merge(
-					$files,
-					$this->_getFilesToParseInDir($current)
+				throw new YaPhpDoc_Core_Parser_Exception(
+					sprintf(Ypd::getInstance()->getTranslation('parser')
+						->_('Directory %s is not readable'),  $dirname)
 				);
 			}
-			elseif($this->_isFilenameToParse($current))
+			
+			while(false !== ($current = readdir($dir)))
 			{
-				array_push($files, $current);
+				if($current == '.' || $current == '..')
+					continue;
+				
+				$current = $dirname.'/'.$current;
+				if(is_dir($current))
+				{
+					$files = array_merge(
+						$files,
+						$this->_getFilesToParseInDir($current)
+					);
+				}
+				elseif($this->_isFilenameToParse($current))
+				{
+					array_push($files, $current);
+				}
 			}
+			
+			closedir($dir);
 		}
-		
-		closedir($dir);
-		
+
 		return $files;
 	}
 	/**
@@ -211,6 +228,18 @@ class YaPhpDoc_Core_Parser
 		# To exclude ?
 		 	&& (empty($this->_excludePattern) || 
 			!preg_match('`'.$this->_excludePattern.'`', $filename));
+	}
+	
+	/**
+	 * Returns true if the directory is hidden (starts with a ".").
+	 * 
+	 * @param string $dirname
+	 * @return bool
+	 */
+	protected function _isHidden($dirname)
+	{
+		$dirname = substr($dirname, strrpos($dirname, DIRECTORY_SEPARATOR)+1);
+		return $dirname[0] == '.';
 	}
 	
 	/**
@@ -231,22 +260,51 @@ class YaPhpDoc_Core_Parser
 			);
 		}
 		
-		# TODO parser
-		throw new YaPhpDoc_Core_Exception(
-			Ypd::getInstance()->getTranslation()
-			->_('YaPhpDoc does not support this feature yet.')
-		);
+		# Create the root node
+		$this->_root = new YaPhpDoc_Token_Document('Root', 0);
+		
+		# Start parsing
+		foreach($files as $file)
+		{
+			Ypd::getInstance()->verbose(sprintf(Ypd::getInstance()
+				->getTranslation('parser')->_('Parsing %s'), $file),
+			false);
+			
+			$this->_parseFile($file);
+		}
+		
 		return $this;
 	}
 	
 	/**
-	 * Parses the array of file lines.
+	 * Parses the file given in parameter.
 	 *  
-	 * @param array $file
+	 * @param string $filename
 	 * @return YaPhpDoc_Core_Parser
 	 */
-	protected function _parseFile(array $file)
+	protected function _parseFile($filename)
 	{
+		$file_content = null;
+		if(is_readable($filename))
+		{
+			$file_content = file_get_contents($filename);
+		}
+		if(null === $file_content)
+		{
+			throw new YaPhpDoc_Core_Parser_Exception(
+				sprintf(Ypd::getInstance()->getTranslation('parser')
+				->_('Can not read file %s'), $file
+			));
+		}
+		
+		# Parse file content
+		$tokens = token_get_all($file_content);
+		
+		throw new YaPhpDoc_Core_Exception(
+			Ypd::getInstance()->getTranslation()
+			->_('YaPhpDoc does not support this feature yet.')
+		);
+		
 		return $this;
 	}
 	
@@ -266,5 +324,16 @@ class YaPhpDoc_Core_Parser
 		}
 		else
 			return false;
+	}
+	
+	/**
+	 * Returns the root element, can be null if the parser has not been
+	 * executed yet.
+	 * 
+	 * @return YaPhpDoc_Token_Document
+	 */
+	public function getRoot()
+	{
+		return $this->_root;
 	}
 }
