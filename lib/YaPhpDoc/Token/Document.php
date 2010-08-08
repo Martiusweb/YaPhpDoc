@@ -15,9 +15,11 @@ class YaPhpDoc_Token_Document extends YaPhpDoc_Token_Structure_Abstract
 {
 	/**
 	 * Root constructor.
+	 * Parent of the root is null.
 	 */
 	public function __construct()
 	{
-		parent::__construct('Root', YaPhpDoc_Token_Abstract::ROOT);
+		$this->_name = 'Root';
+		$this->_tokenType = YaPhpDoc_Token_Abstract::ROOT;
 	}
 }

@@ -40,6 +40,7 @@ class YaPhpDoc_Tokenizer implements IteratorAggregate, Countable
 	
 	/**
 	 * Filters the token in order to keep only those needed by the parser.
+	 * One ore more ignored tokens are replaced by a "T_MISC" token.
 	 * 
 	 * @return YaPhpDoc_Tokenizer
 	 */
@@ -49,8 +50,26 @@ class YaPhpDoc_Tokenizer implements IteratorAggregate, Countable
 
 		for($i = 0, $j = count($this->_tokens_array); $i < $j; ++$i)
 		{
+			$in_misc = false;
+			$last_misc = 0;
 			if(isset($ignored[$this->_tokens_array[$i][0]]))
-				unset($this->_tokens_array[$i]);
+			{
+				if($in_misc)
+				{
+					$this->_tokens_array[$last_misc][1] .= $this->_tokens_array[$i][1];
+					unset($this->_tokens_array[$i]);
+				}
+				else
+				{
+					$in_misc = true;
+					$last_misc = $i;
+					$this->_tokens_array[$i][0] = YaPhpDoc_Tokenizer_Token::T_MISC;
+				}
+			}
+			else
+			{
+				$in_misc = false;
+			}
 		}
 		return $this;
 	}
@@ -98,7 +117,7 @@ class YaPhpDoc_Tokenizer implements IteratorAggregate, Countable
 	{
 		return array_flip(array(
 			# Classic comments, html, & misc.
-			T_COMMENT, T_BAD_CHARACTER, T_INLINE_HTML, // T_WHITESPACE,
+			T_COMMENT, T_BAD_CHARACTER, T_INLINE_HTML, //T_WHITESPACE,
 			# all operators ("=" is not a typed parser token)
 			T_AND_EQUAL, T_BOOLEAN_AND, T_BOOLEAN_OR, T_CONCAT_EQUAL, T_DEC,
 			T_DIV_EQUAL, T_DOUBLE_ARROW, T_INC, T_IS_EQUAL,

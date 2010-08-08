@@ -298,7 +298,7 @@ class YaPhpDoc_Core_Parser
 		}
 		
 		# New file
-		$file = new YaPhpDoc_Token_File($filename);
+		$file = new YaPhpDoc_Token_File($filename, $this->_root);
 		$this->_root->addChild($file);
 		
 		# Parse file content
