@@ -40,7 +40,13 @@ class YaPhpDoc_Core_Parser
 	 * Root element
 	 * @var YaPhpDoc_Token_Document
 	 */
-	private $_root;
+	protected $_root;
+	
+	/**
+	 * Currently parsed file.
+	 * @var string|NULL
+	 */
+	protected $_current_file;
 	
 	/**
 	 * Constructor of the parser.
@@ -270,8 +276,10 @@ class YaPhpDoc_Core_Parser
 				->getTranslation('parser')->_('Parsing %s'), $file),
 			false);
 			
+			$this->_current_file = $file;
 			$this->_parseFile($file);
 		}
+		$this->_current_file = null;
 		
 		return $this;
 	}
@@ -341,5 +349,14 @@ class YaPhpDoc_Core_Parser
 	public function getRoot()
 	{
 		return $this->_root;
+	}
+	
+	/**
+	 * Returns currently parsed file.
+	 * @return string|NULL
+	 */
+	public function getCurrentFile()
+	{
+		return $this->_current_file;
 	}
 }

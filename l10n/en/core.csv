@@ -7,3 +7,5 @@
 "%s does not seem to be a file or a directory, ignoring","%s does not seem to be a file or a directory, ignoring"
 "Start parsing","Start parsing"
 "Stop parsing (time : %f, memory: %s, max: %s)","Stop parsing (time : %f, memory: %s, max: %s)"
+"Autoloader is not defined or configurated.","Autoloader is not defined or configurated."
+" in %s at line %d"," in %s at line %d"

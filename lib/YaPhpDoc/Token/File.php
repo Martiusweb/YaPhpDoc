@@ -55,7 +55,15 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 			}
 			elseif($token->isFunction())
 			{
-				// TODO parse function
+				$function = new YaPhpDoc_Token_Function($this);
+				$function->parse($tokensIterator);
+				if($docblock !== null)
+				{
+					$function->setStandardTags($docblock);
+					$docblock = null; 
+				}
+				$this->addChild($function);
+				unset($function);
 			}
 			elseif($token->isConst())
 			{
@@ -67,6 +75,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 					$docblock = null;
 				}
 				$this->addChild($const);
+				unset($const);
 			}
 			elseif($token->isGlobal())
 			{

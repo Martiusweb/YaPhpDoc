@@ -17,13 +17,20 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 	 * Tags in the DocBlock and their content.
 	 * @var array
 	 */
-	public $_tags = array();
+	protected $_tags = array();
+	
 	
 	/**
 	 * DocBlock content.
 	 * @var string
 	 */
-	public $_content = '';
+	protected $_content = '';
+	
+	/**
+	 * Tags retrieved by getTags().
+	 * @var array
+	 */
+	protected $_usedTags = array();
 	
 	/**
 	 * Constructor
@@ -46,8 +53,8 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 		$token_content = explode("\n", substr(substr($token->getContent(), 2), 0, -2));
 		/* @var $token YaPhpDoc_Tokenizer_Token */
 		
-		// TODO DocBlock parser
 		$content = '';
+		$line_no = $token->getLine();
 		foreach($token_content as $line)
 		{
 			# Ignore prepending whitespaces
@@ -68,12 +75,22 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 			}
 			
 			# is it @tag ?
-			if(preg_match('`^@([a-zA-Z0-9_\-]*?) (.*)`', $line, $matches))
+			if($line[0] == '@')
 			{
-				$this->_tags[$matches[1]][] = $matches[2];
+				try {
+					$tag = YaPhpDoc_Tag_Abstract::getTag($line);
+					$this->_tags[$tag->getName()][] = $tag;
+				} catch(YaPhpDoc_Tag_Exception $e)
+				{
+					Ypd::getInstance()->warning($e->getMessage().sprintf(
+					Ypd::getInstance()->getTranslation()->_(' in %s at line %d'),
+					Ypd::getInstance()->getParser()->getCurrentFile(), $line_no));
+				}
 			}
 			else
 				$content .= $line."\n";
+			
+			++$line_no;
 		}
 		$this->_content = $content;
 		return $this;
@@ -102,8 +119,27 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 	{
 		if(null === $tagname)
 			return $this->_tags;
-		
-		return isset($this->_tags[$tagname]) ? $this->_tags[$tagname]
-			: null;
+
+		if(isset($this->_tags[$tagname]))
+		{
+			return $this->_tags[$tagname];
+			array_push($this->_usedTags, $tagname);		
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns tags that have not been retrieved yet.
+	 * 
+	 * @return array
+	 */
+	public function getNotUsedTags()
+	{
+		$tags = $this->_tags;
+		foreach($this->_usedTags as $tagname)
+		{
+			unset($tags[$tagname]);
+		}
+		return $tags;
 	}
 }
