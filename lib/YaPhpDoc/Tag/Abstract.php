@@ -112,7 +112,7 @@ abstract class YaPhpDoc_Tag_Abstract
 			unset($matches);
 			
 			$class = 'YaPhpDoc_Tag_'.ucfirst($tagname);
-			if(!class_exists($class))
+			if(!class_exists($class, false))
 			{
 				$loader = Zend_Loader_Autoloader::getInstance();
 				if(!in_array('YaPhpDoc', $loader->getRegisteredNamespaces()))
