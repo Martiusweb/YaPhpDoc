@@ -166,7 +166,8 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function isConst()
 	{
-		return $this->_type == T_CONST || $this->_type == 'define';
+		return $this->_type == T_CONST || ($this->_type == T_STRING
+			&& $this->_content == 'define');
 	}
 	
 	/**
@@ -206,7 +207,8 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function isConstantString()
 	{
-		return $this->_type == T_CONSTANT_ENCAPSED_STRING;
+		return $this->_type == T_CONSTANT_ENCAPSED_STRING ||
+			($this->_type == T_STRING && $this->_content != 'define');
 	}
 	
 	/**
@@ -247,9 +249,13 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function getStringContent()
 	{
-		if($this->_type = T_CONSTANT_ENCAPSED_STRING)
+		if($this->_type == T_CONSTANT_ENCAPSED_STRING)
 		{
 			return trim($this->_content, $this->_content[0]);
+		}
+		elseif($this->_type == T_STRING)
+		{
+			return $this->_content;
 		}
 		
 		return '';

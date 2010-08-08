@@ -59,8 +59,14 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 			}
 			elseif($token->isConst())
 			{
-				// TODO parse const
-				// $const = new YaPhpDoc_Token_Const($this);
+				$const = new YaPhpDoc_Token_Const($this);
+				$const->parse($tokensIterator);
+				if($docblock !== null)
+				{
+					$const->setStandardTags($docblock);
+					$docblock = null;
+				}
+				$this->addChild($const);
 			}
 			elseif($token->isGlobal())
 			{
