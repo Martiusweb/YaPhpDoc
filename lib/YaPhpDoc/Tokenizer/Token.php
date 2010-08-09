@@ -232,6 +232,14 @@ class YaPhpDoc_Tokenizer_Token
 	}
 	
 	/**
+	 * Returns true if the token is an array
+	 */	
+	public function isArray()
+	{
+		return $this->_type == T_ARRAY;
+	}
+	
+	/**
 	 * Try to parse constant value content.
 	 * @return string
 	 */

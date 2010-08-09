@@ -79,7 +79,10 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 			{
 				try {
 					$tag = YaPhpDoc_Tag_Abstract::getTag($line);
-					$this->_tags[$tag->getName()][] = $tag;
+					if($tag->isMultipleUsage())
+						$this->_tags[$tag->getName()][] = $tag;
+					else
+						$this->_tags[$tag->getName()] = $tag;	
 				} catch(YaPhpDoc_Tag_Exception $e)
 				{
 					Ypd::getInstance()->warning($e->getMessage().sprintf(
@@ -113,7 +116,7 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 	 * If $tagname is null, all tags are returned.
 	 * 
 	 * @param string $tagname (optional, default null)
-	 * @return array|null
+	 * @return YaPhpDoc_Tag_Abstract|array|null
 	 */
 	public function getTags($tagname = null)
 	{

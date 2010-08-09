@@ -14,4 +14,13 @@
  */
 class YaPhpDoc_Tag_Since extends YaPhpDoc_Tag_Abstract
 {
+	/**
+	 * Since tag constructor.
+	 * @param string $tagline
+	 */
+	public function __construct($tagline)
+	{
+		$this->_setMultipleUsage(false);
+		parent::__construct($tagline);
+	}
 }

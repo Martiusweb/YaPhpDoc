@@ -9,7 +9,6 @@
  * Represent any token (file, package, namespace, class, function, etc) the
  * program can parse and document.
  * 
- * @todo tags : deprecated, see
  * @author Martin Richard
  */
 abstract class YaPhpDoc_Token_Abstract
@@ -64,7 +63,7 @@ abstract class YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Deprecated state of the token.
-	 * @var array|NULL|YaPhpDoc_Tag_Deprecated
+	 * @var YaPhpDoc_Tag_Deprecated
 	 */
 	protected $_deprecated = false;
 	
@@ -152,7 +151,7 @@ abstract class YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Set standard tags if available from given dockblock.
-	 * Tags are : author, license, copyright, deprecated
+	 * Tags are : author, license, copyright, deprecated, since, see
 	 * 
 	 * @param YaPhpDoc_Token_DocBlock $docblock
 	 * @return YaPhpDoc_Token_Abstract
@@ -161,12 +160,16 @@ abstract class YaPhpDoc_Token_Abstract
 	{
 		if($author = $docblock->getTags('author'))
 			$this->setAuthor($author);
-		if($licence = $docblock->getTags('licence'))
-			$this->setLicense($licence);
+		if($license = $docblock->getTags('license'))
+			$this->setLicense($license);
 		if($copyright = $docblock->getTags('copyright'))
 			$this->setCopyright($copyright);
 		if($deprecated = $docblock->getTags('deprecated'))
 			$this->setDeprecated($deprecated);
+		if($since = $docblock->getTags('since'))
+			$this->setSince($since);
+		if($see = $docblock->getTags('see'))
+			$this->setSee($see);
 		if($tags = $docblock->getNotUsedTags())
 			$this->_anonymousTags = $tags;
 		
@@ -234,10 +237,10 @@ abstract class YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Set deprecated tag.
-	 * @param YaPhpDoc_Tag_Deprecated|array $deprecated
+	 * @param YaPhpDoc_Tag_Deprecated $deprecated
 	 * @return YaPhpDoc_Token_Abstract
 	 */
-	public function setDeprecated($deprecated)
+	public function setDeprecated(YaPhpDoc_Tag_Deprecated $deprecated)
 	{
 		$this->_deprecated = $deprecated;
 		return $this;
@@ -253,11 +256,42 @@ abstract class YaPhpDoc_Token_Abstract
 	}
 	
 	/**
-	 * Set since tag.  
-	 * @param YaPhpDoc_Tag_Since|array $deprecated
+	 * Returns true if the token is marked as deprecated.
+	 * It's a proxy method for the (maybe existing) deprecated tag.
+	 * @return bool
+	 */
+	public function isDeprecated()
+	{
+		return (null !== $this->_deprecated
+			&& $this->_deprecated->isDeprecated());
+	}
+	
+	/**
+	 * Set see tag.
+	 * @param array|YaPhpDoc_Tag_See $see
 	 * @return YaPhpDoc_Token_Abstract
 	 */
-	public function setSince($since)
+	public function setSee($see)
+	{
+		$this->_see = $see;
+		return $this;
+	}
+	
+	/**
+	 * Returns see tag(s).
+	 * @return YaPhpDoc_Tag_See|array|NULL
+	 */
+	public function getSee()
+	{
+		return $this->_see;
+	}
+	
+	/**
+	 * Set since tag.  
+	 * @param YaPhpDoc_Tag_Since $deprecated
+	 * @return YaPhpDoc_Token_Abstract
+	 */
+	public function setSince(YaPhpDoc_Tag_Since $since)
 	{
 		$this->_since = $since;
 		return $this;

@@ -28,6 +28,12 @@ abstract class YaPhpDoc_Tag_Abstract
 	protected $_value;
 	
 	/**
+	 * Can the tag be used multiple times ?
+	 * @var bool
+	 */
+	protected $_multiple_usage = true;
+	
+	/**
 	 * Constructor of a tag.
 	 * 
 	 * @param string $tagline
@@ -70,6 +76,26 @@ abstract class YaPhpDoc_Tag_Abstract
 	}
 	
 	/**
+	 * Returns true if the tags can be used several times in the same docblock.
+	 * @return bool
+	 */
+	public function isMultipleUsage()
+	{
+		return $this->_multiple_usage;
+	}
+	
+	/**
+	 * Set the multiple_usage flag.
+	 * @param bool $flag (optional, default to true)
+	 * @return YaPhpDoc_Tag_Abstract
+	 */
+	protected function _setMultipleUsage($flag = true)
+	{
+		$this->_multiple_usage = $flag;
+		return $this;
+	}
+	
+	/**
 	 * Parses the tag line.
 	 * 
 	 * @param string $line
@@ -81,7 +107,7 @@ abstract class YaPhpDoc_Tag_Abstract
 		{
 			$this->_name = $matches[1];
 			if(!empty($matches[2]))
-				$this->_value = $matches[2];
+				$this->_value = trim($matches[2]);
 		}
 		else
 		{

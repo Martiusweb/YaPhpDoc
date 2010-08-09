@@ -76,6 +76,13 @@ class YaPhpDoc_Token_Const extends YaPhpDoc_Token_Var
 					{
 						if($token->isConstantValue())
 							$this->_value = $token->getConstantContent();
+						elseif($token->isArray())
+						{
+							$array = new YaPhpDoc_Token_Array($this->getName(), $this);
+							$array->parse($tokensIterator);
+							$this->_value = $array->getArrayString();
+							unset($array);
+						}
 						elseif($token->getType() == ')')
 						{
 							$is_value = false;
