@@ -81,9 +81,15 @@ abstract class YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Since refers to the first version when the token is available.
-	 * @var array|NULL|YaPhpDoc_Tag_Since
+	 * @var NULL|YaPhpDoc_Tag_Since
 	 */
 	protected $_since;
+	
+	/**
+	 * Version of the token.
+	 * @var NULL|YaPhpDoc_Tag_Since
+	 */
+	protected $_version;
 	
 	/**
 	 * Non identified tags 
@@ -151,7 +157,7 @@ abstract class YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Set standard tags if available from given dockblock.
-	 * Tags are : author, license, copyright, deprecated, since, see
+	 * Tags are : author, license, copyright, deprecated, since, see, version
 	 * 
 	 * @param YaPhpDoc_Token_DocBlock $docblock
 	 * @return YaPhpDoc_Token_Abstract
@@ -170,6 +176,8 @@ abstract class YaPhpDoc_Token_Abstract
 			$this->setSince($since);
 		if($see = $docblock->getTags('see'))
 			$this->setSee($see);
+		if($version = $docblock->getTags('version'))
+			$this->setVersion($version);
 		if($tags = $docblock->getNotUsedTags())
 			$this->_anonymousTags = $tags;
 		
@@ -304,6 +312,27 @@ abstract class YaPhpDoc_Token_Abstract
 	public function getSince()
 	{
 		return $this->_since;
+	}
+	
+	/**
+	 * Set version tag.
+	 * 
+	 * @param YaPhpDoc_Tag_Version $version
+	 * @return YaPhpDoc_Token_Abstract
+	 */
+	public function setVersion(YaPhpDoc_Tag_Version $version)
+	{
+		$this->_version = $version;
+		return $this;
+	}
+	
+	/**
+	 * Returns version tag.
+	 * @return YaPhpDoc_Tag_Version
+	 */
+	public function getVersion()
+	{
+		return $this->_version;
 	}
 	
 	/**

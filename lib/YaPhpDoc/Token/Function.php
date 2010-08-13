@@ -19,6 +19,31 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	protected $_params = array();
 	
 	/**
+	 * True if the function allows any number of params.
+	 * @var bool
+	 */
+	protected $_is_open_params = false;
+	
+	/**
+	 * Type of the returned value.
+	 * @var YaPhpDoc_Tag_Return|NULL
+	 */
+	protected $_return;
+	
+	/**
+	 * Throw tags (exception that can be thrown inside the function).
+	 * @var YaPhpDoc_Tag_Throw[]|NULL
+	 */
+	protected $_throw;
+	
+	/**
+	 * Uses tags.
+	 * @var YaPhpDoc_Tag_Uses[]|NULL
+	 * @var unknown_type
+	 */
+	protected $_uses;
+	
+	/**
 	 * Function constructor.
 	 * 
 	 * @param YaPhpDoc_Token_Abstract $parent
@@ -43,8 +68,7 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 		while($tokensIterator->valid())
 		{
 			$token = $tokensIterator->current();
-//			var_dump('type : '.$token->getType());
-//			var_dump('val : '.$token->getContent());
+			/* @var $token YaPhpDoc_Tokenizer_Token */
 			
 			if($token->isWhitespace())
 			{
@@ -52,7 +76,6 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 				continue;
 			}
 			
-			/* @var $token YaPhpDoc_Tokenizer_Token */
 			if($token->isFunction())
 			{
 				$in_function_definition = true;
@@ -70,7 +93,25 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 			}
 			elseif($in_params_definition)
 			{
-				if($token->isConstantString())
+				if($in_default_value)
+				{
+					if($token->isConstantValue())
+					{
+						$param = $this->_getParam($param_defined);
+						$param->setDefaultValue($token->getConstantContent());
+						$in_default_value = false;
+					}
+					elseif($token->isArray())
+					{
+						$param = $this->_getParam($param_defined);
+						$array = new YaPhpDoc_Token_Array($param->getName(), $param);
+						$array->parse($tokensIterator);
+						$param->setDefaultValue($array->getArrayString());
+						unset($array);
+						$in_default_value = false;
+					}
+				}
+				elseif($token->isConstantString())
 				{
 					$param = $this->_getParam($param_defined);
 					$param->setType($token->getStringContent());
@@ -85,30 +126,13 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 					$in_default_value = true;
 					$this->_getParam($param_defined)->setOptional();
 				}
-				elseif($in_default_value)
-				{
-					if($token->isConstantValue())
-					{
-						$param = $this->_getParam($param_defined);
-						$param->setDefaultValue($token->getConstantContent());
-					}
-					elseif($token->isArray())
-					{
-						$param = $this->_getParam($param_defined);
-						$array = new YaPhpDoc_Token_Array($param->getName(), $param);
-						$array->parse($tokensIterator);
-						$param->setDefaultValue($array->getArrayString());
-						unset($array);
-					}
-					$in_default_value = false;
-				}
 				elseif($token->getType() == ',')
 				{
 					++$param_defined;
 				}
 				elseif($token->getType() == ')')
 				{
-					$in_default_value = false;
+					$in_params_definition = false;
 					break;
 				}
 			}
@@ -134,16 +158,131 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	}
 	
 	/**
+	 * Returns an existing parameter according to its name.
+	 * 
+	 * The name can be prefixed by "$" or not.
+	 *  
+	 * @param string $name
+	 * @return YaPhpDoc_Token_Param|NULL
+	 */
+	protected function _getParamByName($name)
+	{
+		if($name[0] != '$')
+			$name = '$'.$name;
+		
+		foreach($this->_params as $param)
+		{
+			/* @var $param YaPhpDoc_Token_Param */
+			if($param->getName() == $name)
+				return $param;
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Set standard tags if available from given dockblock.
-	 * Tags are : 
-	 * @todo choose tags
+	 * Tags are : param, return, throw, uses
 	 *  
 	 * @param YaPhpDoc_Token_DocBlock $docblock
 	 * @return YaPhpDoc_Token_Function
 	 */
 	public function setStandardTags(YaPhpDoc_Token_DocBlock $docblock)
 	{
-		// TODO standard tags for function
+		if($params = $docblock->getTags('param'))
+			$this->_setParamTags($params);
+		if($return = $docblock->getTags('return'))
+			$this->_return = $return;
+		if($throw = $docblock->getTags('throw'))
+			$this->_throw = $throw;
+		if($uses = $docblock->getTags('uses'))
+			$this->_uses = $uses;
+		
 		return $this;
+	}
+	
+	/**
+	 * Update function parameters according to docblock param @tags.
+	 * 
+	 * @param array $params
+	 * @return YaPhpDoc_Token_Function
+	 */
+	public function _setParamTags(array $params)
+	{
+		$param_defined = 0;
+		foreach($params as $paramTag)
+		{
+			/* @var $paramTag YaPhpDoc_Tag_Param */
+			if($paramTag->isOpenParameter())
+			{
+				$this->_is_open_params = true;
+				continue;
+			}
+			++$param_defined;
+			
+			$paramToken = $this->_getParamByName($paramTag->getParamName());
+			
+			if(null == $paramToken)
+			{
+				$paramToken = new YaPhpDoc_Token_Param($this);
+				$paramToken->setType($paramTag->getType());
+				$paramToken->setName($paramTag->getParamName());
+				$paramToken->setDescription($paramTag->getDescription());
+				
+				$this->_params[$param_defined] = $paramToken;
+			}
+			else
+			{
+				$paramToken->setType($paramTag->getType());
+				$paramToken->setName($paramTag->getParamName());
+				$paramToken->setDescription($paramTag->getDescription());
+			}
+		}
+		return $this;
+	}
+	
+	/**
+	 * Returns true if the function allows any number of parameters.
+	 * @return bool
+	 */
+	public function isOpenParams()
+	{
+		return $this->_is_open_params;
+	}
+	
+	/**
+	 * Returns function parameters.
+	 * @return YaPhpDoc_Token_Param[]
+	 */
+	public function getParams()
+	{
+		return $this->_params;
+	}
+	
+	/**
+	 * Returns the type of the value returned by the function.
+	 * @return YaPhpDoc_Tag_Return|NULL
+	 */
+	public function getReturn()
+	{
+		return $this->_return;
+	}
+	
+	/**
+	 * Returns throw tags (exception that can be thrown inside the function).
+	 * @return YaPhpDoc_Tag_Throw[]|NULL
+	 */
+	public function getThrow()
+	{
+		return $this->_throw;
+	}
+	
+	/**
+	 * Returns uses tags.
+	 * @return YaPhpDoc_Tag_Uses[]|NULL
+	 */
+	public function getUses()
+	{
+		return $this->_uses;
 	}
 }

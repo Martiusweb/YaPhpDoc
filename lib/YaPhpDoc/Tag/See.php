@@ -13,17 +13,52 @@
  * 
  * @author Martin Richard
  */
-class YaPhpDoc_Tag_See extends YaPhpDoc_Tag_Abstract
+class YaPhpDoc_Tag_See extends YaPhpDoc_Tag_Uses
 {
+	/**
+	 * Link URL.
+	 * @var string
+	 */
+	protected $_link;
+	
 	/**
 	 * Parses the see tag.
 	 * @param string $tagline
-	 * @return YaPhpDOc_Tag_See
+	 * @return YaPhpDoc_Tag_See
 	 */
 	protected function _parse($tagline)
 	{
-		// TODO see @ŧag parser
-		parent::_parse($tagline);
+		YaPhpDoc_Tag_Abstract::_parse($tagline);
+		
+		// TODO find standard regex or cstring function for URL parsing
+		/*
+		if(preg_match('``', $tagline, $matches))
+		{
+			
+			$this->_linkable = true;
+			$this->_resolved = true;
+		}
+		else
+			parent::_parse($tagline);
+		*/
+		
+		return $this;
+	}
+	
+	/**
+	 * Try to find the link in the documentation matching the tag value.
+	 * 
+	 * @return YaPhpDoc_Tag_See
+	 */
+	protected function _resolve()
+	{
+		if(null !== $this->_link)
+		{
+			
+		}
+		else
+			parent::_resolve();
+		
 		return $this;
 	}
 }

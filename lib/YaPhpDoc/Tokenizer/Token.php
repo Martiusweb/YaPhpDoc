@@ -196,7 +196,7 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function isConstantValue()
 	{
-		return $this->_type == T_CONSTANT_ENCAPSED_STRING
+		return $this->isConstantString()
 			|| $this->_type == T_DNUMBER || $this->_type == T_LNUMBER;
 	}
 	

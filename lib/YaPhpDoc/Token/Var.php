@@ -38,7 +38,7 @@ class YaPhpDoc_Token_Var extends YaPhpDoc_Token_Abstract
 		if($var = $docblock->getTags('var'))
 		{
 			$var = array_pop($var);
-			if(preg_match('`(.*?)(?:\w|$)(.*)`', $var, $matches))
+			if(preg_match('`(.*?)(?:\s|$)(.*)`', $var, $matches))
 			{
 				$this->_type = $matches[1];
 				if(!empty($matches[2]))

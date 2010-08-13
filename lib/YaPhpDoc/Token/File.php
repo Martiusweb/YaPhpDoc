@@ -35,7 +35,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 		{
 			$token = $tokensIterator->current();
 			/* @var $token YaPhpDoc_Tokenizer_Token */
-			
+
 			# Skip whitespace
 			if($token->isWhitespace())
 			{
@@ -48,8 +48,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 				$docblock = new YaPhpDoc_Token_DocBlock($this);
 				$docblock->parse($tokensIterator);
 			}
-			
-			if($token->isClass())
+			elseif($token->isClass())
 			{
 				// TODO parse class
 			}

@@ -103,7 +103,7 @@ abstract class YaPhpDoc_Tag_Abstract
 	 */
 	protected function _parse($line)
 	{
-		if(preg_match('`^@([a-zA-Z0-9_\-]+)[\b]*(.*|$)`', $line, $matches))
+		if(preg_match('`^@([a-zA-Z0-9_\-]+)\s*(.*|$)`', $line, $matches))
 		{
 			$this->_name = $matches[1];
 			if(!empty($matches[2]))
