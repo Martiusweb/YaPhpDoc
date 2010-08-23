@@ -14,7 +14,7 @@
  * 
  * @author Martin Richard
  */
-abstract class YaPhpDoc_Tag_BooleanType extends YaPhpDoc_Tag_Abstract
+abstract class YaPhpDoc_Tag_Abstract_BooleanType extends YaPhpDoc_Tag_Abstract_Abstract
 {
 	/**
 	 * Tag flag (should be true after parsing, because the tag exists !)

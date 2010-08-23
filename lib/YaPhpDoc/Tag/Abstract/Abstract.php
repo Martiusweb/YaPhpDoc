@@ -13,7 +13,7 @@
  * 
  * @author Martin Richard
  */
-abstract class YaPhpDoc_Tag_Abstract
+abstract class YaPhpDoc_Tag_Abstract_Abstract
 {
 	/**
 	 * Name of the @tag.
@@ -87,7 +87,7 @@ abstract class YaPhpDoc_Tag_Abstract
 	/**
 	 * Set the multiple_usage flag.
 	 * @param bool $flag (optional, default to true)
-	 * @return YaPhpDoc_Tag_Abstract
+	 * @return YaPhpDoc_Tag_Abstract_Abstract
 	 */
 	protected function _setMultipleUsage($flag = true)
 	{
@@ -99,7 +99,7 @@ abstract class YaPhpDoc_Tag_Abstract
 	 * Parses the tag line.
 	 * 
 	 * @param string $line
-	 * @return YaPhpDoc_Tag_Abstract
+	 * @return YaPhpDoc_Tag_Abstract_Abstract
 	 */
 	protected function _parse($line)
 	{
@@ -128,7 +128,7 @@ abstract class YaPhpDoc_Tag_Abstract
 	 * (/lib/YaPhpDoc/Tag/{Tagname}).
 	 * 
 	 * @param string $tagline
-	 * @return YaPhpDoc_Tag_Abstract
+	 * @return YaPhpDoc_Tag_Abstract_Abstract
 	 */
 	public static function getTag($tagline)
 	{

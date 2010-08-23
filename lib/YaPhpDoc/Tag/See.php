@@ -28,7 +28,7 @@ class YaPhpDoc_Tag_See extends YaPhpDoc_Tag_Uses
 	 */
 	protected function _parse($tagline)
 	{
-		YaPhpDoc_Tag_Abstract::_parse($tagline);
+		YaPhpDoc_Tag_Abstract_Abstract::_parse($tagline);
 		
 		// TODO find standard regex or cstring function for URL parsing
 		/*

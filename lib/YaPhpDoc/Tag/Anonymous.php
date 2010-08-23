@@ -10,6 +10,6 @@
  * 
  * @author Martin Richard
  */
-class YaPhpDoc_Tag_Anonymous extends YaPhpDoc_Tag_Abstract
+class YaPhpDoc_Tag_Anonymous extends YaPhpDoc_Tag_Abstract_Abstract
 {
 }

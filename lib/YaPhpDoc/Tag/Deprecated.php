@@ -12,7 +12,7 @@
  * 
  * @author Martin Richard
  */
-class YaPhpDoc_Tag_Deprecated extends YaPhpDoc_Tag_BooleanType
+class YaPhpDoc_Tag_Deprecated extends YaPhpDoc_Tag_Abstract_BooleanType
 {
 	/**
 	 * Returns true if the token is deprecated.

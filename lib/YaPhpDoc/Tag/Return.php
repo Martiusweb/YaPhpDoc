@@ -15,7 +15,7 @@
  * 
  * @author Martin Richard
  */
-class YaPhpDoc_Tag_Return extends YaPhpDoc_Tag_Abstract
+class YaPhpDoc_Tag_Return extends YaPhpDoc_Tag_Abstract_Abstract
 {
 	/**
 	 * Return tag constructor.

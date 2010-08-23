@@ -78,7 +78,7 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 			if($line[0] == '@')
 			{
 				try {
-					$tag = YaPhpDoc_Tag_Abstract::getTag($line);
+					$tag = YaPhpDoc_Tag_Abstract_Abstract::getTag($line);
 					if($tag->isMultipleUsage())
 						$this->_tags[$tag->getName()][] = $tag;
 					else
@@ -116,7 +116,7 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 	 * If $tagname is null, all tags are returned.
 	 * 
 	 * @param string $tagname (optional, default null)
-	 * @return YaPhpDoc_Tag_Abstract|array|null
+	 * @return YaPhpDoc_Tag_Abstract_Abstract|array|null
 	 */
 	public function getTags($tagname = null)
 	{
