@@ -11,7 +11,7 @@
  * 
  * @author Martin Richard
  */
-class Ypd
+class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_TranslationManager_Interface
 {
 	/**
 	 * Returns the array of cli options.
@@ -134,7 +134,7 @@ class Ypd
 		else
 			$this->_locale = YPD_LOCALE;
 		
-		$this->_parser = new YaPhpDoc_Core_Parser();
+		$this->_parser = new YaPhpDoc_Core_Parser($this, $this);
 	}
 	
 	/**
@@ -354,7 +354,7 @@ class Ypd
 	}
 	
 	/**
-	 * Display (if verbose mode isenabled) the message.
+	 * Display (if verbose mode is enabled) the message.
 	 * 
 	 * @param String $message
 	 * @param bool $translate (optional, default true) Translate the message

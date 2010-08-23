@@ -11,7 +11,7 @@
  * 
  * @author Martin Richard
  */
-abstract class YaPhpDoc_Token_Abstract
+abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Aggregate, YaPhpDoc_Core_TranslationManager_Aggregate
 {
 	/**
 	 * Root token type identifier
@@ -93,7 +93,7 @@ abstract class YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Non identified tags 
-	 * @var YaPhpDoc_Tag_Abstract[]|NULL
+	 * @var YaPhpDoc_Tag_Abstract_Abstract[]|NULL
 	 */
 	protected $_anonymousTags;
 	
@@ -141,6 +141,56 @@ abstract class YaPhpDoc_Token_Abstract
 	}
 	
 	/**
+	 * Returns the parser object.
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	public function getParser()
+	{
+		$parent = $this->getParent();
+		while($parent->getTokenType() != YaPhpDoc_Token_Abstract::ROOT)
+		{
+			$parent = $parent->getParent();
+		}
+		return $parent->getParser();
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#getOutputManager()
+	 * @return YaPhpDoc_Core_OutputManager_Interface
+	 */
+	public function getOutputManager()
+	{
+		return $this->getParser()->getOutputManager();
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#out()
+	 * @return YaPhpDoc_Core_OutputManager_Interface
+	 */
+	public function out()
+	{
+		return $this->getParser()->out();
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#getTranslationManager()
+	 * @return YaPhpDoc_Core_TranslationManager_Interface
+	 */
+	public function getTranslationManager()
+	{
+		return $this->getParser()->getTranslationManager();
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#l10n()
+	 * @return YaPhpDoc_Core_TranslationManager_Interface
+	 */
+	public function l10n()
+	{
+		return $this->getParser()->l10n();
+	}
+	
+	/**
 	 * Parse a token using the token iterator. A non overriden
 	 * parser will throw a YaPhpDoc_Core_Parser_Exception.
 	 * 
@@ -151,7 +201,7 @@ abstract class YaPhpDoc_Token_Abstract
 	public function parse(ArrayIterator $tokensIterator)
 	{
 		throw new YaPhpDoc_Core_Parser_Exception(
-			Ypd::getInstance()->getTranslation('parser')
+			$this->l10n()->getTranslation('parser')
 				->_('This token type is not parsable'));
 	}
 	

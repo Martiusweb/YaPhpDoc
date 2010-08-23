@@ -78,16 +78,16 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 			if($line[0] == '@')
 			{
 				try {
-					$tag = YaPhpDoc_Tag_Abstract_Abstract::getTag($line);
+					$tag = YaPhpDoc_Tag_Abstract_Abstract::getTag($line, $this->getParser());
 					if($tag->isMultipleUsage())
 						$this->_tags[$tag->getName()][] = $tag;
 					else
 						$this->_tags[$tag->getName()] = $tag;	
 				} catch(YaPhpDoc_Tag_Exception $e)
 				{
-					Ypd::getInstance()->warning($e->getMessage().sprintf(
-					Ypd::getInstance()->getTranslation()->_(' in %s at line %d'),
-					Ypd::getInstance()->getParser()->getCurrentFile(), $line_no));
+					$this->out()->warning($e->getMessage().sprintf(
+					$this->l10n()->getTranslation()->_(' in %s at line %d'),
+					$this->getParser()->getCurrentFile(), $line_no));
 				}
 			}
 			else

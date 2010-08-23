@@ -13,8 +13,14 @@
  * 
  * @author Martin Richard
  */
-abstract class YaPhpDoc_Tag_Abstract_Abstract
+abstract class YaPhpDoc_Tag_Abstract_Abstract implements YaPhpDoc_Core_OutputManager_Aggregate, YaPhpDoc_Core_TranslationManager_Aggregate
 {
+	/**
+	 * Parser object.
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	protected $_parser;
+	
 	/**
 	 * Name of the @tag.
 	 * @var string
@@ -112,7 +118,7 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract
 		else
 		{
 			throw new YaPhpDoc_Tag_Exception(
-				Ypd::getInstance()->getTranslation('tag')->_(
+				$this->l10n()->getTranslation('tag')->_(
 				'Invalid tag parsing'
 			));
 		}
@@ -128,9 +134,10 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract
 	 * (/lib/YaPhpDoc/Tag/{Tagname}).
 	 * 
 	 * @param string $tagline
+	 * @param YaPhpDoc_Core_Parser $parser
 	 * @return YaPhpDoc_Tag_Abstract_Abstract
 	 */
-	public static function getTag($tagline)
+	public static function getTag($tagline, YaPhpDoc_Core_Parser $parser)
 	{
 		if(preg_match('`^@([a-zA-Z0-9_\-]+)`', $tagline, $matches))
 		{
@@ -144,7 +151,7 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract
 				if(!in_array('YaPhpDoc', $loader->getRegisteredNamespaces()))
 				{
 					throw new YaPhpDoc_Core_Exception(
-						Ypd::getInstance()->getTranslation()->_(
+						$this->l10n()->getTranslation()->_(
 						'Autoloader is not defined or configurated.'
 					));
 				}
@@ -159,6 +166,53 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract
 		else
 			$class = 'YaPhpDoc_Tag_Anonymous';
 
-		return new $class($tagline);
+		$tag = new $class($tagline);
+		$tag->_parser = $parser;
+		return $tag;
+	}
+	
+	/**
+	 * Returns the parser object.
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	public function getParser()
+	{
+		return $this->_parser;
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#getOutputManager()
+	 * @return YaPhpDoc_Core_OutputManager_Interface
+	 */
+	public function getOutputManager()
+	{
+		return $this->getParser()->getOutputManager();
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#out()
+	 * @return YaPhpDoc_Core_OutputManager_Interface
+	 */
+	public function out()
+	{
+		return $this->getParser()->out();
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#getTranslationManager()
+	 * @return YaPhpDoc_Core_TranslationManager_Interface
+	 */
+	public function getTranslationManager()
+	{
+		return $this->getParser()->getTranslationManager();
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#l10n()
+	 * @return YaPhpDoc_Core_TranslationManager_Interface
+	 */
+	public function l10n()
+	{
+		return $this->getParser()->l10n();
 	}
 }

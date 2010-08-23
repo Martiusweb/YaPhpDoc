@@ -10,8 +10,20 @@
  * 
  * @author Martin Richard
  */
-class YaPhpDoc_Core_Parser
+class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaPhpDoc_Core_TranslationManager_Aggregate
 {
+	/**
+	 * Output manager object.
+	 * @var YaPhpDoc_Core_OutputManager_Interface
+	 */
+	protected $_outputManager;
+	
+	/**
+	 * Translation manager object
+	 * @var YaPhpDoc_Core_TranslationManager_Interface
+	 */
+	protected $_translationManager;
+	
 	/**
 	 * Directories to explore stack
 	 * @var array
@@ -49,15 +61,36 @@ class YaPhpDoc_Core_Parser
 	protected $_current_file;
 	
 	/**
+	 * Current namespace.
+	 * @var string
+	 */
+	protected $_current_namespace = '';
+	
+	/**
+	 * Current package.
+	 * @var string
+	 */
+	protected $_current_package = '';
+	
+	/**
+	 * Current class.
+	 */
+	protected $_current_class;
+	
+	/**
 	 * Constructor of the parser.
 	 * 
+	 * @param YaPhpDoc_Core_OutputManager_Interface $ouputManager
+	 * @param YaPhpDoc_Core_TranslationManager_Interface $translationManager
 	 * @param string|array	$dirs  directory(ies) to explore - optionnal
 	 * @param string|array	$files file(s) to parse - optionnal
 	 * @param string		$include_pattern Pattern of files to parse - optionnal
 	 * @param string		$exlude_pattern  Pattern of files to exclude - optionnal
 	 */
-	public function __construct($dirs = null, $files = null, $include_pattern = null, $exclude_pattern = null)
+	public function __construct(YaPhpDoc_Core_OutputManager_Interface $ouputManager, YaPhpDoc_Core_TranslationManager_Interface $translationManager, $dirs = null, $files = null, $include_pattern = null, $exclude_pattern = null)
 	{
+		$this->_outputManager = $ouputManager;
+		$this->_translationManager = $translationManager;
 		if(null !== $dirs)
 			$this->addDirectory($dirs);
 		if(null !== $files)
@@ -116,7 +149,7 @@ class YaPhpDoc_Core_Parser
 		if(($error = $this->_testRegex($pattern)) !== false)
 		{
 			throw new YaPhpDoc_Core_Parser_Exception(sprintf(
-				Ypd::getInstance()->getTranslation('parser')
+				$this->l10n()->getTranslation('parser')
 				->_('Wrong Include Pattern : %s')
 			, $error));
 		}
@@ -140,7 +173,7 @@ class YaPhpDoc_Core_Parser
 	if(($error = $this->_testRegex($pattern)) !== false)
 		{
 			throw new YaPhpDoc_Core_Parser_Exception(sprintf(
-				Ypd::getInstance()->getTranslation('parser')
+				$this->l10n()->getTranslation('parser')
 				->_('Wrong Exclude Pattern : %s')
 			, $error));
 		}
@@ -191,7 +224,7 @@ class YaPhpDoc_Core_Parser
 			if(!($dir = @opendir($dirname)))
 			{
 				throw new YaPhpDoc_Core_Parser_Exception(
-					sprintf(Ypd::getInstance()->getTranslation('parser')
+					sprintf($this->l10n()->getTranslation('parser')
 						->_('Directory %s is not readable'),  $dirname)
 				);
 			}
@@ -261,18 +294,18 @@ class YaPhpDoc_Core_Parser
 		if(empty($files))
 		{
 			throw new YaPhpDoc_Core_Parser_Exception(
-				Ypd::getInstance()->getTranslation('parser')
+				$this->l10n()->getTranslation('parser')
 				->_('There is no source to parse.')
 			);
 		}
 		
 		# Create the root node
-		$this->_root = new YaPhpDoc_Token_Document();
+		$this->_root = new YaPhpDoc_Token_Document($this);
 		
 		# Start parsing
 		foreach($files as $file)
 		{
-			Ypd::getInstance()->verbose(sprintf(Ypd::getInstance()
+			$this->out()->verbose(sprintf($this->l10n()
 				->getTranslation('parser')->_('Parsing %s'), $file),
 			false);
 			
@@ -300,7 +333,7 @@ class YaPhpDoc_Core_Parser
 		if(null === $file_content)
 		{
 			throw new YaPhpDoc_Core_Parser_Exception(
-				sprintf(Ypd::getInstance()->getTranslation('parser')
+				sprintf($this->l10n()->getTranslation('parser')
 				->_('Can not read file %s'), $file
 			));
 		}
@@ -340,6 +373,50 @@ class YaPhpDoc_Core_Parser
 			return false;
 	}
 	
+	/*
+	 * Implements  @return YaPhpDoc_Core_OutputManager_Aggregate
+	 */
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#getOutputManager()
+	 * @return YaPhpDoc_Core_OutputManager_Interface
+	 */
+	public function getOutputManager()
+	{
+		return $this->_outputManager;
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#out()
+	 * @return YaPhpDoc_Core_OutputManager_Interface
+	 */
+	public function out()
+	{
+		return $this->getOutputManager();
+	}
+	
+	/*
+	 * Implements YaPhpDoc_Core_TranslationManager_Aggregate
+	 */
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#getTranslationManager()
+	 * @return YaPhpDoc_Core_TranslationManager_Interface
+	 */
+	public function getTranslationManager()
+	{
+		return $this->_translationManager;
+	}
+	
+	/**
+	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#l10n()
+	 * @return YaPhpDoc_Core_TranslationManager_Interface
+	 */
+	public function l10n()
+	{
+		return $this->getTranslationManager();
+	}
+	
 	/**
 	 * Returns the root element, can be null if the parser has not been
 	 * executed yet.
@@ -358,5 +435,32 @@ class YaPhpDoc_Core_Parser
 	public function getCurrentFile()
 	{
 		return $this->_current_file;
+	}
+	
+	/**
+	 * Returns current namespace.
+	 * @return string
+	 */
+	public function getCurrentNamespace()
+	{
+		return $this->_current_namespace;
+	}
+	
+	/**
+	 * Returns current package.
+	 * @return string
+	 */
+	public function getCurrentPackage()
+	{
+		return $this->_current_package;
+	}
+	
+	/**
+	 * Returns current class.
+	 * @return string|NULL
+	 */
+	public function getCurrentClass()
+	{
+		return $this->_current_class;
 	}
 }
