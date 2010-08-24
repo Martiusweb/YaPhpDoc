@@ -74,8 +74,27 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	
 	/**
 	 * Current class.
+	 * @var string
 	 */
 	protected $_current_class;
+	
+	/**
+	 * True if the next element is final.
+	 * @var bool
+	 */
+	protected $_final = false;
+	
+	/**
+	 * True if the next element is abstract.
+	 * @var bool
+	 */
+	protected $_abstract = false;
+	
+	/**
+	 * True if the next element is static.
+	 * @var bool
+	 */
+	protected $_static = false;
 	
 	/**
 	 * Constructor of the parser.
@@ -462,5 +481,82 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	public function getCurrentClass()
 	{
 		return $this->_current_class;
+	}
+	
+	/**
+	 * Sets the Final flag.
+	 * @param bool $flag (optional, default to true)
+	 * @return bool
+	 */
+	public function setFinal($flag = true)
+	{
+		$this->_final = $flag;
+	}
+	
+	/**
+	 * Returns true if the next element is final.
+	 * If $clear is true, the flag will be set to false.
+	 * 
+	 * @param bool $clear (optional, default to true)
+	 * @return bool
+	 */
+	public function getFinal($clear = true)
+	{
+		$final = $this->_final;
+		if($clear)
+			$this->_final = false;
+		return $final;
+	}
+	
+	/**
+	 * Sets the Abstract flag.
+	 * @param bool $flag (optional, default to true)
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	public function setAbstract($flag = true)
+	{
+		$this->_abstract = $flag;
+		return $this;
+	}
+	
+	/**
+	 * Returns true if the next element is abstract.
+	 * If $clear is true, the flag will be set to false.
+	 * 
+	 * @param bool $clear (optional, default to true)
+	 * @return bool
+	 */
+	public function isAbstract($clear = true)
+	{
+		$abstract = $this->_abstract;
+		if($clear)
+			$this->_abstract = false;
+		return $abstract;
+	}
+
+	/**
+	 * Sets the Static flag.
+	 * @param bool $flag (optional, default to true)
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	public function setStatic($flag = true)
+	{
+		$this->_static = $flag;
+		return $this;
+	}
+	
+	/**
+	 * Returns true if the next element is static.
+	 * If $clear is true, the flag will be set to false.
+	 * 
+	 * @param bool $clear (optional, default to true)
+	 * @return bool
+	 */
+	public function isStatic($clear = true)
+	{
+		$static = $this->_static;
+		if($clear)
+			$this->_static = false;
+		return $static;
 	}
 }

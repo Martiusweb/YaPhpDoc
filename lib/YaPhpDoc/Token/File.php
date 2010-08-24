@@ -48,9 +48,23 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 				$docblock = new YaPhpDoc_Token_DocBlock($this);
 				$docblock->parse($tokensIterator);
 			}
+			elseif($token->isAbstract())
+			{
+				$this->getParser()->setAbstract();
+			}
+			elseif($token->isFinal())
+			{
+				$this->getParser()->setFinal();
+			}
 			elseif($token->isClass())
 			{
-				// TODO parse class
+				$class = new YaPhpDoc_Token_Class($this);
+				$class->parse($tolenIterator);
+				if($docblock !== null)
+				{
+					$function->setStandardTags($docblock);
+					$docblock = null;
+				}
 			}
 			elseif($token->isFunction())
 			{

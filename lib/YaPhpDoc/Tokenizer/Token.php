@@ -151,6 +151,24 @@ class YaPhpDoc_Tokenizer_Token
 	}
 	
 	/**
+	 * Returns true if the token is the final keyword.
+	 * @return bool
+	 */
+	public function isFinal()
+	{
+		return $this->_type == T_FINAL;
+	}
+	
+	/**
+	 * Returns true if the token is the static keyword.
+	 * @return bool
+	 */
+	public function isStatic()
+	{
+		return $this->_type == T_STATIC;
+	}
+	
+	/**
 	 * Returns true if the token is a function definition.
 	 * @return bool
 	 */
