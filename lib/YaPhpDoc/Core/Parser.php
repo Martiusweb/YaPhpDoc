@@ -97,6 +97,24 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	protected $_static = false;
 	
 	/**
+	 * True if the next element is public.
+	 * @var bool
+	 */
+	protected $_public = false;
+	
+	/**
+	 * True if the next element is protected.
+	 * @var bool
+	 */
+	protected $_protected = false;
+	
+	/**
+	 * True if the next element is private.
+	 * @var bool
+	 */
+	protected $_private = false;
+	
+	/**
 	 * Constructor of the parser.
 	 * 
 	 * @param YaPhpDoc_Core_OutputManager_Interface $ouputManager
@@ -558,5 +576,83 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 		if($clear)
 			$this->_static = false;
 		return $static;
+	}
+	
+	/**
+	 * Sets the Public flag.
+	 * @param bool $flag (optional, default to true)
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	public function setPublic($flag = true)
+	{
+		$this->_public = true;
+		return $this;
+	}
+	
+	/**
+	 * Returns true if the next element is public.
+	 * If $clear is true, the flag will be set to false.
+	 * 
+	 * @param bool $clear (optional, default to true)
+	 * @return bool
+	 */
+	public function isPublic($clear = true)
+	{
+		$public = $this->_public;
+		if($clear)
+			$this->_public = false;
+		return $public;
+	}
+	
+	/**
+	 * Sets the Protected flag.
+	 * @param bool $flag (optional, default to true)
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	public function setProtected($flag = true)
+	{
+		$this->_protected = true;
+		return $this;
+	}
+	
+	/**
+	 * Returns true if the next element is protected.
+	 * If $clear is true, the flag will be set to false.
+	 * 
+	 * @param bool $clear (optional, default to true)
+	 * @return bool
+	 */
+	public function isProtected($clear = true)
+	{
+		$protected = $this->_protected;
+		if($clear)
+			$this->_protected = false;
+		return $protected;
+	}
+	
+	/**
+	 * Sets the Private flag.
+	 * @param bool $flag (optional, default to true)
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	public function setPrivate($flag = true)
+	{
+		$this->_private = true;
+		return $this;
+	}
+	
+	/**
+	 * Returns true if the next element is private.
+	 * If $clear is true, the flag will be set to false.
+	 * 
+	 * @param bool $clear (optional, default to true)
+	 * @return bool
+	 */
+	public function isPrivate($clear = true)
+	{
+		$private = $this->_private;
+		if($clear)
+			$this->_private = false;
+		return $rivate;
 	}
 }

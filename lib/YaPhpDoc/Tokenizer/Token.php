@@ -142,6 +142,15 @@ class YaPhpDoc_Tokenizer_Token
 	}
 	
 	/**
+	 * Returns true if the token is a class or an interface definition.
+	 * @return bool
+	 */
+	public function isClassOrInterface()
+	{
+		return $this->isClass() || $this->isInterface();
+	}
+	
+	/**
 	 * Returns true if the token is the abstract keyword.
 	 * @return bool
 	 */	
@@ -255,6 +264,51 @@ class YaPhpDoc_Tokenizer_Token
 	public function isArray()
 	{
 		return $this->_type == T_ARRAY;
+	}
+	
+	/**
+	 * Returns true if the token is the public or the var keyword.
+	 * @return bool
+	 */
+	public function isPublic()
+	{
+		return $this->_type == T_PUBLIC || T_VAR;
+	}
+	
+	/**
+	 * Returns true if the token is the protected keyword
+	 * @return bool
+	 */
+	public function isProtected()
+	{
+		return $this->_type == T_PROTECTED;
+	}
+	
+	/**
+	 * Returns true if the token is the private keyword
+	 * @return bool
+	 */
+	public function isPrivate()
+	{
+		return $this->_type == T_PRIVATE;
+	}
+	
+	/**
+	 * Returns true if the token is the extends keyword
+	 * @return bool
+	 */
+	public function isExtends()
+	{
+		return $this->_type == T_EXTENDS;
+	}
+	
+	/**
+	 * Returns true if the token is the implements keyword
+	 * @return bool
+	 */
+	public function isImplements()
+	{
+		return $this->_type == T_IMPLEMENTS;
 	}
 	
 	/**

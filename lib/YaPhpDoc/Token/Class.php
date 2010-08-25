@@ -54,13 +54,108 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 	 */
 	public function parse(ArrayIterator $tokensIterator)
 	{
-		# Determine context
-		if($this->getParser()->isAbstract())
-			$this->_abstract = true;
-		elseif($this->getParser()->isFinal())
-			$this->_final = true;
-		
-		// TODO parse class
+		if($tokensIterator->current()->isClassOrInterface())
+		{
+			$tokensIterator->next();
+			
+			# Determine context
+			if($this->getParser()->isAbstract())
+				$this->_abstract = true;
+			elseif($this->getParser()->isFinal())
+				$this->_final = true;
+			
+			$in_class_definition = true;
+			$in_extends_definition = false;
+			$in_implements_definition = false;
+			$nested_level = 0;
+			$docblock = null;
+			while($tokensIterator->valid())
+			{
+				$token = $tokensIterator->current();
+				/* @var $token YaPhpDoc_Tokenizer_Token */
+				
+				if($token->isWhitespace())
+				{
+					$tokensIterator->next();
+					continue;
+				}
+				
+				if($token->isDocBlock())
+				{
+					$docblock = new YaPhpDoc_Token_Docblock($this);
+					$docblock->parse($tokensIterator);
+				}
+				elseif($in_class_definition)
+				{
+					if($in_extends_definition)
+					{
+						
+					}
+					elseif($token->isExtends())
+						$in_extends_definition = true;
+						
+					if($in_implements_definition)
+					{
+					
+					}
+					elseif($token->isImplements())
+						$in_implements_definition = true;
+					
+					if(!$in_extends_definition && !$in_implements_definition)
+					{
+						if($token->isConstantString()) # Class definition
+							$this->_name = $token->getStringContent();
+					}
+					
+					if($token->getType() == '{')
+					{
+						$in_extends_definition = false;
+						$in_implements_definition = false;
+						$in_class_definition = false;
+						++$nested_level;
+					}
+				}
+				elseif($nested_level > 0)
+				{
+					if($token->getType() == '}')
+					{
+						--$nested_level;
+						if($nested_level == 0)
+							break;
+					}
+					elseif($token->isPublic())
+					{
+						$this->getParser()->setPublic();
+					}
+					elseif($token->isProtected())
+					{
+						$this->getParser()->setProtected();
+					}
+					elseif($token->isPrivate())
+					{
+						$this->getParser()->setPrivate();
+					}
+					elseif($token->isAbstract())
+					{
+						$this->getParser()->setAbstract();
+					}
+					elseif($token->isStatic())
+					{
+						$this->getParser()->setStatic();
+					}
+					elseif($token->isFinal())
+					{
+						$this->getParser()->setFinal();
+					}
+					// TODO parse class body
+//					elseif(...)
+//					{
+//						
+//					}
+				}
+				$token->next();
+			}
+		}
 		
 		return $this;
 	}
