@@ -92,11 +92,11 @@ class YaPhpDoc_Tokenizer implements IteratorAggregate, Countable
 	/**
 	 * Returns an iterator on tokens (as objects).
 	 * 
-	 * @return ArrayIterator
+	 * @return YaPhpDoc_Tokenizer_Iterator
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator($this->_tokens);
+		return new YaPhpDoc_Tokenizer_Iterator($this->_tokens);
 	}
 	
 	/**

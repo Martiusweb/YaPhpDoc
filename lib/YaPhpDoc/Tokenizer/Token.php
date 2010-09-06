@@ -272,7 +272,7 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function isPublic()
 	{
-		return $this->_type == T_PUBLIC || T_VAR;
+		return $this->_type == T_PUBLIC || $this->_type == T_VAR;
 	}
 	
 	/**

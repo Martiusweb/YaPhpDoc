@@ -25,6 +25,57 @@ class YaPhpDoc_Token_Var extends YaPhpDoc_Token_Abstract
 	protected $_type;
 	
 	/**
+	 * Parses the variable.
+	 * 
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
+	 * @return YaPhpDoc_Token_Var
+	 */
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
+	{
+		$in_default_value = false;
+		while($tokensIterator->valid())
+		{
+			$token = $tokensIterator->current();
+			if($in_default_value)
+			{
+				if($token->isConstantValue())
+				{
+					$this->setDefaultValue($token->getConstantContent());
+					$in_default_value = false;
+				}
+				elseif($token->isArray())
+				{
+					$array = new YaPhpDoc_Token_Array($this->getName(), $this);
+					$array->parse($tokensIterator);
+					$this->setDefaultValue($array->getArrayString());
+					unset($array);
+					$in_default_value = false;
+				}
+			}
+			elseif($token->isConstantString())
+			{
+				$this->setType($token->getStringContent());
+			}
+			elseif($token->isVariable())
+			{
+				$this->setName($token->getContent());
+			}
+			elseif($token->getType() == '=')
+			{
+				$in_default_value = true;
+			}
+			elseif($token->getType() == ';')
+			{
+				break;
+			}
+			
+			$tokensIterator->next();
+		}
+		
+		return $this;
+	}
+	
+	/**
 	 * Set standard tags if available from given dockblock.
 	 * Tags are : var (variable type and desc if available)
 	 * 

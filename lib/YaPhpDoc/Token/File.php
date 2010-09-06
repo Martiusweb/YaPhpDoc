@@ -25,10 +25,10 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 	/**
 	 * Parse a PHP file.
 	 * 
-	 * @param ArrayIterator $tokensIterator
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_File
 	 */
-	public function parse(ArrayIterator $tokensIterator)
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		$docblock = null;
 		while($tokensIterator->valid())
@@ -56,15 +56,18 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 			{
 				$this->getParser()->setFinal();
 			}
-			elseif($token->isClass())
+			elseif($token->isInterface() || $token->isClass())
 			{
-				$class = new YaPhpDoc_Token_Class($this);
-				$class->parse($tolenIterator);
+				$token_type = 'YaPhpDoc_Token_';
+				$token_type .= $token->isInterface() ? 'Interface' : 'Class';
+				$class = new $token_type($this);
+				$class->parse($tokensIterator);
 				if($docblock !== null)
 				{
-					$function->setStandardTags($docblock);
+					$class->setStandardTags($docblock);
 					$docblock = null;
 				}
+				$this->addChild($class);
 			}
 			elseif($token->isFunction())
 			{

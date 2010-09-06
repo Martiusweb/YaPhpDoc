@@ -44,6 +44,12 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	protected $_parent;
 	
 	/**
+	 * The parser objet
+	 * @var YaPhpDoc_Core_Parser
+	 */
+	protected $_parser;
+	
+	/**
 	 * Author of the token
 	 * @var array|NULL|YaPhpDoc_Tag_Author
 	 */
@@ -146,12 +152,11 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	 */
 	public function getParser()
 	{
-		$parent = $this->getParent();
-		while($parent->getTokenType() != YaPhpDoc_Token_Abstract::ROOT)
+		if($this->_parser === null)
 		{
-			$parent = $parent->getParent();
+			$this->_parser = $this->getParent()->getParser(); 
 		}
-		return $parent->getParser();
+		return $this->_parser;
 	}
 	
 	/**
@@ -194,11 +199,11 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	 * Parse a token using the token iterator. A non overriden
 	 * parser will throw a YaPhpDoc_Core_Parser_Exception.
 	 * 
-	 * @param ArrayIterator $tokensIterator
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @throw YaPhpDoc_Core_Parser_Exception
 	 * @return YaPhpDoc_Token_Abstract 
 	 */
-	public function parse(ArrayIterator $tokensIterator)
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		throw new YaPhpDoc_Core_Parser_Exception(
 			$this->l10n()->getTranslation('parser')

@@ -14,12 +14,6 @@
 class YaPhpDoc_Token_Document extends YaPhpDoc_Token_Structure_Abstract
 {
 	/**
-	 * The parser objet
-	 * @var YaPhpDoc_Core_Parser
-	 */
-	private $_parser;
-	
-	/**
 	 * Root constructor.
 	 * Parent of the root is null.
 	 * 

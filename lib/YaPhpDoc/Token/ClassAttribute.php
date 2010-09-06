@@ -6,43 +6,56 @@
  */
 
 /**
- * Represent a function or method parameter.
+ * Represent a class attribute (or parameter), static or not.
  * 
  * @author Martin Richard
  */
-class YaPhpDoc_Token_Param extends YaPhpDoc_Token_Var
+class YaPhpDoc_Token_ClassAttribute extends YaPhpDoc_Token_Var
 {
 	/**
-	 * If true, the parameter is optional.
+	 * Visibility (YaPhpDoc_Token_Class::V_PUBLIC|V_PROTECTED|V_PRIVATE)
+	 * @var int
+	 */
+	protected $_visibility = YaPhpDoc_Token_Class::V_PUBLIC;
+	
+	/**
+	 * Scope (true if static).
 	 * @var bool
 	 */
-	protected $_option = false;
+	protected $_static = false;
 	
 	/**
 	 * Parameter constructor.
 	 * 
-	 * @param YaPhpDoc_Token_Function $parent
+	 * @param YaPhpDoc_Token_Class $parent
 	 * @return YaPhpDoc_Token_Param
 	 */
-	public function __construct(YaPhpDoc_Token_Function $parent)
+	public function __construct(YaPhpDoc_Token_Class $parent)
 	{
 		parent::__construct('unknown', T_VARIABLE, $parent);
 	}
 	
 	/**
-	 * Parses the function parameter.
+	 * Parses the class Attribute.
 	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
-	 * @return YaPhpDoc_Token_Param
+	 * @return YaPhpDoc_Token_ClassAttribute
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		parent::parse($tokensIterator);
 		
-		if($this->_value !== null)
-			$this->setOptional();
-			
+		$this->_static = $this->getParser()->isStatic();
+		
+		if($this->getParser()->isPrivate())
+			$this->_visibility = YaPhpDoc_Token_Class::V_PRIVATE;
+		elseif($this->getParser()->isProtected())
+			$this->_visibility = YaPhpDoc_Token_Class::V_PROTECTED;
+		else
+			$this->_visibility = YaPhpDoc_Token_Class::V_PUBLIC;
+		
 		return $this;
 	}
+	
 	/**
 	 * Set the parameter type.
 	 * 
@@ -89,22 +102,22 @@ class YaPhpDoc_Token_Param extends YaPhpDoc_Token_Var
 	}
 	
 	/**
-	 * Set the parameter as optional.
-	 * @param string $flag (optional, default to true)
-	 * @return YaPhpDoc_Token_Param
-	 */
-	public function setOptional($flag = true)
+	 * Returns the attribute visibility (value is a constant
+	 * YaPhpDoc_Token_Class::V_PUBLIC|V_PROTECTED|V_PRIVATE).
+	 * 
+	 * @return int
+	 */	
+	public function getVisibility()
 	{
-		$this->_option = true;
-		return $this;
+		return $this->_visibility;
 	}
 	
 	/**
-	 * Returns true if the parameter is optional.
+	 * Returns the attribute scope (true if static).
 	 * @return bool
 	 */
-	public function isOptional()
+	public function isStatic()
 	{
-		return $this->_option;
+		return $this->_static;
 	}
 }

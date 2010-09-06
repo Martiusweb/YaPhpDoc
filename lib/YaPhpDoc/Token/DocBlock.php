@@ -44,10 +44,10 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 	 * Parse a docblock : find content and @tags. A line not begining with * is
 	 * ignored (prepending whitespaces are ignored). 
 	 * 
-	 * @param ArrayIterator $tokensIterator
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_DocBlock
 	 */
-	public function parse(ArrayIterator $tokensIterator)
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		$token = $tokensIterator->current();
 		$token_content = explode("\n", substr(substr($token->getContent(), 2), 0, -2));
