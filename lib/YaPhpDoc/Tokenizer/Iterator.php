@@ -14,7 +14,7 @@ class YaPhpDoc_Tokenizer_Iterator extends ArrayIterator
 {
 	/**
 	 * Returns current offset.
-	 * @return YaPhpDoc_Token_Abstract
+	 * @return YaPhpDoc_Tokenizer_Token
 	 */
 	public function current()
 	{

@@ -13,6 +13,12 @@
 class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 {
 	/**
+	 * Current namespace
+	 * @var YaPhpDoc_Token_Namespace
+	 */
+	protected $_currentNamespace;
+	
+	/**
 	 * File constructor.
 	 * @param string $filename
 	 * @param YaPhpDoc_Token_Abstract $parent
@@ -31,6 +37,8 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		$docblock = null;
+		$nested = 0;
+		$is_global_namespace = false;
 		while($tokensIterator->valid())
 		{
 			$token = $tokensIterator->current();
@@ -48,6 +56,38 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 				$docblock = new YaPhpDoc_Token_DocBlock($this);
 				$docblock->parse($tokensIterator);
 			}
+			elseif($token->isUse())
+			{
+				$use = new YaPhpDoc_Token_Use($this->_getCurrentParent());
+				$use->parse($tokensIterator);
+				array_push($this->_uses, $use);
+				$this->addChild($use);
+			}
+			elseif($token->isNamespace())
+			{
+				$this->_currentNamespace = new YaPhpDoc_Token_Namespace($this);
+				$this->_currentNamespace->parse($tokensIterator);
+				$this->addChild($this->_currentNamespace);
+				
+				$tokensIterator->next();
+				if($token->getType() != '{')
+				{
+					$is_global_namespace = true;
+				}
+				continue;
+			}
+			elseif($token->getType() == '{')
+			{
+				++$nested;
+			}
+			elseif($token->getType() == '}')
+			{
+				--$nested;
+				if(!$is_global_namespace && $nested == 0)
+				{
+					$this->_currentNamespace = null;
+				}
+			}
 			elseif($token->isAbstract())
 			{
 				$this->getParser()->setAbstract();
@@ -60,49 +100,50 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 			{
 				$token_type = 'YaPhpDoc_Token_';
 				$token_type .= $token->isInterface() ? 'Interface' : 'Class';
-				$class = new $token_type($this);
+				$class = new $token_type($this->_getCurrentParent());
 				$class->parse($tokensIterator);
 				if($docblock !== null)
 				{
 					$class->setStandardTags($docblock);
 					$docblock = null;
 				}
-				$this->addChild($class);
+				$this->_getCurrentParent()->addChild($class);
+				unset($class);
 			}
 			elseif($token->isFunction())
 			{
-				$function = new YaPhpDoc_Token_Function($this);
+				$function = new YaPhpDoc_Token_Function($this->_getCurrentParent());
 				$function->parse($tokensIterator);
 				if($docblock !== null)
 				{
 					$function->setStandardTags($docblock);
-					$docblock = null; 
+					$docblock = null;
 				}
-				$this->addChild($function);
+				$this->_getCurrentParent()->addChild($function);
 				unset($function);
 			}
 			elseif($token->isConst())
 			{
-				$const = new YaPhpDoc_Token_Const($this);
+				$const = new YaPhpDoc_Token_Const($this->_getCurrentParent());
 				$const->parse($tokensIterator);
 				if($docblock !== null)
 				{
 					$const->setStandardTags($docblock);
 					$docblock = null;
 				}
-				$this->addChild($const);
+				$this->_getCurrentParent()->addChild($const);
 				unset($const);
 			}
 			elseif($token->isGlobal())
 			{
-				$global = new YaPhpDoc_Token_Global($this);
+				$global = new YaPhpDoc_Token_Global($this->_getCurrentParent());
 				$global->parse($tokensIterator);
 				if($docblock !== null)
 				{
 					$global->setStandardTags($docblock);
 					$docblock = null;
 				}
-				$this->addChild($global);
+				$this->_getCurrentParent()->addChild($global);
 				unset($global);
 			}
 			else
@@ -117,7 +158,21 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 			
 			$tokensIterator->next();
 		}
-		
+
+		return $this;
+	}
+	
+	/**
+	 * Returns the current parent (a namespace or a file).
+	 * 
+	 * @return YaPhpDoc_Token_Abstract
+	 */
+	protected function _getCurrentParent()
+	{
+		if($this->_currentNamespace != null)
+		{
+			return $this->_currentNamespace;
+		}
 		return $this;
 	}
 }
