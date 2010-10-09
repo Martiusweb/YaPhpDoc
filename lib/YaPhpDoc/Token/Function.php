@@ -56,14 +56,13 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	/**
 	 * Parse the function.
 	 * 
-	 * @param ArrayIterator $tokensIterator
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_Function
 	 */
-	public function parse(ArrayIterator $tokensIterator)
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		$in_function_definition = false;
 		$in_params_definition = false;
-		$in_default_value = false;
 		$param_defined = 0;
 		while($tokensIterator->valid())
 		{
@@ -93,38 +92,15 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 			}
 			elseif($in_params_definition)
 			{
-				if($in_default_value)
+				if($token->isVariable())
 				{
-					if($token->isConstantValue())
-					{
-						$param = $this->_getParam($param_defined);
-						$param->setDefaultValue($token->getConstantContent());
-						$in_default_value = false;
-					}
-					elseif($token->isArray())
-					{
-						$param = $this->_getParam($param_defined);
-						$array = new YaPhpDoc_Token_Array($param->getName(), $param);
-						$array->parse($tokensIterator);
-						$param->setDefaultValue($array->getArrayString());
-						unset($array);
-						$in_default_value = false;
-					}
+					$param = $this->_getParam($param_defined);
+					$param->parse($tokensIterator);
 				}
 				elseif($token->isConstantString())
 				{
 					$param = $this->_getParam($param_defined);
 					$param->setType($token->getStringContent());
-				}
-				elseif($token->isVariable())
-				{
-					$param = $this->_getParam($param_defined);
-					$param->setName($token->getContent());
-				}
-				elseif($token->getType() == '=')
-				{
-					$in_default_value = true;
-					$this->_getParam($param_defined)->setOptional();
 				}
 				elseif($token->getType() == ',')
 				{

@@ -272,7 +272,7 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function isPublic()
 	{
-		return $this->_type == T_PUBLIC || T_VAR;
+		return $this->_type == T_PUBLIC || $this->_type == T_VAR;
 	}
 	
 	/**
@@ -309,6 +309,42 @@ class YaPhpDoc_Tokenizer_Token
 	public function isImplements()
 	{
 		return $this->_type == T_IMPLEMENTS;
+	}
+	
+	/**
+	 * Returns true if the token is the namespace keyword
+	 * @return bool
+	 */
+	public function isNamespace()
+	{
+		return $this->_type == T_NAMESPACE;
+	}
+	
+	/**
+	 * Returns true if the token is the namespace separator token.
+	 * @return bool
+	 */
+	public function isNamespaceSeparator()
+	{
+		return $this->_type == T_NS_SEPARATOR;
+	}
+	
+	/**
+	 * Returns true if the token is the use keyword.
+	 * @return bool
+	 */
+	public function isUse()
+	{
+		return $this->_type == T_USE;
+	}
+	
+	/**
+	 * Returns true if the token is the as keyword.
+	 * @return bool
+	 */
+	public function isAs()
+	{
+		return $this->_type == T_AS;
 	}
 	
 	/**

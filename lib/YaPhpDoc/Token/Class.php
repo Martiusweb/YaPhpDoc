@@ -13,6 +13,24 @@
 class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 {
 	/**
+	 * Constant representing a public class member. 
+	 * @var int
+	 */
+	const V_PUBLIC = 100;
+	
+	/**
+	 * Constant representing a protected class member. 
+	 * @var int
+	 */
+	const V_PROTECTED = 101;
+	
+	/**
+	 * Constant representing a private class member. 
+	 * @var int
+	 */
+	const V_PRIVATE = 102;
+	
+	/**
 	 * True if the class is abstract.
 	 * @var bool
 	 */
@@ -37,6 +55,18 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 	protected $_implements = array();
 	
 	/**
+	 * Class attributes.
+	 * @var YaPhpDoc_Token_ClassAttribute[]
+	 */
+	protected $_attributes = array();
+	
+	/**
+	 * Methods.
+	 * @var YaPhpDoc_Token_Method[]
+	 */
+	protected $_methods = array();
+	
+	/**
 	 * Function constructor.
 	 * 
 	 * @param YaPhpDoc_Token_Abstract $parent
@@ -49,10 +79,10 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 	/**
 	 * Parse the function.
 	 * 
-	 * @param ArrayIterator $tokensIterator
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_Class
 	 */
-	public function parse(ArrayIterator $tokensIterator)
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		if($tokensIterator->current()->isClassOrInterface())
 		{
@@ -89,14 +119,21 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 				{
 					if($in_extends_definition)
 					{
-						
+						if($token->isConstantString())
+						{
+							$this->_extends = $token->getStringContent();
+							$in_extends_definition = false;
+						}
 					}
 					elseif($token->isExtends())
 						$in_extends_definition = true;
 						
 					if($in_implements_definition)
 					{
-					
+						if($token->isConstantString())
+						{
+							$this->_implements[] = $token->getStringContent();
+						}
 					}
 					elseif($token->isImplements())
 						$in_implements_definition = true;
@@ -147,13 +184,32 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 					{
 						$this->getParser()->setFinal();
 					}
-					// TODO parse class body
-//					elseif(...)
-//					{
-//						
-//					}
+					elseif($token->isFunction())
+					{
+						$method = new YaPhpDoc_Token_Method($this);
+						$method->parse($tokensIterator);
+						if($docblock !== null)
+						{
+							$method->setStandardTags($docblock);
+							$docblock = null;
+						}
+						$this->_methods[] = $method;
+						$this->addChild($method);
+					}
+					elseif($token->isVariable())
+					{
+						$attribute = new YaPhpDoc_Token_ClassAttribute($this);
+						$attribute->parse($tokensIterator);
+						if($docblock !== null)
+						{
+							$attribute->setStandardTags($docblock);
+							$docblock = null;
+						}
+						$this->_attributes[] = $attribute;
+						$this->addChild($attribute);
+					}
 				}
-				$token->next();
+				$tokensIterator->next();
 			}
 		}
 		
@@ -209,5 +265,23 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 	public function getInterfaces()
 	{
 		return $this->_implements;
+	}
+	
+	/**
+	 * Returns the class attributes (subset of token children).
+	 * @return YaPhpDoc_Token_ClassAttribute[]
+	 */
+	public function getAttributes()
+	{
+		return $this->_attributes;
+	}
+	
+	/**
+	 * Returns the class methods (subset of token children).
+	 * @return YaPhpDoc_Token_Method[]
+	 */
+	public function getMethods()
+	{
+		return $this->_methods;
 	}
 }

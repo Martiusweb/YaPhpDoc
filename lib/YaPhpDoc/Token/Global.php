@@ -23,10 +23,10 @@ class YaPhpDoc_Token_Global extends YaPhpDoc_Token_Var
 	
 	/**
 	 * Parses the global : try to find it's name.
-	 * @param ArrayIterator $tokensIterator
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_Global
 	 */
-	public function parse(ArrayIterator $tokensIterator)
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		if($tokensIterator->current()->isGlobal())
 		{

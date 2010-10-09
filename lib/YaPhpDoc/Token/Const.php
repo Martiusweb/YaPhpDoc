@@ -25,10 +25,10 @@ class YaPhpDoc_Token_Const extends YaPhpDoc_Token_Var
 	/**
 	 * Parses the constant.
 	 * 
-	 * @param ArrayIterator $tokensIterator
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_Const
 	 */
-	public function parse(ArrayIterator $tokensIterator)
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		if($tokensIterator->current()->isConst())
 		{

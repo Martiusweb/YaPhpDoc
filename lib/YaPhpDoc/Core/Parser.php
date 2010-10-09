@@ -518,7 +518,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	 * @param bool $clear (optional, default to true)
 	 * @return bool
 	 */
-	public function getFinal($clear = true)
+	public function isFinal($clear = true)
 	{
 		$final = $this->_final;
 		if($clear)
@@ -653,6 +653,6 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 		$private = $this->_private;
 		if($clear)
 			$this->_private = false;
-		return $rivate;
+		return $private;
 	}
 }

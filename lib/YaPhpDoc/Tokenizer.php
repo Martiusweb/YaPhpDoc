@@ -92,11 +92,11 @@ class YaPhpDoc_Tokenizer implements IteratorAggregate, Countable
 	/**
 	 * Returns an iterator on tokens (as objects).
 	 * 
-	 * @return ArrayIterator
+	 * @return YaPhpDoc_Tokenizer_Iterator
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator($this->_tokens);
+		return new YaPhpDoc_Tokenizer_Iterator($this->_tokens);
 	}
 	
 	/**
@@ -132,7 +132,7 @@ class YaPhpDoc_Tokenizer implements IteratorAggregate, Countable
 			T_ARRAY_CAST, T_BOOL_CAST, T_DOUBLE_CAST, T_INT_CAST, T_OBJECT_CAST,
 			T_STRING_CAST, T_UNSET_CAST,
 			# various keywords
-			T_AS, T_BREAK, T_CASE, T_CATCH, T_CONTINUE, T_DEFAULT, T_DO, T_ECHO,
+			T_BREAK, T_CASE, T_CATCH, T_CONTINUE, T_DEFAULT, T_DO, T_ECHO,
 			T_ELSE, T_ELSEIF, T_EMPTY, T_ENDDECLARE, T_ENDFOR, T_ENDFOREACH,
 			T_ENDIF, T_ENDSWITCH, T_ENDWHILE, T_END_HEREDOC, T_EVAL, T_EXIT,
 			T_GOTO, T_HALT_COMPILER, T_IF, T_FOR, T_FOREACH, T_INCLUDE,

@@ -20,10 +20,10 @@ class YaPhpDoc_Token_Array extends YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Parse the array declaration.
-	 * @param ArrayIterator $tokensIterator
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_Array
 	 */
-	public function parse(ArrayIterator $tokensIterator)
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		if($tokensIterator->current()->isArray())
 		{
