@@ -31,6 +31,8 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 			'list|l'				=> 'Don\'t parse, just display files to parse list',
 			'exclude|e=s'			=> 'Exclude files matching the given Regex pattern',
 			'include|i=s'			=> 'Include files matching the given Regex pattern',
+			'output-format|out=s'	=> 'Select output format (default is the standard value)',
+			'destination|dest=s'	=> 'Destination of the generated files (default is working directory)',
 		);
 	}
 	
@@ -60,6 +62,12 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	 * @var YaPhpDoc_Core_Parser
 	 */
 	protected $_parser;
+	
+	/**
+	 * PHP Documentation generator object.
+	 * @var YaPhpDoc_Generator_Abstract
+	 */
+	protected $_generator;
 	
 	/**
 	 * Locale code
@@ -110,6 +118,12 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	protected $_verbose = false;
 	
 	/**
+	 * Destination of the generated files.
+	 * @var string
+	 */
+	protected $_destination = '';
+	
+	/**
 	 * Warning alerts counter
 	 * @var int
 	 */
@@ -135,6 +149,8 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 			$this->_locale = YPD_LOCALE;
 		
 		$this->_parser = new YaPhpDoc_Core_Parser($this, $this);
+		
+		YaPhpDoc_Core_TranslationManager_Resolver::setTranslationManager($this);
 	}
 	
 	/**
@@ -493,6 +509,29 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	}
 	
 	/**
+	 * Set the documentation output format.
+	 * @param string $format
+	 * @return Ypd
+	 */
+	public function setOutputFormat($format)
+	{
+		$this->_generator = YaPhpDoc_Generator_Factory::getGenerator($format,
+			$this, $this);
+		return $this;
+	}
+	
+	/**
+	 * Set the destination directory.
+	 * @param string $dest
+	 * @return Ypd
+	 */
+	public function setDestination($dest)
+	{
+		$this->_destination = $dest;
+		return $this;
+	}
+	
+	/**
 	 * Display the list of file to be parsed.
 	 * @return Ypd
 	 */
@@ -533,6 +572,18 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 		
 		if(null !== $e)
 			throw $e;
+		
+		return $this;
+	}
+	
+	/**
+	 * Start documentation generation.
+	 * 
+	 * @return Ypd
+	 */
+	public function generate()
+	{
+		// TODO start generation
 		
 		return $this;
 	}

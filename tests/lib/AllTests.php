@@ -18,8 +18,8 @@ class lib_AllTests
 {
 	public static function suite()
 	{
-		$suite = new PHPUnit_Framework_TestSuite('lib_YaPhpDoc');
-		$suite->addTestSuite(lib_YaPhpDoc_AllTests::suite());
+		$suite = new PHPUnit_Framework_TestSuite('lib');
+		$suite->addTest(lib_YaPhpDoc_AllTests::suite());
 		return $suite;
 	}
 }

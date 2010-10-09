@@ -411,7 +411,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	}
 	
 	/*
-	 * Implements  @return YaPhpDoc_Core_OutputManager_Aggregate
+	 * Implements YaPhpDoc_Core_OutputManager_Aggregate
 	 */
 	
 	/**

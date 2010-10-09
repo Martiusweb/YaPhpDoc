@@ -145,22 +145,9 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract implements YaPhpDoc_Core_OutputMan
 			unset($matches);
 			
 			$class = 'YaPhpDoc_Tag_'.ucfirst($tagname);
-			if(!class_exists($class, false))
+			if(!YaPhpDoc_Tool_Loader::classExists($class))
 			{
-				$loader = Zend_Loader_Autoloader::getInstance();
-				if(!in_array('YaPhpDoc', $loader->getRegisteredNamespaces()))
-				{
-					throw new YaPhpDoc_Core_Exception(
-						$this->l10n()->getTranslation()->_(
-						'Autoloader is not defined or configurated.'
-					));
-				}
-				$loader->suppressNotFoundWarnings(true);
-				if(!$loader->autoload($class))
-				{
-					$class = 'YaPhpDoc_Tag_Anonymous';
-				}
-				$loader->suppressNotFoundWarnings(false);
+				$class = 'YaPhpDoc_Tag_Anonymous';
 			}
 		}
 		else
