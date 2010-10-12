@@ -72,6 +72,16 @@ try
 		$ypd->setExcludePatternFromOption($pattern);
 	if($pattern = $options->getOption('include'))
 		$ypd->setIncludePatternFromOption($pattern);
+		
+	# Generated files
+	if($format = $options->getOption('output-format'))
+		$ypd->setOutputFormat($format);
+	else
+		$ypd->setOutputFormat('default');
+	if($dest = $option->getOption('destination'))
+		$ypd->setDestination($dest);
+	else
+		$ypd->setDestination($_SERVER['pwd']);
 }
 catch(Zend_Console_Getopt_Exception $e)
 {
@@ -96,7 +106,7 @@ try
 		exit();
 	}
 	
-	$ypd->parse();
+	$ypd->parse()->generate();
 }
 catch(YaPhpDoc_Core_Exception $e)
 {
