@@ -31,6 +31,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 	/**
 	 * Parse a PHP file.
 	 * 
+	 * @todo A refactoring will be performed in 1.X+, management of namespaces is not fully stable
 	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_File
 	 */
@@ -60,8 +61,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 			{
 				$use = new YaPhpDoc_Token_Use($this->_getCurrentParent());
 				$use->parse($tokensIterator);
-				array_push($this->_uses, $use);
-				$this->addChild($use);
+				$this->_getCurrentParent()->addChild($use);
 			}
 			elseif($token->isNamespace())
 			{

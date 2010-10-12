@@ -20,6 +20,12 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	protected $_children = array();
 	
 	/**
+	 * Use statements
+	 * @var array
+	 */
+	protected $_uses = array();
+	
+	/**
 	 * Adds a child to the node.
 	 * 
 	 * @param YaPhpDoc_Token_Abstract|array $child
@@ -37,6 +43,9 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 		}
 		elseif($child instanceof YaPhpDoc_Token_Abstract)
 			array_push($this->_children, $child);
+		
+		if($child instanceof YaPhpDoc_Token_Use)
+			array_push($this->_uses, $child);
 		
 		return $this;
 	}
@@ -57,5 +66,14 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	public function count()
 	{
 		return count($this->_children);
+	}
+	
+	/**
+	 * Returns an Iterator on Use tokens.
+	 * @return ArrayIterator
+	 */
+	public function getUseIterator()
+	{
+		return new ArrayIterator($this->_uses);
 	}
 }

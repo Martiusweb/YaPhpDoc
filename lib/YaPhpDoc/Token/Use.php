@@ -22,7 +22,7 @@ class YaPhpDoc_Token_Use extends YaPhpDoc_Token_Abstract
 	 * Constructor of a use token.
 	 * @param YaPhpDoc_Token_File $parent
 	 */
-	public function __construct(YaPhpDoc_Token_File $parent)
+	public function __construct(YaPhpDoc_Token_Structure_Abstract $parent)
 	{
 		parent::__construct('unknown', T_NAMESPACE, $parent);
 	}

@@ -139,7 +139,10 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 		if(null !== $exclude_pattern)
 			$this->_excludePattern = $exclude_pattern;
 		else
-			$this->_excludePattern = '('.DIRECTORY_SEPARATOR.'|^)\..*';
+		{
+			$ds = str_replace('\\', '\\\\', DIRECTORY_SEPARATOR);
+			$this->_excludePattern = '('.$ds.'|^)\.[^'.$ds.']*$';
+		}
 	}
 	
 	/**
@@ -298,6 +301,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	 */
 	protected function _isFilenameToParse($filename)
 	{
+		# TODO Refactor and use fnmatch instead (PHP 5.3.0 only on windows)
 		# To include ?
 		return (empty($this->_includePattern) || 
 				preg_match('`'.$this->_includePattern.'`', $filename))
