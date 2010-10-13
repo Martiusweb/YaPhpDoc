@@ -46,6 +46,19 @@ class YaPhpDoc_Tool_Loader
 		}
 	}
 	
+	/**
+	 * Returns the "local" class name, it means the class name suffix without
+	 * it "namespaces". For instance, "YaPhpDoc_MyNamespace_MyClass" local
+	 * class name is "MyClass".
+	 * 
+	 * @param string $classname
+	 * @return string
+	 */
+	public static function getLocalClassname($classname)
+	{
+		return substr($classname, strripos($classname, '_')+1);
+	}
+	
 	private function __construct()
 	{
 	}

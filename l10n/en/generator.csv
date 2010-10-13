@@ -1,1 +1,3 @@
-"Generator for %s format does not exists.","Generator for %s format does not exists."
+"Generator for format %s does not exists.","Generator for format %s does not exists."
+"%s is not a writable directory","%s is not a writable directory"
+"Destination directory did not exist and has been created","Destination directory did not exist and has been created"

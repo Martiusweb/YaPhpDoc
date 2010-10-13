@@ -42,7 +42,7 @@ class YaPhpDoc_Generator_Factory
 		{
 			throw new YaPhpDoc_Generator_Exception(sprintf(
 				$translationManager->getTranslation('generator')->_(
-				'Generator for %s format does not exists.'),
+				'Generator for format %s does not exists.'),
 				$output_format
 			));
 		}

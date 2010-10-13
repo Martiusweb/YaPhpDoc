@@ -185,6 +185,22 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	}
 	
 	/**
+	 * Returns the documentation generator. If the generator does not exists
+	 * yet, getGenerator() will try to create a generator for "default" format.
+	 * 
+	 * @return YaPhpDoc_Generator_Abstract
+	 */
+	public function getGenerator()
+	{
+		if($this->_generator === null)
+		{
+			$this->_generator = YaPhpDoc_Generator_Factory::
+				getGenerator('default', $this, $this);
+		}
+		return $this->_generator;
+	}
+	
+	/**
 	 * Returns translate object for current $key dictionnary
 	 * @param string $key (default core)
 	 * @return Zend_Translate
@@ -583,6 +599,12 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	 */
 	public function generate()
 	{
+		$msg = sprintf($this->getTranslation()
+			->_('Start generation of documentation in format %s'), $this->_generator);
+		$this->verbose($msg, false);
+		
+		$this->getGenerator()->setDestination($this->_destination);
+		
 		// TODO start generation
 		
 		return $this;

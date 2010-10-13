@@ -78,7 +78,7 @@ try
 		$ypd->setOutputFormat($format);
 	else
 		$ypd->setOutputFormat('default');
-	if($dest = $option->getOption('destination'))
+	if($dest = $options->getOption('destination'))
 		$ypd->setDestination($dest);
 	else
 		$ypd->setDestination($_SERVER['pwd']);

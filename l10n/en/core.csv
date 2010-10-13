@@ -9,3 +9,4 @@
 "Stop parsing (time : %f, memory: %s, max: %s)","Stop parsing (time : %f, memory: %s, max: %s)"
 "Autoloader is not defined or configurated.","Autoloader is not defined or configurated."
 " in %s at line %d"," in %s at line %d"
+"Start generation of documentation in format %s","Start generation of documentation in format %s"
