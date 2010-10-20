@@ -27,13 +27,18 @@ class YaPhpDoc_Generator_Factory
 	 * 
 	 * Throws an exception if the generator can not be found.
 	 * 
-	 * @throws YaPhpDoc_Generator_Exception
 	 * @param string $output_format
+	 * @param YaPhpDoc_Core_OutputManager_Interface $outputManager
+	 * @param YaPhpDoc_Core_TranslationManager_Interface $translationManager
+	 * @param string $data_dir Path to the data/ directory
+	 * 
+	 * @throws YaPhpDoc_Generator_Exception
 	 * @return YaPhpDoc_Generator_Abstract
 	 */
 	public static function getGenerator($output_format,
 		YaPhpDoc_Core_OutputManager_Interface $outputManager,
-		YaPhpDoc_Core_TranslationManager_Interface $translationManager)
+		YaPhpDoc_Core_TranslationManager_Interface $translationManager,
+		$data_dir)
 	{
 		$output_generator_class = 'YaPhpDoc_Generator_Output_'
 			.ucfirst($output_format);
@@ -47,7 +52,7 @@ class YaPhpDoc_Generator_Factory
 			));
 		}
 		
-		return new $output_generator_class($outputManager, $translationManager);
+		return new $output_generator_class($outputManager, $translationManager, $data_dir);
 	}
 	
 	private function __construct()

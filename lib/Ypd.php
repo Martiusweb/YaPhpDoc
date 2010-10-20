@@ -124,6 +124,11 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	protected $_destination = '';
 	
 	/**
+	 * Path to data directory.
+	 * @var string
+	 */
+	protected $_dataDir = '';
+	/**
 	 * Warning alerts counter
 	 * @var int
 	 */
@@ -195,7 +200,7 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 		if($this->_generator === null)
 		{
 			$this->_generator = YaPhpDoc_Generator_Factory::
-				getGenerator('default', $this, $this);
+				getGenerator('default', $this, $this, $this->_dataDir);
 		}
 		return $this->_generator;
 	}
@@ -547,6 +552,18 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 		return $this;
 	}
 	
+	/**
+	 * Set the data directory.
+	 * 
+	 * @param string $data_dir path to data directory
+	 * @return Ypd
+	 */
+	public function setDataDirectory($data_dir)
+	{
+		$this->_dataDir = $data_dir;
+		return $this;
+	}
+		
 	/**
 	 * Display the list of file to be parsed.
 	 * @return Ypd

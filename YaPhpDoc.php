@@ -23,8 +23,13 @@ $loader->registerNamespace(array('YaPhpDoc', 'Ypd', 'Twig'));
 
 # utility classes
 $ypd = Ypd::getInstance();
+
+# Set path to data directory
+$ypd->setDataDirectory(dirname(__FILE__).'/data');
+
+# Load cli translation
 $ypd->getTranslation('cli');
-	
+
 # Parse cli options
 $options = $ypd->getGetopt();
 

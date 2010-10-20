@@ -14,6 +14,12 @@
 abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManager_Aggregate, YaPhpDoc_Core_TranslationManager_Aggregate
 {
 	/**
+	 * Path to the data directory.
+	 * @var string
+	 */
+	protected $_dataDir = '';
+	
+	/**
 	 * Destination of the generated files. 
 	 * @var string
 	 */
@@ -33,10 +39,12 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	
 	public function __construct(
 		YaPhpDoc_Core_OutputManager_Interface $outputManager,
-		YaPhpDoc_Core_TranslationManager_Interface $translationManager)
+		YaPhpDoc_Core_TranslationManager_Interface $translationManager,
+		$data_dir)
 	{
 		$this->_outputManager = $outputManager;
-		$this->_translationManager = $translationManager;	
+		$this->_translationManager = $translationManager;
+		$this->_dataDir = $data_dir;	
 	}
 	
 	/**
@@ -130,4 +138,12 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	{
 		return lcfirst(YaPhpDoc_Tool_Loader::getLocalClassname(get_class($this)));
 	}
+	
+	/**
+	 * Initialize the generator. This function must be overriden by the
+	 * generator concrete class. There are no requirements, but no returned
+	 * value is expected.
+	 * @return void
+	 */
+	abstract public function initialize(); 
 }
