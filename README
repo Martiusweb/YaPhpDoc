@@ -11,6 +11,9 @@ License:
 This software is released under the New BSD License.
 Zend Framework code is under copyright from Zend, and distributed under its own
 license (New BSD License).
+Twig code is under copyright from Twig Team, and distributed under its own
+license (New BSD Licence).
+
 
 Usage:
 Execute YaPhpDoc to learn more

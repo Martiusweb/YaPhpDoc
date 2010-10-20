@@ -19,7 +19,7 @@ set_include_path(
 # Prepare autoloading
 require 'Zend/Loader/Autoloader.php';
 $loader = Zend_Loader_Autoloader::getInstance();
-$loader->registerNamespace(array('YaPhpDoc', 'Ypd'));
+$loader->registerNamespace(array('YaPhpDoc', 'Ypd', 'Twig'));
 
 # utility classes
 $ypd = Ypd::getInstance();
