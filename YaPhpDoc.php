@@ -86,7 +86,15 @@ try
 	if($dest = $options->getOption('destination'))
 		$ypd->setDestination($dest);
 	else
-		$ypd->setDestination($_SERVER['pwd']);
+		$ypd->setDestination($_SERVER['PWD'].DIRECTORY_SEPARATOR.'doc');
+	
+	# Configuration file
+	if($cfg = $options->getOption('config'))
+		$ypd->setConfig($cfg, $ypd->getDataDirectory().DIRECTORY_SEPARATOR
+			.'config'.DIRECTORY_SEPARATOR.'default.xml');
+	else
+		$ypd->setConfig($ypd->getDataDirectory().DIRECTORY_SEPARATOR.'config'
+			.DIRECTORY_SEPARATOR.'default.xml');
 }
 catch(Zend_Console_Getopt_Exception $e)
 {

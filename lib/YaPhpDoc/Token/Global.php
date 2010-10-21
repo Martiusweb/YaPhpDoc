@@ -59,7 +59,7 @@ class YaPhpDoc_Token_Global extends YaPhpDoc_Token_Var
 				{
 					$this->_name = substr($token->getContent(), 1);
 				}
-				elseif($token->getType == '=')
+				elseif($token->getType() == '=')
 				{
 					$in_global_value = true;
 				}
@@ -69,7 +69,7 @@ class YaPhpDoc_Token_Global extends YaPhpDoc_Token_Var
 						$this->_value = $token->getConstantContent();
 					elseif($token->isArray())
 					{
-						$array = new YaPhpDoc_Token_Array($this->name, $this);
+						$array = new YaPhpDoc_Token_Array($this->_name, $this);
 						$array->parse($tokensIterator);
 						$this->_value = $array->getArrayString();
 						unset($array);	

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * YaPhpDoc
+ * @author Martin Richard
+ * @license New BSD License
+ */
+-->
+<yaphpdoc>
+	<generator>
+		<document>
+			<project>YaPhpDoc</project>
+			<title>Documentation generated with YaPhpDoc</title>
+		</document>
+	</generator>
+</yaphpdoc>

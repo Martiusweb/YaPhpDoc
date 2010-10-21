@@ -26,6 +26,12 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	protected $_destination = '.';
 	
 	/**
+	 * Generator configuration object.
+	 * @var Zend_Config
+	 */
+	protected $_config;
+	
+	/**
 	 * Output manager object.
 	 * @var YaPhpDoc_Core_OutputManager_Interface
 	 */
@@ -86,12 +92,24 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 		return $this;
 	}
 	
+	/**
+	 * set the configuration object.
+	 * 
+	 * @param Zend_Config $config
+	 * @return YaPhpDoc_Generator_Abstract
+	 */
+	public function setConfig(Zend_Config $config)
+	{
+		$this->_config = $config;
+		return $this;
+	}
+	
 	/*
 	 * Implements YaPhpDoc_Core_OutputManager_Aggregate
 	 */
 	
 	/**
-	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#getOutputManager()
+	 * @see YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#getOutputManager()
 	 * @return YaPhpDoc_Core_OutputManager_Interface
 	 */
 	public function getOutputManager()
@@ -100,7 +118,7 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	}
 	
 	/**
-	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#out()
+	 * @see YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#out()
 	 * @return YaPhpDoc_Core_OutputManager_Interface
 	 */
 	public function out()
@@ -113,7 +131,7 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	 */
 	
 	/**
-	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#getTranslationManager()
+	 * @see YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#getTranslationManager()
 	 * @return YaPhpDoc_Core_TranslationManager_Interface
 	 */
 	public function getTranslationManager()
@@ -122,7 +140,7 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	}
 	
 	/**
-	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#l10n()
+	 * @see YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#l10n()
 	 * @return YaPhpDoc_Core_TranslationManager_Interface
 	 */
 	public function l10n()
@@ -140,10 +158,84 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	}
 	
 	/**
-	 * Initialize the generator. This function must be overriden by the
+	 * Write $content in the file $filename, created in the destination directory.
+	 * Create directories under the destination if they don't exist.
+	 * 
+	 * Content is optionnal, allowing to shortcut this parameter for specifics
+	 * generator implementation needs (using a library that already writes files
+	 * for instance).
+	 * 
+	 * @param string $filename
+	 * @param string $content (optionnal)
+	 * @throws YaPhpDoc_Generator_Exception
+	 * @return YaPhpDoc_Generator_Absctract
+	 */
+	protected function _write($filename, $content = '')
+	{
+		$filename = $this->_destination.DIRECTORY_SEPARATOR.$filename;
+		
+		$this->_mkDirIfNotExists(dirname($filename));
+		
+		if(!file_put_contents($filename, $content, LOCK_EX))
+		{
+			throw new YaPhpDoc_Generator_Exception(sprintf(
+				$this->l10n('generator')->_('Unable to write file %s'), $filename
+			));
+		}
+		
+		return $this;
+	}
+	
+	/**
+	 * Creates a directory if this one does not exist. Directories are created
+	 * recursively.
+	 *  
+	 * @param string $dirname Directory to create
+	 * @param int $mode Mode of the directory (same as standard mkdir function), default to 755
+	 * @throws YaPhpDoc_Generator_Exception
+	 * @return YaPhpDoc_Generator_Abstract
+	 */
+	protected function _mkDirIfNotExists($dirname, $mode = 0755)
+	{
+		if(!is_dir($dirname))
+		{
+			if(!mkdir($dirname, $mode, true))
+			{
+				throw new YaPhpDoc_Generator_Exception(sprintf(
+					$this->l10n('generator')->_('Unable to create directory %s'),
+					$dirname
+				));
+			}
+		}
+		return $this;
+	}
+	
+	/**
+	 * Renders the documentation.
+	 * @throws YaPhpDoc_Generator_Exception
+	 * @return YaPhpDoc_Generator_Abstract
+	 */
+	public function render()
+	{
+		$this->_initialize();
+		$this->_build();
+		
+		return $this;
+	}
+	
+	/**
+	 * Initializes the generator. This function must be overriden by the
 	 * generator concrete class. There are no requirements, but no returned
 	 * value is expected.
 	 * @return void
 	 */
-	abstract public function initialize(); 
+	abstract protected function _initialize();
+	
+	/**
+	 * Generates the documentation.
+	 * 
+	 * @throws YaPhpDoc_Generator_Exception
+	 * @return void
+	 */
+	abstract protected function _build();
 }

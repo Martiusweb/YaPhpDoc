@@ -32,7 +32,8 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 			'exclude|e=s'			=> 'Exclude files matching the given Regex pattern',
 			'include|i=s'			=> 'Include files matching the given Regex pattern',
 			'output-format|out=s'	=> 'Select output format (default is the standard value)',
-			'destination|dest=s'	=> 'Destination of the generated files (default is working directory)',
+			'destination|o=s'		=> 'Destination of the generated files (default is working directory)',
+			'config|c=s'			=> 'Configuration file'
 		);
 	}
 	
@@ -68,6 +69,12 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	 * @var YaPhpDoc_Generator_Abstract
 	 */
 	protected $_generator;
+	
+	/**
+	 * Zend_Config object.
+	 * @var Zend_Config
+	 */
+	protected $_config;
 	
 	/**
 	 * Locale code
@@ -199,8 +206,7 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	{
 		if($this->_generator === null)
 		{
-			$this->_generator = YaPhpDoc_Generator_Factory::
-				getGenerator('default', $this, $this, $this->_dataDir);
+			$this->setOutputFormat('default');
 		}
 		return $this->_generator;
 	}
@@ -537,7 +543,7 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	public function setOutputFormat($format)
 	{
 		$this->_generator = YaPhpDoc_Generator_Factory::getGenerator($format,
-			$this, $this);
+			$this, $this, $this->_dataDir);
 		return $this;
 	}
 	
@@ -561,6 +567,43 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 	public function setDataDirectory($data_dir)
 	{
 		$this->_dataDir = $data_dir;
+		return $this;
+	}
+	
+	/**
+	 * Returns the data directory.
+	 * @return string
+	 */
+	public function getDataDirectory()
+	{
+		return $this->_dataDir;
+	}
+	
+	/**
+	 * Loads configuration according to config_file.
+	 * Formats supported are listed in the YaPhpDoc_Tool_Config::load() method
+	 * documentation.
+	 * 
+	 * If $merge is given, the file will be used as default configuration file.
+	 * 
+	 * @param string $config_file
+	 * @param string $merge base file to merge with
+	 * @throws YaPhpDoc_Core_Exception
+	 * @return Ypd
+	 */
+	public function setConfig($config_file, $merge = null)
+	{
+		try {
+			if($merge == null)
+				$this->_config = YaPhpDoc_Tool_Config::load($config_file);
+			else
+				$this->_config = YaPhpDoc_Tool_Config::merge($merge, $config_file);
+		}
+		catch(Zend_Config_Exception $e)
+		{
+			throw new YaPhpDoc_Core_Exception(sprintf($this->getTranslation()
+				->_('Unable to load configuration file %s'), $config_file));
+		}
 		return $this;
 	}
 		
@@ -620,9 +663,10 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 			->_('Start generation of documentation in format %s'), $this->_generator);
 		$this->verbose($msg, false);
 		
-		$this->getGenerator()->setDestination($this->_destination);
-		
-		// TODO start generation
+		$this->getGenerator()
+			->setDestination($this->_destination)
+			->setConfig($this->_config->generator)
+			->render();
 		
 		return $this;
 	}

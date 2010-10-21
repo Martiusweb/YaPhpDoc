@@ -46,7 +46,6 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract implements YaPhpDoc_Core_OutputMan
 	 */
 	public function __construct($tagline)
 	{
-		$this->_parse($tagline);
 	}
 	
 	/**
@@ -155,6 +154,7 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract implements YaPhpDoc_Core_OutputMan
 
 		$tag = new $class($tagline);
 		$tag->_parser = $parser;
+		$tag->_parse($tagline);
 		return $tag;
 	}
 	
@@ -168,7 +168,7 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract implements YaPhpDoc_Core_OutputMan
 	}
 	
 	/**
-	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#getOutputManager()
+	 * @see YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#getOutputManager()
 	 * @return YaPhpDoc_Core_OutputManager_Interface
 	 */
 	public function getOutputManager()
@@ -177,7 +177,7 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract implements YaPhpDoc_Core_OutputMan
 	}
 	
 	/**
-	 * @see lib/YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#out()
+	 * @see YaPhpDoc/Core/OutputManager/YaPhpDoc_Core_OutputManager_Aggregate#out()
 	 * @return YaPhpDoc_Core_OutputManager_Interface
 	 */
 	public function out()
@@ -186,7 +186,7 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract implements YaPhpDoc_Core_OutputMan
 	}
 	
 	/**
-	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#getTranslationManager()
+	 * @see YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#getTranslationManager()
 	 * @return YaPhpDoc_Core_TranslationManager_Interface
 	 */
 	public function getTranslationManager()
@@ -195,7 +195,7 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract implements YaPhpDoc_Core_OutputMan
 	}
 	
 	/**
-	 * @see lib/YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#l10n()
+	 * @see YaPhpDoc/Core/TranslationManager/YaPhpDoc_Core_TranslationManager_Aggregate#l10n()
 	 * @return YaPhpDoc_Core_TranslationManager_Interface
 	 */
 	public function l10n()

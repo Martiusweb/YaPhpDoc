@@ -6,9 +6,13 @@
  */
 
 /**
- * This is the standard generator class.
+ * This is the standard generator class.  The generated output is in HTML with
+ * Javascript auto-completion (HtmlDefault theme).
  * 
- * The generated output is in HTML with Javascript auto-completion. 
+ * You can use this class as a base to write your own generator in HTML. It
+ * uses Twig, the Symfony 2 templating engine and supports themes templating.
+ * You can create a new theme based on the HtmlDefault one if you don't have
+ * specifics needs here.
  * 
  * @author Martin Richard
  */
@@ -18,7 +22,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	 * Theme name (matches the theme directory name).
 	 * @var string
 	 */
-	private $_theme = 'default';
+	private $_theme = 'HtmlDefault';
 	
 	/**
 	 * Twig environment object.
@@ -26,16 +30,28 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	 */
 	protected $_twig;
 	
-	public function initialize()
+	/**
+	 * Global context for twig rendering.
+	 * @var array
+	 */
+	protected $_globalContext = array();
+	
+	/**
+	 * @see lib/YaPhpDoc/Generator/YaPhpDoc_Generator_Abstract#initialize()
+	 */
+	protected function _initialize()
 	{
-		$loader = new Twig_Loader_Filesystem($this->getDataPath().'/templates/'.
-			$this->_theme);
+		try {
+			$loader = new Twig_Loader_Filesystem($this->_dataDir.'/templates/'.
+				$this->_theme);
+			$this->_twig = new Twig_Environment($loader);
+		}
+		catch(Exception $e)
+		{
+			throw new YaPhpDoc_Generator_Exception($e->getMessage());
+		}
 		
-		# TODO Use a configuration system to set cache path
-		$this->_twig = new Twig_Environment($loader, array(
-			'debug'	=> false,
-			'cache' => '/tmp'
-		));
+		$this->_globalContext['config'] = $this->_config;
 	}
 	
 	/**
@@ -56,5 +72,56 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	public function getTheme()
 	{
 		return $this->_theme;
+	}
+	
+	/**
+	 * Adds a value to global twig template context.
+	 * @param string $var
+	 * @param string $val
+	 * @return YaPhpDoc_Generator_Output_Default
+	 */
+	public function setGlobalContextValue($var, $val)
+	{
+		$this->_globalContext[$var] = $val;
+		return $this;
+	}
+	
+	/**
+	 * @see YaPhpDoc/Generator/YaPhpDoc_Generator_Abstract#build()
+	 */
+	protected function _build()
+	{
+		try {
+			$this->_buildIndex();
+		}
+		catch(YaPhpDoc_Core_Exception $e)
+		{
+			throw $e;
+		}
+		catch(Exception $e)
+		{
+			# TODO : Hide twig & compilation exceptions
+			throw new YaPhpDoc_Generator_Exception($this->l10n('generator')->_(
+				'Compilation failed'));
+		}
+	}
+	
+	protected function _buildIndex()
+	{
+		$template = $this->_twig->loadTemplate('index.html');
+		$this->_write('index.html', $this->_render($template));
+	}
+	
+	/**
+	 * Renders a template (proxy for the Twig_Template render method), adding
+	 * global context variables.
+	 * 
+	 * @param Twig_TemplateInterface $template
+	 * @param array $context
+	 * @return string
+	 */
+	protected function _render($template, $context = array())
+	{
+		return $template->render(array_merge($context, $this->_globalContext));
 	}
 }
