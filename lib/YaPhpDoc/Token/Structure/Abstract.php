@@ -76,4 +76,29 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	{
 		return new ArrayIterator($this->_uses);
 	}
+	
+	/**
+	 * Returns an array of all the classes.
+	 * 
+	 * @return YaPhpDoc_Token_Class[]
+	 */
+	public function getAllClasses()
+	{
+		$classes = new SplObjectStorage();
+		foreach($this->_children as $child)
+		{
+			if($child instanceof YaPhpDoc_Token_Class && !$classes->contains($child))
+				$classes->attach($child);
+			elseif($child instanceof YaPhpDoc_Token_Structure_Abstract)
+			{
+				$childClasses = $child->getAllClasses();
+				foreach($childClasses as $childClass)
+				{
+					if(!$classes->contains($childClass))
+						$classes->attach($childClass);
+				}
+			}
+		}
+		return $classes;
+	}
 }

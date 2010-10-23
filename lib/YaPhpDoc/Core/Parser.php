@@ -176,6 +176,16 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	}
 	
 	/**
+	 * Returns the directories where the parser looks for
+	 * source.
+	 * @return array
+	 */
+	public function getDirectories()
+	{
+		return $this->_directories;
+	}
+	
+	/**
 	 * Sets the pattern of included files.
 	 * 
 	 * The file (absolute or relative path and name of the file) following

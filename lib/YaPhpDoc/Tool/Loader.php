@@ -34,6 +34,7 @@ class YaPhpDoc_Tool_Loader
 					'Autoloader is not defined or configurated.'
 				));
 			}
+			# DEBUG Suppress warnings (hide every error messages)
 			$loader->suppressNotFoundWarnings(true);
 			$loading = $loader->autoload($class);
 			$loader->suppressNotFoundWarnings(false);

@@ -666,6 +666,7 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 		$this->getGenerator()
 			->setDestination($this->_destination)
 			->setConfig($this->_config->generator)
+			->setRoot($this->getParser()->getRoot())
 			->render();
 		
 		return $this;

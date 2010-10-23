@@ -19,7 +19,7 @@ class YaPhpDoc_Tokenizer_Iterator extends ArrayIterator
 	public function current()
 	{
 		$current = parent::current();
-		// TODO debug only
+		// DEBUG Display currently parsed token
 //		var_dump($current->getType().' : '.$current->getContent());
 		return $current;
 	}

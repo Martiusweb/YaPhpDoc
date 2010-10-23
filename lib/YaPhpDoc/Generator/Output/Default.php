@@ -44,7 +44,10 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		try {
 			$loader = new Twig_Loader_Filesystem($this->_dataDir.'/templates/'.
 				$this->_theme);
-			$this->_twig = new Twig_Environment($loader);
+			$this->_twig = new Twig_Environment($loader, array(
+				'debug' => true,
+				'strict_variables' => true
+			));
 		}
 		catch(Exception $e)
 		{
@@ -52,6 +55,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		}
 		
 		$this->_globalContext['config'] = $this->_config;
+		$this->_globalContext['code']	= $this->_root;
 	}
 	
 	/**
@@ -100,8 +104,9 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		}
 		catch(Exception $e)
 		{
+			$this->getOutputManager()->error($e->getMessage());
 			# TODO : Hide twig & compilation exceptions
-			throw new YaPhpDoc_Generator_Exception($this->l10n('generator')->_(
+			throw new YaPhpDoc_Generator_Exception($this->l10n()->getTranslation('generator')->_(
 				'Compilation failed'));
 		}
 	}

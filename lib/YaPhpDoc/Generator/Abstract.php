@@ -43,6 +43,12 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	 */
 	protected $_translationManager;
 	
+	/**
+	 * Root of the parsed code representation.
+	 * @var YaPhpDoc_Token_Document
+	 */
+	protected $_root;
+	
 	public function __construct(
 		YaPhpDoc_Core_OutputManager_Interface $outputManager,
 		YaPhpDoc_Core_TranslationManager_Interface $translationManager,
@@ -101,6 +107,18 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	public function setConfig(Zend_Config $config)
 	{
 		$this->_config = $config;
+		return $this;
+	}
+	
+	/**
+	 * Sets the parsed code root.
+	 * 
+	 * @param YaPhpDoc_Token_Document $root
+	 * @return YaPhpDoc_Generator_Abstract
+	 */
+	public function setRoot(YaPhpDoc_Token_Document $root)
+	{
+		$this->_root = $root;
 		return $this;
 	}
 	

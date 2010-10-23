@@ -1,4 +1,7 @@
 <?php
+/**
+ * File docblock
+ */
 
 /**
  * This is a class

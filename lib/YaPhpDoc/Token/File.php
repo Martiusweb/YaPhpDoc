@@ -102,6 +102,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 				$token_type .= $token->isInterface() ? 'Interface' : 'Class';
 				$class = new $token_type($this->_getCurrentParent());
 				$class->parse($tokensIterator);
+				
 				if($docblock !== null)
 				{
 					$class->setStandardTags($docblock);
@@ -174,5 +175,14 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 			return $this->_currentNamespace;
 		}
 		return $this;
+	}
+	
+	/**
+	 * Return the filename without the parsing root.
+	 * @return string
+	 */
+	public function getFilename()
+	{
+		return str_replace($this->getParser()->getDirectories(), '', $this->getName());
 	}
 }
