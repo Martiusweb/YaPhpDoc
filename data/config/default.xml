@@ -32,6 +32,7 @@
 		<class> <!-- Contains the classes to use for each parsable token -->
 			<FILE>YaPhpDoc_Token_File</FILE> <!-- Class for a file -->
 			<T_DOC_COMMENT>YaPhpDoc_Token_DocBlock</T_DOC_COMMENT> <!-- Class for a docblock -->
+			<T_NAMESPACE>YaPhpDoc_Token_Namespace</T_NAMESPACE> <!-- Class for a namespace -->
 		</class>
 	</parser>
 </yaphpdoc>

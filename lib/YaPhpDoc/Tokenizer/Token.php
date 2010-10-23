@@ -41,6 +41,21 @@ class YaPhpDoc_Tokenizer_Token
 	private $_line;
 	
 	/**
+	 * Returns the string representing the type $type, which is a type constant.
+	 * @param int $type
+	 * @return string
+	 */
+	public static function getTypeAsString($type)
+	{
+		if(is_string($type))
+			return $type;
+		elseif($type == self::T_MISC)
+			return 'T_MISC';
+		else
+			return token_name($type);
+	}
+	
+	/**
 	 * Constructor.
 	 * You can give the token as an array of with separated parameters.
 	 * @param int|array $type
@@ -62,12 +77,7 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function getType()
 	{
-		if(is_string($this->_type))
-			return $this->_type;
-		elseif($this->_type == self::T_MISC)
-			return 'T_MISC';
-		else
-			return token_name($this->_type);
+		return self::getTypeAsString($this->_type);
 	}
 	
 	/**

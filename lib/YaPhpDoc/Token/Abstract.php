@@ -240,6 +240,17 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	}
 	
 	/**
+	 * Breaks the parser, this method allow to control and stop parsing in a
+	 * parent parse() method.
+	 * 
+	 * @throws YaPhpDoc_Core_Parser_Break_Exception
+	 */
+	protected function _breakParsing()
+	{
+		throw new YaPhpDoc_Core_Parser_Break_Exception();
+	}
+	
+	/**
 	 * Set author.
 	 * @param YaPhpDoc_Tag_Author|array $author
 	 * @return YaPhpDoc_Token_Abstract

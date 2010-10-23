@@ -37,6 +37,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
+		$this->_addParsableTokenType(T_NAMESPACE);
 		parent::parse($tokensIterator);
 		return $this;
 	}

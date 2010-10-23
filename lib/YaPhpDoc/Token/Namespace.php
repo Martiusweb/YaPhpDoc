@@ -34,6 +34,7 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
+		return $this;
 		if($tokensIterator->current()->isNamespace())
 		{
 			$tokensIterator->next();
@@ -59,5 +60,14 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 		}
 		
 		return $this;
+	}
+
+	/**
+	 * @see lib/YaPhpDoc/Token/YaPhpDoc_Token_Abstract#setStandardTags($docblock)
+	 */
+	public function setStandardTags(YaPhpDoc_Token_DocBlock $docblock)
+	{
+		$this->appendDescription($docblock->getContent());
+		return parent::setStandardTags($docblock);
 	}
 }
