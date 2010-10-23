@@ -25,6 +25,12 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	protected $_translationManager;
 	
 	/**
+	 * Configuration object.
+	 * @var Zend_Config|NULL
+	 */
+	protected $_config;
+	
+	/**
 	 * Directories to explore stack
 	 * @var array
 	 */
@@ -340,6 +346,14 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	 */
 	public function parseAll()
 	{
+		if($this->_config === null)
+		{
+			throw new YaPhpDoc_Core_Parser_Exception(
+				$this->l10n()->getTranslation('parser')
+				->_('Configuration is missing.')
+			);
+		}
+			
 		$files = $this->getFilesToParse();
 		
 		if(empty($files))
@@ -390,7 +404,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 		}
 		
 		# New file
-		$file = new YaPhpDoc_Token_File($filename, $this->_root);
+		$file = YaPhpDoc_Token_Abstract::getFileToken($this, $filename, $this->_root);
 		$this->_root->addChild($file);
 		
 		# Parse file content
@@ -422,6 +436,28 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 		}
 		else
 			return false;
+	}
+	
+	/**
+	 * Set the configuration object. This object is, according to the standard
+	 * configuration schema, the "parser" node.
+	 * 
+	 * @param Zend_Config $config
+	 * @return YaPhpDoc_Core_Parser
+	 */
+	public function setConfig(Zend_Config $config)
+	{
+		$this->_config = $config;
+		return $this;
+	}
+	
+	/**
+	 * Returns the configuration object.
+	 * @return Zend_Config
+	 */
+	public function getConfig()
+	{
+		return $this->_config;
 	}
 	
 	/*

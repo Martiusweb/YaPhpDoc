@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>{{config.document.project}} - {{config.document.title}}</title>
+</head>
+<body>
+<h1>{{config.document.project}} API documentation</h1>
+<h2>List of the files</h2>
+	<ul>
+		{% for file in code %}
+		<li>{{file.filename}}</li>
+		{% endfor %}
+	</ul>
+</body>
+</html>

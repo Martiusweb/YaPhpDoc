@@ -14,6 +14,12 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	implements IteratorAggregate, Countable
 {
 	/**
+	 * Array of parsable token types.
+	 * @var array
+	 */
+	private $_parsableTokenTypes = array();
+	
+	/**
 	 * Children tokens
 	 * @var YaPhpDoc_Token_Abstract
 	 */
@@ -100,5 +106,101 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 			}
 		}
 		return $classes;
+	}
+	
+	/**
+	 * Returns true if the token is of a type that can be parsed.
+	 * 
+	 * @param string $type
+	 * @return YaPhpDoc_Token_Structure_Abstract
+	 */
+	protected function _addParsableTokenType($type)
+	{
+		array_push($this->_parsableTokenTypes, $type);
+		return $this;
+	}
+	
+	/**
+	 * Returns true if the token is of a type that can be parsed.
+	 * 
+	 * @param YaPhpDoc_Tokenizer_Token $token
+	 * @return bool
+	 */
+	protected function _isParsableToken(YaPhpDoc_Tokenizer_Token $token)
+	{
+		return in_array($token->getType(), $this->_parsableTokenTypes, true);
+	}
+	
+	/*
+	 * Structure parsing
+	 */
+	
+	/**
+	 * @see lib/YaPhpDoc/Token/YaPhpDoc_Token_Abstract#parse($tokensIterator)
+	 */
+	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
+	{
+		$docblock = null;
+		while($tokensIterator->valid())
+		{
+			$token = $tokensIterator->current();
+			
+			# Tokens modifying the context
+			if(!$this->_parseContext($token))
+			{
+				# Docblock
+				if($token->isDocblock())
+				{
+					# If there is a docblock never used, it must be for this token
+					if($dockblock !== null)
+						$this->setStandardTags($docblock);
+					
+					$docblock = YaPhpDoc_Token_Abstract::getToken(
+						$this->getParser(), $token->getType(), $this);
+					$docblock->parse($tokensIterator);
+				}
+				# Other tokens
+				elseif($this->_isParsableToken($token))
+				{
+					$parsedToken = YaPhpDoc_Token_Abstract::getToken(
+						$this->getParser(), $token->getType(), $this);
+					
+					if($docblock !== null)
+					{
+						$parsedToken->setStandardTags($docblock);
+						$docblock = null;
+					}
+					
+					$parsedToken->parse($tokensIterator);
+					$this->addChild($parsedToken);
+					unset($parsedToken);
+				}
+			}
+			
+			# We are done, go to next token
+			$tokensIterator->next();
+		}
+		
+		# We still have a dockblock, it's a for this token
+		if($dockblock !== null)
+			$this->setStandardTags($docblock);
+		
+		return $this;
+	}
+	
+	/**
+	 * Determinates if the token is a context modifier. We call context
+	 * modifiers tokens which are used to modify the scope, visibility or the
+	 * state of a symbol. For instance, "abstract", "static", "public", modifies
+	 * methods or properties of a class.
+	 * 
+	 * The method returns true if the token was a modifier).
+	 * 
+	 * @param YaPhpDoc_Tokenizer_Token $token
+	 * @return bool
+	 */
+	protected function _parseContext(YaPhpDoc_Tokenizer_Token $token)
+	{
+		return false;
 	}
 }

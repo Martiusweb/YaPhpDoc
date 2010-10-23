@@ -633,7 +633,7 @@ class Ypd implements YaPhpDoc_Core_OutputManager_Interface, YaPhpDoc_Core_Transl
 		
 		$e = null;
 		try {
-			$this->_parser->parseAll();
+			$this->_parser->setConfig($this->_config->parser)->parseAll();
 		}
 		catch(Exception $e)
 		{}

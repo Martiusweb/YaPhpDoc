@@ -13,4 +13,9 @@
 			<title>Documentation generated with YaPhpDoc</title>
 		</document>
 	</generator>
+	<parser>
+		<class>
+			<FILE>YaPhpDoc_Token_File</FILE>
+		</class>
+	</parser>
 </yaphpdoc>

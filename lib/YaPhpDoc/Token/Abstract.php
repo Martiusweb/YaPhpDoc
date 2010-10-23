@@ -200,7 +200,7 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	 * parser will throw a YaPhpDoc_Core_Parser_Exception.
 	 * 
 	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
-	 * @throw YaPhpDoc_Core_Parser_Exception
+	 * @throws YaPhpDoc_Core_Parser_Exception
 	 * @return YaPhpDoc_Token_Abstract 
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
@@ -426,5 +426,54 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	public function getDescription()
 	{
 		return $this->_description;
+	}
+	
+	/*
+	 * Tokens factory
+	 */
+	
+	/**
+	 * Returns a new instance of a token according to its type $type.
+	 * The token type is evaluated according to the configuration (class node),
+	 * if the method can't find a class to instanciate, a
+	 * YaPhpDoc_Core_Parser_Exception is thrown.
+	 * 
+	 * @param YaPhpDoc_Core_Parser $parser
+	 * @param string $type
+	 * @param YaPhpDoc_Token_Abstract $parent
+	 * @throws YaPhpDoc_Core_Parser_Exception
+	 * @return YaPhpDoc_Token_Abstract
+	 */
+	public static function getToken(YaPhpDoc_Core_Parser $parser, $type,
+		YaPhpDoc_Token_Abstract $parent)
+	{
+		$classname = $parser->getConfig()->class->get($type, null);
+		
+		if($classname === null)
+		{
+			throw new YaPhpDoc_Core_Parser_Exception(sprintf(
+				$parser->l10n()->getTranslation('parser')
+				->_('Unable to find a class for the token type %s'), $type
+			));
+		}
+		
+		return new $classname($parent);
+	}
+	
+	/**
+	 * Returns a new instance of a file token.
+	 * The token type is evaluated according to the configuration (class node),
+	 * there is no check of the correctness of the found classname.
+	 * 
+	 * @param YaPhpDoc_Core_Parser $parser
+	 * @param string $filename
+	 * @param YaPhpDoc_Token_Structure_Abstract $parent
+	 * @return YaPhpDoc_Token_File
+	 */
+	public static function getFileToken(YaPhpDoc_Core_Parser $parser, $filename,
+		YaPhpDoc_Token_Structure_Abstract $parent)
+	{
+		$classname = $parser->getConfig()->class->FILE;
+		return new $classname($filename, $parent);
 	}
 }
