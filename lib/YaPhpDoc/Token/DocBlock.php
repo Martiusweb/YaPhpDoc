@@ -125,8 +125,8 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 
 		if(isset($this->_tags[$tagname]))
 		{
-			return $this->_tags[$tagname];
-			array_push($this->_usedTags, $tagname);		
+			array_push($this->_usedTags, $tagname);
+			return $this->_tags[$tagname];		
 		}
 		return null;
 	}

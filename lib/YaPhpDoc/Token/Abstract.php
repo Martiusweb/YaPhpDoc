@@ -266,7 +266,7 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	 */
 	public function setLicense($license)
 	{
-		$this->_license;
+		$this->_license = $license;
 		return $this;
 	}
 	
@@ -286,6 +286,7 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	 */
 	public function setCopyright($copyright)
 	{
+		$this->_copyright = $copyright;
 		return $this;
 	}
 	
@@ -409,13 +410,24 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	}
 	
 	/**
-	 * Sets descriptions.
+	 * Sets description.
 	 * @param string $description
 	 * @return YaPhpDoc_Token_Abstract
 	 */
 	public function setDescription($description)
 	{
 		$this->_description = $description;
+		return $this;
+	}
+	
+	/**
+	 * Append text to existing description.
+	 * @param string $description
+	 * @return YaPhpDoc_Token_Abstract
+	 */
+	public function appendDescription($description)
+	{
+		$this->_description .= $description;
 		return $this;
 	}
 	

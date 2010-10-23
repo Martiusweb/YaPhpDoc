@@ -152,7 +152,7 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 				if($token->isDocblock())
 				{
 					# If there is a docblock never used, it must be for this token
-					if($dockblock !== null)
+					if($docblock !== null)
 						$this->setStandardTags($docblock);
 					
 					$docblock = YaPhpDoc_Token_Abstract::getToken(
@@ -182,7 +182,7 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 		}
 		
 		# We still have a dockblock, it's a for this token
-		if($dockblock !== null)
+		if($docblock !== null)
 			$this->setStandardTags($docblock);
 		
 		return $this;

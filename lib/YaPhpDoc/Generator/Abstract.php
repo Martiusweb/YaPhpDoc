@@ -176,6 +176,26 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	}
 	
 	/**
+	 * Returns the configuration node for this parser. If this one does not
+	 * exist, it returns an empty Zend_Config object.
+	 * 
+	 * The node must be in generator/{name of the format}, which is found with
+	 * __toString().
+	 * 
+	 * @return Zend_Config
+	 */
+	public function getGeneratorConfig()
+	{
+		$nodeName = $this->__toString();
+		if($this->_config !== null && (($node = $this->_config->get($nodeName)) !== null))
+		{
+			return $node;
+		}
+		
+		return new Zend_Config(array());
+	}
+	
+	/**
 	 * Write $content in the file $filename, created in the destination directory.
 	 * Create directories under the destination if they don't exist.
 	 * 

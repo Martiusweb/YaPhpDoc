@@ -15,7 +15,7 @@
 class YaPhpDoc_Tag_Version extends YaPhpDoc_Tag_Abstract_Abstract
 {
 	/**
-	 * Since tag constructor.
+	 * Version tag constructor.
 	 * @param string $tagline
 	 */
 	public function __construct($tagline)

@@ -37,7 +37,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		
+		parent::parse($tokensIterator);
 		return $this;
 	}
 	
@@ -62,5 +62,14 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 	public function getFilename()
 	{
 		return str_replace($this->getParser()->getDirectories(), '', $this->getName());
+	}
+	
+	/**
+	 * @see YaPhpDoc/Token/YaPhpDoc_Token_Abstract#setStandardTags($docblock)
+	 */
+	public function setStandardTags(YaPhpDoc_Token_DocBlock $docblock)
+	{
+		$this->appendDescription($docblock->getContent());
+		return parent::setStandardTags($docblock);
 	}
 }

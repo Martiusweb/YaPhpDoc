@@ -7,10 +7,42 @@
 <body>
 <h1>{{config.document.project}} API documentation</h1>
 <h2>List of the files</h2>
-	<ul>
-		{% for file in code %}
-		<li>{{file.filename}}</li>
-		{% endfor %}
-	</ul>
+{% for file in code %}
+<h3>{{file.filename}}</h3>
+<p>desc: {{file.description}}</p>
+<ul>
+	<li>Authors:
+		<ul>
+			{% for author in file.author %}
+			<li>{{author}}</li>
+			{% endfor %}
+		</ul
+	></li>
+	<li>License:
+		<ul>
+			{% for license in file.license %}
+			<li>{{license}}</li>
+			{% endfor %}
+		</ul>
+	</li>
+	<li>Copyright:
+		<ul>
+			{% for copyright in file.copyright %}
+				<li>{{copyright}}</li>
+			{% endfor %}
+		</ul>
+	</li>
+	<li>{%if file.deprecated %}Deprecated{% else %}Not deprecated{% endif %}</li>
+	<li>Since: {{file.since}}</li>
+	<li>See:
+		<ul>
+			{% for see in file.see %}
+			<li>{{see}}</li>
+			{% endfor %}
+		</ul>
+	</li>
+	<li>Version: {{file.version}}</li>
+</ul>		
+{% endfor %}
 </body>
 </html>

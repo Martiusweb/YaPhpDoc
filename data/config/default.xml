@@ -4,18 +4,34 @@
  * YaPhpDoc
  * @author Martin Richard
  * @license New BSD License
+ *
+ * Notes about configuration files in XML :
+ *  This file is parsed with Zend_Config_Xml, you must be careful with low-level
+ *  text nodes, because blank characters are not ignored. You must not let
+ *  leading and trailing blank characters into configuration values. Else, it
+ *  will cause fatal error when trying to use a value as a PHP symbol (such as
+ *  class names in the parser/class node).
  */
 -->
 <yaphpdoc>
-	<generator>
-		<document>
-			<project>YaPhpDoc</project>
-			<title>Documentation generated with YaPhpDoc</title>
+	<generator> <!-- Generator Configuration node -->
+		<document> <!-- Generated document configuration keys -->
+			<project>YaPhpDoc</project>	<!-- Project name -->
+			<title>Documentation generated with YaPhpDoc</title> <!-- Page title suffix -->
 		</document>
+		<!--
+			For each generator format supported, we can add a node with
+			specific configuration keys.
+		-->
+		<default> <!-- "default" generator specific configuration -->
+			<theme>Test</theme> <!-- TODO switch to HtmlDefault -->
+		</default>
 	</generator>
-	<parser>
-		<class>
-			<FILE>YaPhpDoc_Token_File</FILE>
+	
+	<parser> <!--  Parser configuration node -->
+		<class> <!-- Contains the classes to use for each parsable token -->
+			<FILE>YaPhpDoc_Token_File</FILE> <!-- Class for a file -->
+			<T_DOC_COMMENT>YaPhpDoc_Token_DocBlock</T_DOC_COMMENT> <!-- Class for a docblock -->
 		</class>
 	</parser>
 </yaphpdoc>

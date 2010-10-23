@@ -4,3 +4,4 @@
 "Unable to write file %s","Unable to write file %s"
 "Unable to create directory %s","Unable to create directory %s"
 "Compilation failed","Compilation failed"
+"Generating documentation with theme %s","Generating documentation with theme %s"

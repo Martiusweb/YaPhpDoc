@@ -1,12 +1,16 @@
 <?php
-/*
- * This file is part of Iphigenie
- * Martius Web - www.martiusweb.net 
- ****
- * The license of this source is described in
- * the COPYING file provided. Please refer to
- * www.martiusweb.net if you don't find it.
- ****
- * Author: Martin "Martius" Richard
+/**
+ * This file helps to test docblocks for a file token.
+ * 
+ * @author Martin Richard
+ * @license WTFPL
  */
 
+/**
+ * As you can see, we can have several docblocks for a same level.
+ * @deprecated
+ * @copyright Martin Richard
+ * @since 0.1
+ * @see /file/docblock
+ * @version 1.0
+ */

@@ -41,6 +41,11 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	 */
 	protected function _initialize()
 	{
+		# Try to find the theme in the configuration
+		$this->_theme = $this->getGeneratorConfig()->get('theme', $this->_theme);
+		$this->out()->verbose(sprintf($this->l10n()->getTranslation('generator')
+			->_('Generating documentation with theme %s'), $this->_theme),
+		false);
 		try {
 			$loader = new Twig_Loader_Filesystem($this->_dataDir.'/templates/'.
 				$this->_theme);
