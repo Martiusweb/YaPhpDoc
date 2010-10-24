@@ -42,13 +42,13 @@
 		</ul>
 	</li>
 	<li>Version: {{file.version}}</li>
-</ul>		
-{% endfor %}
+</ul>
 
-<h2>List of the namespaces</h2>
-{% for namespace in code.namespaces %}
-<h3>{{namespace.name}}</h3>
+<h4>List of the namespaces</h4>
+{% for namespace in file.allNamespaces %}
+<h5>{{namespace.fullName}}</h5>
 <p>Desc: {{namespace.description}}</p>
+{% endfor %}
 {% endfor %}
 </body>
 </html>

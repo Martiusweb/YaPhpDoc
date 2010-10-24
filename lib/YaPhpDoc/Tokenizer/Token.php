@@ -47,12 +47,20 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public static function getTypeAsString($type)
 	{
-		if(is_string($type))
-			return $type;
-		elseif($type == self::T_MISC)
+		if($type == self::T_MISC)
 			return 'T_MISC';
-		else
-			return token_name($type);
+		
+		switch($type)
+		{
+			case T_DOC_COMMENT:
+				return 'docBlock';
+			case T_NAMESPACE:
+				return 'namespace';
+			case T_CONST:
+				return 'const';
+			default:
+				return token_name($type);
+		}
 	}
 	
 	/**
@@ -77,7 +85,21 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function getType()
 	{
-		return self::getTypeAsString($this->_type);
+		if(is_string($this->_type))
+			return $this->_type;
+		else
+		{
+			# Some reflection
+			$reflection = new ReflectionClass(get_class($this));
+			foreach($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
+			{
+				/* @var $method ReflectionMethod */
+				$method = $method->name;
+				if(substr($method, 0, 2) == 'is' && $this->$method())
+					return lcfirst(substr($method, 2));
+			}
+		}
+		return 'T_MISC';
 	}
 	
 	/**
@@ -355,6 +377,18 @@ class YaPhpDoc_Tokenizer_Token
 	public function isAs()
 	{
 		return $this->_type == T_AS;
+	}
+	
+	/**
+	 * Allows call to isXxx() and returns false.
+	 * 
+	 * @param string $f
+	 * @param array $a
+	 * @return bool
+	 */
+	public function __call($f, $a)
+	{
+		return false;
 	}
 	
 	/**

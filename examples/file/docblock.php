@@ -14,3 +14,9 @@
  * @see /file/docblock
  * @version 1.0
  */
+
+/**
+ * A constant
+ * @var int
+ */
+define('TEST', 100);

@@ -8,5 +8,21 @@
  */
 namespace foo
 {
+	/**
+	 * Nested namespace...
+	 * @author martius
+	 *
+	 */
+	namespace bar
+	{
+		
+	}
+}
+
+/**
+ * A second namespace in the file !
+ */
+namespace baz
+{
 	
 }

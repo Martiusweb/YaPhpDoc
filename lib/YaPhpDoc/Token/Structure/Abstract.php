@@ -35,8 +35,8 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	 * Children tokens, ordered by token type.
 	 * @var array
 	 */
-	protected $_childrenByTokenType = array();
-	
+	protected $_childrenByTokenType = array('_structure' => array());
+
 	/**
 	 * Adds a child to the node.
 	 * 
@@ -59,6 +59,9 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 				$this->_childrenByTokenType[$type] = array();
 			
 			array_push($this->_childrenByTokenType[$type], $child);
+			
+			if($child instanceof YaPhpDoc_Token_Structure_Abstract)
+				array_push($this->_childrenByTokenType['_structure'], $child);
 		}
 		return $this;
 	}
@@ -106,9 +109,30 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	}
 	
 	/**
-	 * You can use magic calls as a proxy for getChildrenByType(), for instance
-	 * getFiles() or files() means getChildrenByType('file'). The trailing "s"
-	 * is mandatory.
+	 * Returns an array of descendant tokens of the given type. 
+	 * @param string $type
+	 * @return YaPhpDoc_Token_Abstract[]
+	 */
+	public function getDescendantsByType($type)
+	{
+		$type = lcfirst($type);
+		$descendant = $this->getChildrenByType($type);
+		foreach($this->_childrenByTokenType['_structure'] as $child)
+		{
+			/* @var $child YaPhpDoc_Token_Structure_Abstract */
+			$descendant = array_merge($descendant,
+				$child->getDescendantsByType($type));
+		}
+		return $descendant;
+	}
+	
+	/**
+	 * You can use magic calls as a proxy for getChildrenByType() or
+	 * getDescendantsByType(), for instance :
+	 *  * getFiles() or files() means getChildrenByType('file').
+	 *  * getAllFiles() or allFiles() mens getDescendantsByType('file').
+	 *  
+	 * The trailing "s" is mandatory.
 	 * 
 	 * @param string $funcname
 	 * @param array $args
@@ -119,7 +143,11 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	{
 		if(substr($funcname, -1) == 's')
 		{
-			if(substr($funcname, 0, 3) == 'get')
+			if(substr($funcname, 0, 6) == 'getAll')
+				return $this->getDescendantsByType(lcfirst(substr($funcname, 6, -1)));
+			elseif(substr($funcname, 0, 3) == 'all')
+				return $this->getDescendantsByType(lcfirst(substr($funcname, 3, -1)));
+			elseif(substr($funcname, 0, 3) == 'get')
 				return $this->getChildrenByType(lcfirst(substr($funcname, 3, -1)));
 			else
 				return $this->getChildrenByType(lcfirst(substr($funcname, 0, -1)));
@@ -132,8 +160,12 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	}
 	
 	/**
-	 * You can use magic getters as a proxy for getChildrenByType(), for instance
-	 * $foo->files means getChildrenByType('file'). The trailing "s" is mandatory.
+	 * You can use magic getters as a proxy for getChildrenByType() or
+	 * getDescendantsByType(), for instance :
+	 *  * $foo->files means getChildrenByType('file').
+	 *  * $foo->allFiles means getDescendantByType('file').
+	 *  
+	 * The trailing "s" is mandatory.
 	 * 
 	 * @param string $tokenType
 	 * @return array
@@ -141,43 +173,20 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	public function __get($tokenType)
 	{
 		if(substr($tokenType, -1) == 's')
-			return $this->getChildrenByType(lcfirst(substr($tokenType, 0, -1)));
-	}
-	
-	/**
-	 * Returns an array of all the classes.
-	 * 
-	 * @return YaPhpDoc_Token_Class[]
-	 */
-	public function getAllClasses()
-	{
-		$classes = new SplObjectStorage();
-		foreach($this->_children as $child)
 		{
-			if($child instanceof YaPhpDoc_Token_Class && !$classes->contains($child))
-				$classes->attach($child);
-			elseif($child instanceof YaPhpDoc_Token_Structure_Abstract)
-			{
-				$childClasses = $child->getAllClasses();
-				foreach($childClasses as $childClass)
-				{
-					if(!$classes->contains($childClass))
-						$classes->attach($childClass);
-				}
-			}
+			if(substr($tokenType, 0, 3) == 'all')
+				return $this->getDescendantsByType(lcfirst(substr($tokenType, 3, -1)));
+			else
+				return $this->getChildrenByType(lcfirst(substr($tokenType, 0, -1)));
 		}
-		return $classes;
 	}
 	
 	/**
 	 * Returns true if the token is of a type that can be parsed.
 	 * 
-	 * If a constant type is provided, the method will try to find de matching
-	 * string (without success check).
-	 * 
 	 * An array of type can also be given.
 	 * 
-	 * @param string|int $type
+	 * @param string $type
 	 * @return YaPhpDoc_Token_Structure_Abstract
 	 */
 	protected final function _addParsableTokenType($type)
@@ -188,9 +197,6 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 				$this->_addParsableTokenType($type);
 		}
 		
-		if(!is_string($type))
-			$type = YaPhpDoc_Tokenizer_Token::getTypeAsString($type);
-		
 		array_push($this->_parsableTokenTypes, $type);
 		return $this;
 	}
@@ -198,16 +204,12 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	/**
 	 * Adds a callback according to the token type.
 	 *  
-	 * @param string|int $token_type
+	 * @param string $token_type
 	 * @param callback $callback
 	 * @return YaPhpDoc_Token_Structure_Abstract
 	 */
 	protected final function _addTokenCallback($token_type, $callback)
 	{
-		if(!is_string($token_type))
-		{
-			$token_type = YaPhpDoc_Tokenizer_Token::getTypeAsString($token_type);
-		}
 		$this->_tokenCallbacks[$token_type] = $callback;
 		
 		return $this;
@@ -216,14 +218,11 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	/**
 	 * Returns (if defined) the callback sat for the given type of tokens.
 	 * 
-	 * @param string|int $token_type
+	 * @param string $token_type
 	 * @return callback
 	 */
 	protected function _getTokenCallback($token_type)
 	{
-		if(!is_string($token_type))
-			$token_type = YaPhpDoc_Tokenizer_Token::getTypeAsString($token_type);
-		
 		if(!isset($this->_tokenCallbacks[$token_type]))
 			return null;
 		
@@ -238,7 +237,13 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	 */
 	protected function _isParsableToken(YaPhpDoc_Tokenizer_Token $token)
 	{
-		return in_array($token->getType(), $this->_parsableTokenTypes, true);
+		foreach($this->_parsableTokenTypes as $parsable)
+		{
+			$funcname = 'is'.ucfirst($parsable);
+			if($token->$funcname())
+				return true;
+		}
+		return false;
 	}
 	
 	/*
@@ -335,8 +340,11 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	 */
 	protected final function _tokenCallback(YaPhpDoc_Tokenizer_Token $token)
 	{
-		if(isset($this->_tokenCallbacks[$token->getType()]))
-			call_user_func($this->_tokenCallback[$token->getType()], $token);
+		$callback = $this->_getTokenCallback($token->getType());
+		if($callback !== null)
+		{
+			call_user_func($callback, $token);
+		}
 		
 		return $this;
 	}

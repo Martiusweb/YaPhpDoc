@@ -21,9 +21,9 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	
 	/**
 	 * File token type identifier
-	 * @var file
+	 * @var string
 	 */
-	const FILE = 1;
+	const FILE = 'file';
 	
 	/**
 	 * Name of the token
@@ -496,7 +496,7 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	public static function getFileToken(YaPhpDoc_Core_Parser $parser, $filename,
 		YaPhpDoc_Token_Structure_Abstract $parent)
 	{
-		$classname = $parser->getConfig()->class->FILE;
+		$classname = $parser->getConfig()->class->get(self::FILE);
 		return new $classname($filename, $parent);
 	}
 }
