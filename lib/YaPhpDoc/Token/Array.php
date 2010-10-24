@@ -35,10 +35,6 @@ class YaPhpDoc_Token_Array extends YaPhpDoc_Token_Abstract
 				$token = $tokensIterator->current();
 				/* @var $token YaPhpDoc_Tokenizer_Token */
 				
-				if($token->isArray())
-				{
-					$representation .= $token->getContent();
-				}
 				if($in_def)
 				{
 					if($token->getType() == '(')
@@ -70,6 +66,10 @@ class YaPhpDoc_Token_Array extends YaPhpDoc_Token_Abstract
 						unset($content);
 					}
 					
+				}
+				elseif($token->isArray())
+				{
+					$representation .= $token->getContent();
 				}
 				elseif($token->getType() == '(')
 				{

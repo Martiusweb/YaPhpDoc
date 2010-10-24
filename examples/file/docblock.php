@@ -23,6 +23,6 @@ define('TEST', 100);
 
 /**
  * This constant is an array
- * @var array (foo => bar)
+ * @var array (foo => array(bar))
  */
-define('ARRAY_CONST', array('foo' => 'bar'));
+define('ARRAY_CONST', array('foo' => array('bar')));
