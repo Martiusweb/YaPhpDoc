@@ -20,3 +20,9 @@
  * @var int
  */
 define('TEST', 100);
+
+/**
+ * This constant is an array
+ * @var array (foo => bar)
+ */
+define('ARRAY_CONST', array('foo' => 'bar'));

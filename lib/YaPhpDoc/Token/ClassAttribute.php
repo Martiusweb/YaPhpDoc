@@ -57,18 +57,6 @@ class YaPhpDoc_Token_ClassAttribute extends YaPhpDoc_Token_Var
 	}
 	
 	/**
-	 * Set the parameter type.
-	 * 
-	 * @param string $type
-	 * @return YaPhpDoc_Token_Param
-	 */
-	public function setType($type)
-	{
-		$this->_type = $type;
-		return $this;
-	}
-	
-	/**
 	 * Set the parameter name.
 	 * 
 	 * @param string $name
@@ -78,27 +66,6 @@ class YaPhpDoc_Token_ClassAttribute extends YaPhpDoc_Token_Var
 	{
 		$this->_name = $name;
 		return $this;
-	}
-	
-	/**
-	 * Set the default parameter value.
-	 * 
-	 * @param string $value
-	 * @return YaPhpDoc_Token_Param
-	 */
-	public function setDefaultValue($value)
-	{
-		$this->_value = $value;
-		return $this;
-	}
-	
-	/**
-	 * Returns the default value of the parameter.
-	 * @return string
-	 */
-	public function getDefaultValue()
-	{
-		return $this->_value;
 	}
 	
 	/**

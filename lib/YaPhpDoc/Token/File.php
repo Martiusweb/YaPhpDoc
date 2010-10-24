@@ -31,7 +31,6 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 	/**
 	 * Parse a PHP file.
 	 * 
-	 * @todo A refactoring will be performed in 1.X+, management of namespaces is not fully stable
 	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_File
 	 */

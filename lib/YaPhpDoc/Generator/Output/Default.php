@@ -60,6 +60,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		}
 		
 		$this->_globalContext['config'] = $this->_config;
+		# TODO decorates the root with an object translating values in HTML
 		$this->_globalContext['code']	= $this->_root;
 	}
 	

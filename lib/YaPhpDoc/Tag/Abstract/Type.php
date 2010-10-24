@@ -18,13 +18,13 @@ class YaPhpDoc_Tag_Abstract_Type extends YaPhpDoc_Tag_Abstract_Abstract
 	 * Type of the tag.
 	 * @var string
 	 */
-	protected $type = 'mixed';
+	protected $_type = 'mixed';
 	
 	/**
 	 * Comment added to the type.
 	 * @var string
 	 */
-	protected $comment = ''; 
+	protected $_comment = ''; 
 	
 	/**
 	 * Type of an item of the array returned by the function.
@@ -51,7 +51,7 @@ class YaPhpDoc_Tag_Abstract_Type extends YaPhpDoc_Tag_Abstract_Abstract
 	{
 		parent::_parse($line);
 		
-		$type = preg_split('#\s#', $this->_value, 1);
+		$type = preg_split('`\s`', $this->_value, 2);
 		$comment = (isset($type[1]) ? $type[1] : '');
 		$type = $type[0];
 		

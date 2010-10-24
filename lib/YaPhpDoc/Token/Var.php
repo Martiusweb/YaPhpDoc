@@ -36,21 +36,10 @@ class YaPhpDoc_Token_Var extends YaPhpDoc_Token_Abstract
 		while($tokensIterator->valid())
 		{
 			$token = $tokensIterator->current();
-			if($in_default_value)
+			
+			if($token->getType() == '=')
 			{
-				if($token->isConstantValue())
-				{
-					$this->setDefaultValue($token->getConstantContent());
-					$in_default_value = false;
-				}
-				elseif($token->isArray())
-				{
-					$array = new YaPhpDoc_Token_Array($this->getName(), $this);
-					$array->parse($tokensIterator);
-					$this->setDefaultValue($array->getArrayString());
-					unset($array);
-					$in_default_value = false;
-				}
+				$this->_parseValue($tokensIterator);
 			}
 			elseif($token->isConstantString())
 			{
@@ -59,10 +48,6 @@ class YaPhpDoc_Token_Var extends YaPhpDoc_Token_Abstract
 			elseif($token->isVariable())
 			{
 				$this->setName($token->getContent());
-			}
-			elseif($token->getType() == '=')
-			{
-				$in_default_value = true;
 			}
 			elseif($token->getType() == ';')
 			{
@@ -76,6 +61,24 @@ class YaPhpDoc_Token_Var extends YaPhpDoc_Token_Abstract
 	}
 	
 	/**
+	 * Finds the variable value.
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
+	 * @return void
+	 */
+	protected function _parseValue(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
+	{
+		$token = $tokensIterator->current();
+		if($token->isConstantValue())
+				$this->_value = $token->getConstantContent();
+		elseif($token->isArray())
+		{
+			$array = new YaPhpDoc_Token_Array($this->getName(), $this);
+			$array->parse($tokensIterator);
+			$this->_value = $array->getArrayString();
+		}
+	}
+	
+	/**
 	 * Set standard tags if available from given dockblock.
 	 * Tags are : var (variable type and desc if available)
 	 * 
@@ -85,28 +88,36 @@ class YaPhpDoc_Token_Var extends YaPhpDoc_Token_Abstract
 	 */
 	public function setStandardTags(YaPhpDoc_Token_DocBlock $docblock)
 	{
-		$this->setDescription($docblock->getContent());
+		$this->appendDescription($docblock->getContent());
 		if($var = $docblock->getTags('var'))
 		{
-			$var = array_pop($var);
-			if(preg_match('`(.*?)(?:\s|$)(.*)`', $var, $matches))
-			{
-				$this->_type = $matches[1];
-				if(!empty($matches[2]))
-					$this->setDescription($matches[2]);
-			}
+			/* @var $var YaPhpDoc_Tag_Var */
+			$this->_type = $var->getType();
+			$this->appendDescription($var->getComment());
 		}
 		
 		parent::setStandardTags($docblock);
 	}
 	
 	/**
-	 * Returns the variable value if known. Else, returns null.
+	 * Returns the default value of the parameter.
 	 * @return string|NULL
 	 */
-	public function getValue()
+	public function getDefaultValue()
 	{
 		return $this->_value;
+	}
+	
+	/**
+	 * Set the parameter type.
+	 * 
+	 * @param string $type
+	 * @return YaPhpDoc_Token_Param
+	 */
+	public function setType($type)
+	{
+		$this->_type = $type;
+		return $this;
 	}
 	
 	/**

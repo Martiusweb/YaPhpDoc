@@ -14,6 +14,12 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	implements IteratorAggregate, Countable
 {
 	/**
+	 * Skip whitespaces token while parsing.
+	 * @var bool
+	 */
+	private $_ignoreWhitespaces = true;
+	
+	/**
 	 * Array of parsable token types.
 	 * @var array
 	 */
@@ -182,9 +188,22 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	}
 	
 	/**
+	 * Sets ignore whitespaces flag, allowing to skip parsing of whitespaces
+	 * tokens.
+	 * 
+	 * @param bool $flag optional, default to true
+	 * @return YaPhpDoc_Token_Structure_Abstract
+	 */
+	public function _setIgnoreWhitespaces($flag = true)
+	{
+		$this->_ignoreWhitespaces = $flag;
+		return $this;
+	}
+	
+	/**
 	 * Returns true if the token is of a type that can be parsed.
 	 * 
-	 * An array of type can also be given.
+	 * An array of types can also be given.
 	 * 
 	 * @param string $type
 	 * @return YaPhpDoc_Token_Structure_Abstract
@@ -260,6 +279,13 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 		{
 			$token = $tokensIterator->current();
 			
+			# Skip whitespaces
+			if($this->_ignoreWhitespaces && $token->isWhitespace())
+			{
+				$tokensIterator->next();
+				continue;
+			}
+				
 			# Tokens modifying the context
 			if(!$this->_parseContext($token))
 			{
