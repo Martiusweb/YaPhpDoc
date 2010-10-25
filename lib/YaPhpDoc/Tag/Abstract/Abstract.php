@@ -140,13 +140,16 @@ abstract class YaPhpDoc_Tag_Abstract_Abstract implements YaPhpDoc_Core_OutputMan
 	{
 		if(preg_match('`^@([a-zA-Z0-9_\-]+)`', $tagline, $matches))
 		{
-			$tagname = $matches[1];
+			$tagname = ucfirst($matches[1]);
 			unset($matches);
 			
-			$class = 'YaPhpDoc_Tag_'.ucfirst($tagname);
-			if(!YaPhpDoc_Tool_Loader::classExists($class))
+			$class = 'YaPhpDoc_Tag_'.$tagname;
+			if($tagname == 'Exception'
+				|| !YaPhpDoc_Tool_Loader::classExists($class))
 			{
 				$class = 'YaPhpDoc_Tag_Anonymous';
+				$parser->out()->notice(sprintf($parser->l10n()
+				->getTranslation('parser')->_('Unknown doc tag %s'), $tagname));
 			}
 		}
 		else

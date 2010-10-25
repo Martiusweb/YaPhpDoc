@@ -11,4 +11,5 @@
  * @author Martin Richard
  */
 class YaPhpDoc_Tag_Exception extends YaPhpDoc_Core_Exception
-{}
+{
+}

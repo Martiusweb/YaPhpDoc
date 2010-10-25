@@ -161,8 +161,11 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 		if(is_array($dir))
 			$this->_directories = array_merge($this->_directories, $dir);
 		else
+		{
+			if($dir[strlen($dir)-1] == DIRECTORY_SEPARATOR)
+				$dir = substr($dir, 0, -1);
 			array_push($this->_directories, $dir);
-		
+		}
 		return $this;
 	}
 	

@@ -5,3 +5,4 @@
 "Can not read file %s","Can not read file %s"
 "Parsing %s","Parsing %s"
 "Configuration is missing.","Configuration is missing."
+"Unknown doc tag %s","Unknown doc tag %s"
