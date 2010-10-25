@@ -10,12 +10,12 @@ class YaPhpDoc_Token_Array extends YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Array Constructor.
-	 * @param string $name
 	 * @param YaPhpDoc_Token_Abstract $parent
+	 * @param string $name
 	 */
-	public function __construct($name, YaPhpDoc_Token_Abstract $parent)
+	public function __construct(YaPhpDoc_Token_Abstract $parent, $name)
 	{
-		parent::__construct($name, T_ARRAY, $parent);
+		parent::__construct($parent, 'array', $name);
 	}
 	
 	/**

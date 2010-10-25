@@ -14,22 +14,10 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	implements IteratorAggregate, Countable
 {
 	/**
-	 * Skip whitespaces token while parsing.
-	 * @var bool
-	 */
-	private $_ignoreWhitespaces = true;
-	
-	/**
 	 * Array of parsable token types.
 	 * @var array
 	 */
 	private $_parsableTokenTypes = array();
-	
-	/**
-	 * Callbacks functions by token type.
-	 * @var callback[]
-	 */
-	private $_tokenCallbacks = array();
 	
 	/**
 	 * Children tokens.
@@ -221,34 +209,6 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	}
 	
 	/**
-	 * Adds a callback according to the token type.
-	 *  
-	 * @param string $token_type
-	 * @param callback $callback
-	 * @return YaPhpDoc_Token_Structure_Abstract
-	 */
-	protected final function _addTokenCallback($token_type, $callback)
-	{
-		$this->_tokenCallbacks[$token_type] = $callback;
-		
-		return $this;
-	}
-	
-	/**
-	 * Returns (if defined) the callback sat for the given type of tokens.
-	 * 
-	 * @param string $token_type
-	 * @return callback
-	 */
-	protected function _getTokenCallback($token_type)
-	{
-		if(!isset($this->_tokenCallbacks[$token_type]))
-			return null;
-		
-		return $this->_tokenCallbacks[$token_type];
-	}
-	
-	/**
 	 * Returns true if the token is of a type that can be parsed.
 	 * 
 	 * @param YaPhpDoc_Tokenizer_Token $token
@@ -321,6 +281,7 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 					# callbacks defined by token type, can throw a break exception
 					try {
 						$this->_tokenCallback($token);
+						$this->_tokensIteratorCallback($token, $tokensIterator);
 					} catch(YaPhpDoc_Core_Parser_Break_Exception $e)
 					{
 						$tokensIterator->next();
@@ -336,41 +297,6 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 		# We still have a dockblock, it's a for this token
 		if($docblock !== null)
 			$this->setStandardTags($docblock);
-		
-		return $this;
-	}
-	
-	/**
-	 * Determinates if the token is a context modifier. We call context
-	 * modifiers tokens which are used to modify the scope, visibility or the
-	 * state of a symbol. For instance, "abstract", "static", "public", modifies
-	 * methods or properties of a class.
-	 * 
-	 * The method returns true if the token was a modifier.
-	 * 
-	 * This method may be overriden in a concrete structure.
-	 * 
-	 * @param YaPhpDoc_Tokenizer_Token $token
-	 * @return bool
-	 */
-	protected function _parseContext(YaPhpDoc_Tokenizer_Token $token)
-	{
-		return false;
-	}
-	
-	/**
-	 * Calls a callback function or method according to the token type.
-	 * 
-	 * @param YaPhpDoc_Tokenizer_Token $token
-	 * @return YaPhpDoc_Token_Structure_Abstract
-	 */
-	protected final function _tokenCallback(YaPhpDoc_Tokenizer_Token $token)
-	{
-		$callback = $this->_getTokenCallback($token->getType());
-		if($callback !== null)
-		{
-			call_user_func($callback, $token);
-		}
 		
 		return $this;
 	}

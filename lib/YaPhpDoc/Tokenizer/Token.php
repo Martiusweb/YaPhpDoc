@@ -11,6 +11,11 @@
  * 
  * Not all Token types are supported, only those who are needed by the parser.
  * 
+ * A new token type is defined by adding a isType() method, which returns true
+ * if the token is of type Type. If the method is a top-level type (ie TypeA
+ * or TypeB), the method should be declared after the isTypeA and isTypeB. See
+ * isConstantString() and isConstantValue() as an example.
+ * 
  * @author Martin Richard
  */
 class YaPhpDoc_Tokenizer_Token
@@ -249,17 +254,6 @@ class YaPhpDoc_Tokenizer_Token
 	}
 	
 	/**
-	 * Returns true if the token is a constant value (such as a constant string
-	 * or a constant number).
-	 * @return bool 
-	 */
-	public function isConstantValue()
-	{
-		return $this->isConstantString()
-			|| $this->_type == T_DNUMBER || $this->_type == T_LNUMBER;
-	}
-	
-	/**
 	 * Returns true if the token is a constant string ('foo', "foo", `foo`).
 	 * A "double-quoted" string containing a variable is not a constant string.
 	 * @return bool
@@ -271,6 +265,17 @@ class YaPhpDoc_Tokenizer_Token
 	}
 	
 	/**
+	 * Returns true if the token is a constant value (such as a constant string
+	 * or a constant number).
+	 * @return bool 
+	 */
+	public function isConstantValue()
+	{
+		return $this->isConstantString()
+			|| $this->_type == T_DNUMBER || $this->_type == T_LNUMBER;
+	}
+	
+	/**
 	 * Returns true if the token is a variable ($foo, ${foo}, {$foo}) or
 	 * a string containing variable ("$foo", `$foo`).
 	 * @return bool
@@ -278,7 +283,7 @@ class YaPhpDoc_Tokenizer_Token
 	public function isVariable()
 	{
 		return $this->_type == T_VARIABLE || $this->_type == T_CURLY_OPEN
-			|| $this->_type == T_STRING || $this->_type == T_STRING_VARNAME;
+			/* || $this->_type == T_STRING */ || $this->_type == T_STRING_VARNAME;
 	}
 	
 	/**
@@ -287,6 +292,7 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function isEvaluableStringDelimiter()
 	{
+		# TODO check this one... results are suprising
 		return $this->_type == '`';
 	}
 	

@@ -18,11 +18,11 @@ class YaPhpDoc_Token_Global extends YaPhpDoc_Token_Var
 	 */
 	public function __construct(YaPhpDoc_Token_Abstract $parent)
 	{
-		parent::__construct('unknown', T_GLOBAL, $parent);
+		parent::__construct($parent, 'global', 'unknown');
 	}
 	
 	/**
-	 * Parses the global : try to find it's name.
+	 * Parses the global : try to find its name.
 	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
 	 * @return YaPhpDoc_Token_Global
 	 */
@@ -69,16 +69,18 @@ class YaPhpDoc_Token_Global extends YaPhpDoc_Token_Var
 						$this->_value = $token->getConstantContent();
 					elseif($token->isArray())
 					{
-						$array = new YaPhpDoc_Token_Array($this->_name, $this);
+						$array = YaPhpDoc_Token_Abstract::getToken(
+							$this->getParser(), 'array', $this);
 						$array->parse($tokensIterator);
 						$this->_value = $array->getArrayString();
 						unset($array);	
 					}
+					elseif($token->getType() == ';')
+					{
+						break;
+					}
 				}
-				elseif($token->getType() == ';')
-				{
-					break;
-				}
+				
 				$tokensIterator->next();
 			}
 		}

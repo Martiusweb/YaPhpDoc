@@ -49,7 +49,7 @@ class YaPhpDoc_Tag_Param extends YaPhpDoc_Tag_Abstract_Abstract
 		$this->_value = trim($this->_value);
 		if($this->_value != '...')
 		{
-			$content = preg_split('`\s+`', $this->_value);
+			$content = preg_split('`\s+`', $this->_value, 3);
 			if(isset($content[0]))
 			{
 				$this->_type = $content[0];

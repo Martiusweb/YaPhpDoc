@@ -37,7 +37,7 @@ class YaPhpDoc_Token_DocBlock extends YaPhpDoc_Token_Abstract
 	 */
 	public function __construct(YaPhpDoc_Token_Abstract $parent)
 	{
-		parent::__construct('docblock', 'docBlock', $parent);
+		parent::__construct($parent, 'docBlock', 'docBlock');
 	}
 	
 	/**

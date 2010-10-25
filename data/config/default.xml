@@ -34,6 +34,12 @@
 			<docBlock>YaPhpDoc_Token_DocBlock</docBlock> <!-- Class for a docblock -->
 			<namespace>YaPhpDoc_Token_Namespace</namespace> <!-- Class for a namespace -->
 			<const>YaPhpDoc_Token_Const</const> <!-- Class for a constant -->
+			<use>YaPhpDoc_Token_Use</use> <!-- Class for use statement -->
+			<global>YaPhpDoc_Token_Global</global> <!-- Class for a global variable -->
+			<var>YaPhpDoc_Token_Var</var> <!-- Class for a variable -->
+			<array>YaPhpDoc_Token_Array</array> <!-- Class for an array -->
+			<function>YaPhpDoc_Token_Function</function> <!-- Class for a function -->
+			<param>YaPhpDoc_Token_Param</param> <!-- Class for a function parameter -->
 		</class>
 	</parser>
 </yaphpdoc>

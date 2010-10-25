@@ -19,7 +19,7 @@ class YaPhpDoc_Token_Const extends YaPhpDoc_Token_Var
 	 */
 	public function __construct(YaPhpDoc_Token_Abstract $parent)
 	{
-		parent::__construct('unknown', T_CONST, $parent);
+		parent::__construct($parent, 'const', 'unknown');
 	}
 	
 	/**

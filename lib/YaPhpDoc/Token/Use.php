@@ -24,7 +24,7 @@ class YaPhpDoc_Token_Use extends YaPhpDoc_Token_Abstract
 	 */
 	public function __construct(YaPhpDoc_Token_Structure_Abstract $parent)
 	{
-		parent::__construct('unknown', T_NAMESPACE, $parent);
+		parent::__construct($parent, 'use', 'unknown');
 	}
 	
 	/**

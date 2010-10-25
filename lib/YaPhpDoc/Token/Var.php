@@ -32,32 +32,32 @@ class YaPhpDoc_Token_Var extends YaPhpDoc_Token_Abstract
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		$in_default_value = false;
-		while($tokensIterator->valid())
-		{
-			$token = $tokensIterator->current();
-			
-			if($token->getType() == '=')
-			{
-				$this->_parseValue($tokensIterator);
-			}
-			elseif($token->isConstantString())
-			{
-				$this->setType($token->getStringContent());
-			}
-			elseif($token->isVariable())
-			{
-				$this->setName($token->getContent());
-			}
-			elseif($token->getType() == ';')
-			{
-				break;
-			}
-			
-			$tokensIterator->next();
-		}
+		$this->_addTokenCallback(';', array($this, '_breakParsing'));
+		$this->_addTokensIteratorCallback('=', array($this, '_parseValue'));
+		$this->_addTokenCallback('constantString', array($this, '_parseType'));
+		$this->_addTokenCallback('variable', array($this, '_parseVariable'));
+		
+		parent::parse($tokensIterator);
 		
 		return $this;
+	}
+	
+	/**
+	 * Parse the variable type.
+	 * @return void
+	 */
+	protected function _parseType(YaPhpDoc_Tokenizer_Token $token)
+	{
+		$this->setType($token->getStringContent());
+	}
+	
+	/**
+	 * Parse the variable name.
+	 * @return void
+	 */
+	protected function _parseVariable(YaPhpDoc_Tokenizer_Token $token)
+	{
+		$this->setName($token->getContent());
 	}
 	
 	/**
@@ -72,7 +72,7 @@ class YaPhpDoc_Token_Var extends YaPhpDoc_Token_Abstract
 				$this->_value = $token->getConstantContent();
 		elseif($token->isArray())
 		{
-			$array = new YaPhpDoc_Token_Array($this->getName(), $this);
+			$array = YaPhpDoc_Token_Abstract::getToken($this->getParser(), 'array', $this, $this->getName());
 			$array->parse($tokensIterator);
 			$this->_value = $array->getArrayString();
 		}

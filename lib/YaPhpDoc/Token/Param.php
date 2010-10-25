@@ -13,6 +13,12 @@
 class YaPhpDoc_Token_Param extends YaPhpDoc_Token_Var
 {
 	/**
+	 * Means that the parameter was the last to be parsed (break token was ')'). 
+	 * @var bool
+	 */
+	private $_endOfParameters = false;
+	
+	/**
 	 * If true, the parameter is optional.
 	 * @var bool
 	 */
@@ -26,7 +32,7 @@ class YaPhpDoc_Token_Param extends YaPhpDoc_Token_Var
 	 */
 	public function __construct(YaPhpDoc_Token_Function $parent)
 	{
-		parent::__construct('unknown', T_VARIABLE, $parent);
+		parent::__construct($parent, 'param', 'unknown');
 	}
 	
 	/**
@@ -36,6 +42,9 @@ class YaPhpDoc_Token_Param extends YaPhpDoc_Token_Var
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
+		$this->_addTokenCallback(',', array($this, '_breakParsing'));
+		$this->_addTokenCallback(')', array($this, '_endOfParameters'));
+		
 		parent::parse($tokensIterator);
 		
 		if($this->_value !== null)
@@ -43,6 +52,29 @@ class YaPhpDoc_Token_Param extends YaPhpDoc_Token_Var
 			
 		return $this;
 	}
+	
+	/**
+	 * breaks parsing and notify that parsing was ended by a ").
+	 * @param YaPhpDoc_Tokenizer_Token $token
+	 * @return void
+	 */
+	protected function _endOfParameters(YaPhpDoc_Tokenizer_Token $token)
+	{
+		if($token->getType() == ')')
+			$this->_endOfParameters = true;
+		
+		$this->_breakParsing();
+	}
+	
+	/**
+	 * Returns true if parsing was terminated by a ')' token.
+	 * @return bool
+	 */
+	public function isEndOfParameters()
+	{
+		return $this->_endOfParameters;
+	}
+	
 	/**
 	 * Set the parameter type.
 	 * 

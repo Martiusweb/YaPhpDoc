@@ -50,6 +50,28 @@
 				<li>
 					<h5>{{namespace.fullName}}</h5>
 					<p>Desc: {{namespace.description}}</p>
+					<ul>
+					{% for use in namespace.allUses %}
+						<li>
+							<h5>{{use.name}}</h5>
+							{% if use.alias %}
+							<p>{{use.alias}}</p>
+							{% endif %}
+						</li>
+					{% endfor %}
+					</ul>
+				</li>
+			{% endfor %}
+			</ul>
+			
+			<h4>List of use statements</h4>
+			<ul>
+			{% for use in file.allUses %}
+				<li>
+					<h5>{{use.name}}</h5>
+					{% if use.alias %}
+					<p>{{use.alias}}</p>
+					{% endif %}
 				</li>
 			{% endfor %}
 			</ul>
@@ -61,6 +83,38 @@
 					<h5><code>{{const.type}}</code> {{const.name}}</h5>
 					<pre>{{const.value}}</pre>
 					<p>{{const.description}}</p>
+				</li>
+			{% endfor %}
+			</ul>
+			
+			<h4>List of globals</h4>
+			<ul>
+			{% for global in file.globals %}
+				<li>
+					<h5><code>{{global.type}}</code> {{global.name}}</h5>
+					<pre>{{global.defaultValue}}</pre>
+					<p>{{global.description}}</p>
+				</li>
+			{% endfor %}
+			</ul>
+			
+			<h4>List of functions</h4>
+			<ul>
+			{% for function in file.functions %}
+				<li>
+					<h5><code>{{function.return}}</code> {{function.name}}</h5>
+					<p>{{function.description}}</p>
+					<ul>
+					{% for param in function.params %}
+						<li><code>{{param.type}}</code> {{param.name}}
+						{% if param.defaultValue %}({{param.defaultValue}}){% endif %}
+						{% if param.description %}<p>{{param.description}}</p>{% endif %}
+						</li>
+					{% endfor %}
+					{% if function.isOpenParams %}
+						<li>...</li>
+					{% endif %}
+					</ul>
 				</li>
 			{% endfor %}
 			</ul>

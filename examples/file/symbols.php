@@ -26,3 +26,18 @@ define('TEST', 100);
  * @var array (foo => array(bar))
  */
 define('ARRAY_CONST', array('foo' => array('bar')));
+
+/**
+ * A global var.
+ * @var string
+ */
+$GLOBALS['foo'] = 'bar';
+
+/**
+ * A function doing nothing.
+ * @return void
+ */
+function test()
+{
+	
+}

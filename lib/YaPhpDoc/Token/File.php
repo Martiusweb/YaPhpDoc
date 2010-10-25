@@ -25,7 +25,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 	 */
 	public function __construct($filename, YaPhpDoc_Token_Structure_Abstract $parent)
 	{
-		parent::__construct($filename, YaPhpDoc_Token_Abstract::FILE, $parent);
+		parent::__construct($parent, YaPhpDoc_Token_Abstract::FILE, $filename);
 	}
 	
 	/**
@@ -37,9 +37,13 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
 		$this->_addParsableTokenType('namespace');
+		$this->_addParsableTokenType('use');
 		$this->_addParsableTokenType('const');
+		$this->_addParsableTokenType('global');
+		$this->_addParsableTokenType('function');
 		
 		parent::parse($tokensIterator);
+		
 		return $this;
 	}
 	

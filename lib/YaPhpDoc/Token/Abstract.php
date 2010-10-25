@@ -11,7 +11,9 @@
  * 
  * @author Martin Richard
  */
-abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Aggregate, YaPhpDoc_Core_TranslationManager_Aggregate
+abstract class YaPhpDoc_Token_Abstract implements
+	YaPhpDoc_Core_OutputManager_Aggregate,
+	YaPhpDoc_Core_TranslationManager_Aggregate
 {
 	/**
 	 * Root token type identifier
@@ -32,8 +34,8 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	protected $_name;
 	
 	/**
-	 * Token type (as given by token_get_all)
-	 * @var int
+	 * Token type
+	 * @var string
 	 */
 	protected $_tokenType;
 	
@@ -104,15 +106,34 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	protected $_anonymousTags;
 	
 	/**
+	 * Skip whitespaces token while parsing.
+	 * @var bool
+	 */
+	private $_ignoreWhitespaces = true;
+	
+	/**
+	 * Callbacks functions by token type.
+	 * @var callback[]
+	 */
+	private $_tokenCallbacks = array();
+	
+	/**
+	 * Callbacks functions by token type, gives the tokensIterator for
+	 * subparsing.
+	 * @var callback[]
+	 */
+	private $_tokensIteratorCallbacks = array();
+	
+	/**
 	 * Constructor of a token. The type of token is not tested,
 	 * but the behavior of the program is not predictable if
 	 * the givent value is not one of the php token constants.
 	 * 
-	 * @param string $name
-	 * @param int $token_type
 	 * @param YaPhpDoc_Token_Abstract $parent
+	 * @param int $token_type
+	 * @param string $name
 	 */
-	public function __construct($name, $token_type, YaPhpDoc_Token_Abstract $parent)
+	public function __construct(YaPhpDoc_Token_Abstract $parent, $token_type, $name)
 	{
 		$this->_name = $name;
 		$this->_tokenType = $token_type;
@@ -205,9 +226,169 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		throw new YaPhpDoc_Core_Parser_Exception(
-			$this->l10n()->getTranslation('parser')
-				->_('This token type is not parsable'));
+		$docblock = null;
+		while($tokensIterator->valid())
+		{
+			$token = $tokensIterator->current();
+			
+			# Skip whitespaces
+			if($this->_ignoreWhitespaces && $token->isWhitespace())
+			{
+				$tokensIterator->next();
+				continue;
+			}
+				
+			# Tokens modifying the context
+			if(!$this->_parseContext($token))
+			{
+				# Docblock
+				if($token->isDocblock())
+				{
+					# If there is a docblock never used, it must be for this token
+					if($docblock !== null)
+						$this->setStandardTags($docblock);
+					
+					$docblock = YaPhpDoc_Token_Abstract::getToken(
+						$this->getParser(), $token->getType(), $this);
+					$docblock->parse($tokensIterator);
+				}
+				else
+				{
+					# callbacks defined by token type, can throw a break exception
+					try {
+						$this->_tokenCallback($token);
+						$this->_tokensIteratorCallback($token, $tokensIterator);
+					} catch(YaPhpDoc_Core_Parser_Break_Exception $e)
+					{
+						$tokensIterator->next();
+						break;
+					}
+				}
+			}
+			
+			# We are done, go to next token
+			$tokensIterator->next();
+		}
+		
+		# We still have a dockblock, it's a for this token
+		if($docblock !== null)
+			$this->setStandardTags($docblock);
+		
+		return $this;
+	}
+	
+	/**
+	 * Adds a callback according to the token type.
+	 *  
+	 * @param string $token_type
+	 * @param callback $callback
+	 * @return YaPhpDoc_Token_Structure_Abstract
+	 */
+	protected final function _addTokenCallback($token_type, $callback)
+	{
+		$this->_tokenCallbacks[$token_type] = $callback;
+		
+		return $this;
+	}
+	
+	/**
+	 * Returns (if defined) the callback sat for the given type of tokens.
+	 * 
+	 * @param string $token_type
+	 * @return callback
+	 */
+	protected function _getTokenCallback($token_type)
+	{
+		if(!isset($this->_tokenCallbacks[$token_type]))
+			return null;
+		
+		return $this->_tokenCallbacks[$token_type];
+	}
+	
+	/**
+	 * Calls a callback function or method according to the token type.
+	 * 
+	 * @param YaPhpDoc_Tokenizer_Token $token
+	 * @return YaPhpDoc_Token_Structure_Abstract
+	 */
+	protected final function _tokenCallback(YaPhpDoc_Tokenizer_Token $token)
+	{
+		$callback = $this->_getTokenCallback($token->getType());
+		if($callback !== null)
+		{
+			call_user_func($callback, $token);
+		}
+		
+		return $this;
+	}
+	
+	/**
+	 * Determinates if the token is a context modifier. We call context
+	 * modifiers tokens which are used to modify the scope, visibility or the
+	 * state of a symbol. For instance, "abstract", "static", "public", modifies
+	 * methods or properties of a class.
+	 * 
+	 * The method returns true if the token was a modifier.
+	 * 
+	 * This method may be overriden in a concrete structure.
+	 * 
+	 * @param YaPhpDoc_Tokenizer_Token $token
+	 * @return bool
+	 */
+	protected function _parseContext(YaPhpDoc_Tokenizer_Token $token)
+	{
+		return false;
+	}
+	
+	/**
+	 * Adds a callback according to the token type, which provides the
+	 * tokens iterator for sub-parsing.
+	 *  
+	 * @param string $token_type
+	 * @param callback $callback
+	 * @return YaPhpDoc_Token_Structure_Abstract
+	 */
+	protected final function _addTokensIteratorCallback($token_type, $callback)
+	{
+		$this->_tokensIteratorCallbacks[$token_type] = $callback;
+		
+		return $this;
+	}
+	
+	/**
+	 * Returns (if defined) the callback sat for the given type of tokens for
+	 * sub-parsing.
+	 * 
+	 * @param string $token_type
+	 * @return callback
+	 */
+	protected function _getTokensIteratorCallback($token_type)
+	{
+		if(!isset($this->_tokensIteratorCallbacks[$token_type]))
+			return null;
+		
+		return $this->_tokensIteratorCallbacks[$token_type];
+	}
+	
+	/**
+	 * Calls a callback function or method according to the token type, providing
+	 * the tokens iterator for sub-parsing.
+	 * 
+	 * @param YaPhpDoc_Tokenizer_Token $token
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
+	 * @return YaPhpDoc_Token_Structure_Abstract
+	 */
+	protected final function _tokensIteratorCallback(
+		YaPhpDoc_Tokenizer_Token $token,
+		YaPhpDoc_Tokenizer_Iterator $tokensIterator)
+	{
+		$callback = $this->_getTokensIteratorCallback($token->getType());
+		if($callback !== null)
+		{
+			call_user_func($callback, $tokensIterator);
+		}
+		
+		return $this;
 	}
 	
 	/**
@@ -464,11 +645,12 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 	 * @param YaPhpDoc_Core_Parser $parser
 	 * @param string $type
 	 * @param YaPhpDoc_Token_Abstract $parent
+	 * @param string $name optional, "unknown" is default value
 	 * @throws YaPhpDoc_Core_Parser_Exception
 	 * @return YaPhpDoc_Token_Abstract
 	 */
 	public static function getToken(YaPhpDoc_Core_Parser $parser, $type,
-		YaPhpDoc_Token_Abstract $parent)
+		YaPhpDoc_Token_Abstract $parent, $name = 'unknown')
 	{
 		$classname = $parser->getConfig()->class->get($type, null);
 		
@@ -480,7 +662,7 @@ abstract class YaPhpDoc_Token_Abstract implements YaPhpDoc_Core_OutputManager_Ag
 			));
 		}
 		
-		return new $classname($parent);
+		return new $classname($parent, $name);
 	}
 	
 	/**

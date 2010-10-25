@@ -33,6 +33,12 @@ class YaPhpDoc_Tokenizer implements IteratorAggregate, Countable
 	 */
 	public function __construct($source)
 	{
+		if(version_compare(phpversion(), '5.3.0', '<'))
+		{
+			define('T_NAMESPACE', 0);
+			define('T_USE', 0);
+		}
+		
 		$this->_tokens_array = token_get_all($source);
 		
 		$this->_filter()->_toObjects();

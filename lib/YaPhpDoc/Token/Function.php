@@ -34,7 +34,7 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	 * Throw tags (exception that can be thrown inside the function).
 	 * @var YaPhpDoc_Tag_Throw[]|NULL
 	 */
-	protected $_throw;
+	protected $_throws;
 	
 	/**
 	 * Uses tags.
@@ -50,7 +50,7 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	 */
 	public function __construct(YaPhpDoc_Token_Abstract $parent)
 	{
-		parent::__construct('unknown', T_FUNCTION, $parent);
+		parent::__construct($parent, 'unknown', 'function');
 	}
 	
 	/**
@@ -61,8 +61,33 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		$in_function_definition = false;
-		$in_params_definition = false;
+		if($tokensIterator->current()->isFunction())
+		{
+			$this->_addTokenCallback('constantString', array($this, '_parseName'));
+			$this->_addTokensIteratorCallback('(', array($this, '_parseParams'));
+			parent::parse($tokensIterator);
+		}
+		return $this;
+	}
+	
+	/**
+	 * Parses the function name.
+	 * @param YaPhpDoc_Tokenizer_Token $token
+	 * @return void
+	 */
+	protected function _parseName($token)
+	{
+		$this->_name = $token->getStringContent();
+	}
+	
+	/**
+	 * Parses the parameters.
+	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
+	 * @return void
+	 */
+	protected function _parseParams(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
+	{
+		$tokensIterator->next();
 		$param_defined = 0;
 		while($tokensIterator->valid())
 		{
@@ -75,47 +100,30 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 				continue;
 			}
 			
-			if($token->isFunction())
+			if($token->isVariable())
 			{
-				$in_function_definition = true;
-			}
-			elseif($in_function_definition)
-			{
-				if($token->isConstantString())
-					$this->_name = $token->getStringContent();
-				if($token->getType() == '(')
-				{
-					$in_function_definition = false;
-					$in_params_definition = true;
-					++$param_defined;
-				}
-			}
-			elseif($in_params_definition)
-			{
-				if($token->isVariable())
-				{
-					$param = $this->_getParam($param_defined);
-					$param->parse($tokensIterator);
-				}
-				elseif($token->isConstantString())
-				{
-					$param = $this->_getParam($param_defined);
-					$param->setType($token->getStringContent());
-				}
-				elseif($token->getType() == ',')
+				$param = $this->_getParam($param_defined);
+				$param->parse($tokensIterator);
+				
+				if($param->isEndOfParameters())
+					$this->_breakParsing();
+				else
 				{
 					++$param_defined;
-				}
-				elseif($token->getType() == ')')
-				{
-					$in_params_definition = false;
-					break;
+					continue;
 				}
 			}
-			
+			elseif($token->isConstantString())
+			{
+				$param = $this->_getParam($param_defined);
+				$param->setType($token->getStringContent());
+			}
+			elseif($token->getType() == ')')
+			{
+				$this->_breakParsing();
+			}
 			$tokensIterator->next();
 		}
-		return $this;
 	}
 	
 	/**
@@ -128,7 +136,8 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	{
 		if(!isset($this->_params[$param_idx]))
 		{
-			$this->_params[$param_idx] = new YaPhpDoc_Token_Param($this);
+			$this->_params[$param_idx] = YaPhpDoc_Token_Abstract::getToken(
+				$this->getParser(), 'param', $this);
 		}
 		return $this->_params[$param_idx];
 	}
@@ -158,7 +167,7 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Set standard tags if available from given dockblock.
-	 * Tags are : param, return, throw, uses
+	 * Tags are : param, return, throws, uses
 	 *  
 	 * @param YaPhpDoc_Token_DocBlock $docblock
 	 * @return YaPhpDoc_Token_Function
@@ -169,10 +178,12 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 			$this->_setParamTags($params);
 		if($return = $docblock->getTags('return'))
 			$this->_return = $return;
-		if($throw = $docblock->getTags('throw'))
-			$this->_throw = $throw;
+		if($throws = $docblock->getTags('throws'))
+			$this->_throws = $throws;
 		if($uses = $docblock->getTags('uses'))
 			$this->_uses = $uses;
+		
+		$this->setDescription($docblock->getContent());
 		
 		return $this;
 	}
@@ -194,13 +205,13 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 				$this->_is_open_params = true;
 				continue;
 			}
-			++$param_defined;
 			
 			$paramToken = $this->_getParamByName($paramTag->getParamName());
 			
 			if(null == $paramToken)
 			{
-				$paramToken = new YaPhpDoc_Token_Param($this);
+				$paramToken = YaPhpDoc_Token_Abstract::getToken(
+					$this->getParser(), 'param', $this);
 				$paramToken->setType($paramTag->getType());
 				$paramToken->setName($paramTag->getParamName());
 				$paramToken->setDescription($paramTag->getDescription());
@@ -213,6 +224,7 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 				$paramToken->setName($paramTag->getParamName());
 				$paramToken->setDescription($paramTag->getDescription());
 			}
+			++$param_defined;
 		}
 		return $this;
 	}
@@ -221,7 +233,7 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	 * Returns true if the function allows any number of parameters.
 	 * @return bool
 	 */
-	public function isOpenParams()
+	public function getIsOpenParams()
 	{
 		return $this->_is_open_params;
 	}
@@ -248,9 +260,9 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	 * Returns throw tags (exception that can be thrown inside the function).
 	 * @return YaPhpDoc_Tag_Throw[]|NULL
 	 */
-	public function getThrow()
+	public function getThrows()
 	{
-		return $this->_throw;
+		return $this->_throws;
 	}
 	
 	/**
