@@ -39,35 +39,12 @@ class YaPhpDoc_Token_Const extends YaPhpDoc_Token_Var
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		if($tokensIterator->current()->isConst())
-		{
-			while($tokensIterator->valid())
-			{
-				$token = $tokensIterator->current();
-				/* @var $token YaPhpDoc_Tokenizer_Token */
-
-				# Skip whitespaces
-				if($token->isWhitespace())
-				{
-					$tokensIterator->next();
-					continue;
-				}
-
-				if($token->getTypeId() == T_CONST)
-				{
-					$this->_parseConst($tokensIterator);
-				}
-				elseif($token->getTypeId() == T_STRING
-					&& $token->getContent() == 'define')
-				{
-					$this->_parseDefine($tokensIterator);
-				}
-				elseif($token->getType() == ';')
-					break;
-
-				$tokensIterator->next();
-			}
-		}
+		$this->_addTokensIteratorCallback('const', array($this, '_parseConst'));
+		$this->_addTokenCallback(';', array($this, '_breakParsing'));
+		
+		# Shortcut the Var parsing.
+		YaPhpDoc_Token_Abstract::parse($tokensIterator);
+		
 		return $this;
 	}
 
@@ -114,27 +91,18 @@ class YaPhpDoc_Token_Const extends YaPhpDoc_Token_Var
 	 */
 	protected function _parseConst(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		$is_name = true;
-		$is_value = false;
-		while($tokensIterator->valid())
+		$token = $tokensIterator->current();
+		# We parse only constants defined with "const".
+		if($token->getTypeId() === T_CONST)
 		{
-			$token = $tokensIterator->current();
-			if($is_value)
-			{
-				if($token->isConstantValue())
-					$this->_value = $token->getConstantContent();
-				break;
-			} 
-			elseif($token->isConstantString())
-			{
-				$this->_name = $token->getStringContent();
-			}
-			elseif($token->getType() == '=')
-			{
-				$is_value = true;
-			}
-			
-			$tokensIterator->next();
+			parent::parse($tokensIterator);
+			$this->_breakParsing();
+		}
+		elseif($token->getTypeId() == T_STRING
+					&& $token->getContent() == 'define')
+		{
+			$this->_parseDefine($tokensIterator);
+			$this->_breakParsing();
 		}
 	}
 }

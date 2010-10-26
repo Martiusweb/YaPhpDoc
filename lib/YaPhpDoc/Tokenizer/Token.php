@@ -230,7 +230,7 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function isConst()
 	{
-		return $this->_type == T_CONST || ($this->_type == T_STRING
+		return $this->isConstKeyword() || ($this->_type == T_STRING
 			&& $this->_content == 'define');
 	}
 	
