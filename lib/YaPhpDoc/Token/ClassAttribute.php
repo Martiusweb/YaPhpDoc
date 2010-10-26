@@ -32,7 +32,7 @@ class YaPhpDoc_Token_ClassAttribute extends YaPhpDoc_Token_Var
 	 */
 	public function __construct(YaPhpDoc_Token_Class $parent)
 	{
-		parent::__construct('unknown', T_VARIABLE, $parent);
+		parent::__construct($parent, 'classAttribute', 'unknown');
 	}
 	
 	/**

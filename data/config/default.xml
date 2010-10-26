@@ -40,6 +40,9 @@
 			<array>YaPhpDoc_Token_Array</array> <!-- Class for an array -->
 			<function>YaPhpDoc_Token_Function</function> <!-- Class for a function -->
 			<param>YaPhpDoc_Token_Param</param> <!-- Class for a function parameter -->
+			<class>YaPhpDoc_Token_Class</class> <!-- Class for a class -->
+			<method>YaPhpDoc_Token_Method</method> <!-- Class for a method -->
+			<classAttribute>YaPhpDoc_Token_ClassAttribute</classAttribute> <!-- Class for a class attribute (or property) -->
 		</class>
 	</parser>
 </yaphpdoc>

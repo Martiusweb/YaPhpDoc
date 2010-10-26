@@ -121,5 +121,55 @@
 		</li>
 	</ul>
 {% endfor %}
+
+<h3>List of classes</h3>
+<ul>
+	{% for class in code.allClasses %}
+	<li><h4>{{class.name}}</h4>
+	{% if class.parentClass %}
+	<p>Extends <code>{{class.parentClass}}</code></p>
+	{% endif %}
+	
+	{% if class.getInterfaces %}
+	<ul>
+	{% for interface in class.interfaces %}
+		<li>{{interface}}</li>
+	{% endfor %}
+	</ul>
+	{% endif %}
+	
+	<h4>List of methods</h4>
+	<ul>
+	{% for function in class.methods %}
+		<li>
+			<h5><code>{{function.return}}</code> {{function.name}}</h5>
+			<p>{{function.description}}</p>
+			<ul>
+			{% for param in function.params %}
+				<li><code>{{param.type}}</code> {{param.name}}
+				{% if param.defaultValue %}({{param.defaultValue}}){% endif %}
+				{% if param.description %}<p>{{param.description}}</p>{% endif %}
+				</li>
+			{% endfor %}
+			{% if function.isOpenParams %}
+				<li>...</li>
+			{% endif %}
+			</ul>
+		</li>
+	{% endfor %}
+	</ul>
+	
+	<h4>List of attributes</h4>
+	<ul>
+	{% for attr in class.attributes %}
+		<li>
+			<h5><code>{{attr.type}}</code> {{attr.name}}</h5>
+			<p>{{attr.description}}</p>
+		</li>
+	{% endfor %}
+	</ul>
+	</li>
+	{% endfor %}
+</ul>
 </body>
 </html>

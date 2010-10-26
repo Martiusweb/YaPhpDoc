@@ -41,6 +41,7 @@ class YaPhpDoc_Token_File extends YaPhpDoc_Token_Structure_Abstract
 		$this->_addParsableTokenType('const');
 		$this->_addParsableTokenType('global');
 		$this->_addParsableTokenType('function');
+		$this->_addParsableTokenType('class');
 		
 		parent::parse($tokensIterator);
 		

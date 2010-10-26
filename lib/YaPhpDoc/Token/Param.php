@@ -42,6 +42,7 @@ class YaPhpDoc_Token_Param extends YaPhpDoc_Token_Var
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
+		# TODO Test when value is an array (why "=>" is an "evaluableStringDelimiter" ?)
 		$this->_addTokenCallback(',', array($this, '_breakParsing'));
 		$this->_addTokenCallback(')', array($this, '_endOfParameters'));
 		

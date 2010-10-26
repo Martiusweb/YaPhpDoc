@@ -260,7 +260,6 @@ abstract class YaPhpDoc_Token_Abstract implements
 						$this->_tokensIteratorCallback($token, $tokensIterator);
 					} catch(YaPhpDoc_Core_Parser_Break_Exception $e)
 					{
-						$tokensIterator->next();
 						break;
 					}
 				}
@@ -337,6 +336,17 @@ abstract class YaPhpDoc_Token_Abstract implements
 	 */
 	protected function _parseContext(YaPhpDoc_Tokenizer_Token $token)
 	{
+		if($token->isAbstract())
+		{
+			$this->getParser()->setAbstract();
+			return true;
+		}
+		if($token->isFinal())
+		{
+			$this->getParser()->setFinal();
+			return true;
+		}
+		
 		return false;
 	}
 	

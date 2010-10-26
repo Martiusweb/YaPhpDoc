@@ -20,6 +20,12 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	private $_parsableTokenTypes = array();
 	
 	/**
+	 * Parsed token type to use if different of the token type.
+	 * @var unknown_type
+	 */
+	private $_parsedTokenTypes = array();
+	
+	/**
 	 * Children tokens.
 	 * @var YaPhpDoc_Token_Abstract
 	 */
@@ -176,6 +182,24 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	}
 	
 	/**
+	 * Returns an array of child classes.
+	 * @return YaPhpDoc_Token_Class[]
+	 */
+	public function getClasses()
+	{
+		return $this->getChildrenByType('class');
+	}
+	
+	/**
+	 * Returns an array of descendant classes.
+	 * @return YaPhpDoc_Token_Class[]
+	 */
+	public function getAllClasses()
+	{
+		return $this->getDescendantsByType('class');
+	}
+	
+	/**
 	 * Sets ignore whitespaces flag, allowing to skip parsing of whitespaces
 	 * tokens.
 	 * 
@@ -194,17 +218,21 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	 * An array of types can also be given.
 	 * 
 	 * @param string $type
+	 * @param string $parsedType optional, default is $type
 	 * @return YaPhpDoc_Token_Structure_Abstract
 	 */
-	protected final function _addParsableTokenType($type)
+	protected final function _addParsableTokenType($type, $parsedType = null)
 	{
 		if(is_array($type))
 		{
 			foreach($type as $t)
-				$this->_addParsableTokenType($type);
+				$this->_addParsableTokenType($type);	
 		}
 		
 		array_push($this->_parsableTokenTypes, $type);
+		if($parsedType !== null)
+			$this->_parsedTokenTypes[$type] = $parsedType;
+		
 		return $this;
 	}
 	
@@ -263,8 +291,13 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 				# Other tokens
 				elseif($this->_isParsableToken($token))
 				{
+					if(isset($this->_parsedTokenTypes[$token->getType()]))
+						$parsedType = $this->_parsedTokenTypes[$token->getType()];
+					else
+						$parsedType = $token->getType();
+						
 					$parsedToken = YaPhpDoc_Token_Abstract::getToken(
-						$this->getParser(), $token->getType(), $this);
+						$this->getParser(), $parsedType, $this);
 					
 					if($docblock !== null)
 					{
@@ -284,7 +317,6 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 						$this->_tokensIteratorCallback($token, $tokensIterator);
 					} catch(YaPhpDoc_Core_Parser_Break_Exception $e)
 					{
-						$tokensIterator->next();
 						break;
 					}
 				}

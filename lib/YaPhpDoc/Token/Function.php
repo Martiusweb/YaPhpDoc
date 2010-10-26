@@ -43,6 +43,12 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	 */
 	protected $_uses;
 	
+//	/**
+//	 * Nested block level.
+//	 * @var int
+//	 */
+//	protected $_nested = 0;
+	
 	/**
 	 * Function constructor.
 	 * 
@@ -65,10 +71,35 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 		{
 			$this->_addTokenCallback('constantString', array($this, '_parseName'));
 			$this->_addTokensIteratorCallback('(', array($this, '_parseParams'));
+//			$this->_addTokensCallback('{', array($this, '_parseLeftBrace'));
+//			$this->_addTokensCallback('}', array($this, '_parseRightBrace'));
+			
 			parent::parse($tokensIterator);
 		}
 		return $this;
 	}
+	
+//	/**
+//	 * Behavior when token is "{".
+//	 * @return void
+//	 */
+//	protected function _parseLeftBrace()
+//	{
+//		++$this->_nested;
+//	}
+//	
+//	/**
+//	 * Behavior when token is "}".
+//	 * @return void
+//	 */
+//	protected function _parseRightBrace()
+//	{
+//		--$this->_nested;
+//		if($this->_nested == 0)
+//		{
+//			
+//		}
+//	}
 	
 	/**
 	 * Parses the function name.
