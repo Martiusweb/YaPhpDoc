@@ -213,11 +213,11 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	}
 	
 	/**
-	 * Returns true if the token is of a type that can be parsed.
+	 * Adds a parsable token type.
 	 * 
 	 * An array of types can also be given.
 	 * 
-	 * @param string $type
+	 * @param string|array $type
 	 * @param string $parsedType optional, default is $type
 	 * @return YaPhpDoc_Token_Structure_Abstract
 	 */
@@ -228,11 +228,35 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 			foreach($type as $t)
 				$this->_addParsableTokenType($type);	
 		}
+		else
+		{
+			array_push($this->_parsableTokenTypes, $type);
+			if($parsedType !== null)
+				$this->_parsedTokenTypes[$type] = $parsedType;
+		}
 		
-		array_push($this->_parsableTokenTypes, $type);
-		if($parsedType !== null)
-			$this->_parsedTokenTypes[$type] = $parsedType;
-		
+		return $this;
+	}
+	
+	/**
+	 * Removes a parsable token type.
+	 *  
+	 * @param string|array $type
+	 * @return YaPhpDoc_Token_Structure_Abstract
+	 */
+	protected final function _removeParsableTokenType($type)
+	{
+		if(is_array($type))
+		{
+			foreach($type as $t)
+				$this->_removeParsableTokenType($t);
+		}
+		else
+		{
+			$k = array_search($type, $this->_parsableTokenTypes);
+			if($k !== false)
+				unset($this->_parsableTokenTypes[$k]);
+		}
 		return $this;
 	}
 	

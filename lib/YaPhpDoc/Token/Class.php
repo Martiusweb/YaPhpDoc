@@ -93,28 +93,31 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 	 */
 	protected function _parseContext(YaPhpDoc_Tokenizer_Token $token)
 	{
-		if($token->isPublic())
+		if($this->_nested == 1)
 		{
-			$this->getParser()->setPublic();
-			return true;
+			if($token->isPublic())
+			{
+				$this->getParser()->setPublic();
+				return true;
+			}
+			elseif($token->isProtected())
+			{
+				$this->getParser()->setProtected();
+				return true;
+			}
+			elseif($token->isPrivate())
+			{
+				$this->getParser()->setPrivate();
+				return true;
+			}
+			elseif($token->isStatic())
+			{
+				$this->getParser()->setStatic();
+				return true;
+			}
+			
+			parent::_parseContext($token);
 		}
-		elseif($token->isProtected())
-		{
-			$this->getParser()->setProtected();
-			return true;
-		}
-		elseif($token->isPrivate())
-		{
-			$this->getParser()->setPrivate();
-			return true;
-		}
-		elseif($token->isStatic())
-		{
-			$this->getParser()->setStatic();
-			return true;
-		}
-		
-		parent::_parseContext($token);
 		return false;
 	}
 	
@@ -126,7 +129,6 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		echo "begin class parse\n";
 		if($this->getParser()->isAbstract())
 				$this->_abstract = true;
 		elseif($this->getParser()->isFinal())
@@ -139,7 +141,6 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 		$this->_addTokenCallback('}', array($this, '_parseRightBrace'));
 		
 		parent::parse($tokensIterator);
-		echo "end class parse\n";
 		return $this;
 	}
 	
@@ -194,8 +195,8 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 	protected function _parseLeftBrace(YaPhpDoc_Tokenizer_Token $token)
 	{
 		++$this->_nested;
-		$this->_addParsableTokenType('function', 'method');
-		$this->_addParsableTokenType('variable', 'classAttribute');
+		
+		$this->_setParsableTokens();
 	}
 	
 	/**
@@ -206,8 +207,35 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 	protected function _parseRightBrace(YaPhpDoc_Tokenizer_Token $token)
 	{
 		--$this->_nested;
+		
+		$this->_setParsableTokens();
+		
 		if($this->_nested == 0)
 			$this->_breakParsing();
+	}
+	
+	/**
+	 * Sets parsables token (ie parse variables and function if we are
+	 * in a first-level block (in the class definition).
+	 * 
+	 * @return void
+	 */
+	protected function _setParsableTokens()
+	{
+		static $sat = false;
+		
+		if($this->_nested == 1)
+		{
+			$sat = true;
+			$this->_addParsableTokenType('function', 'method');
+			$this->_addParsableTokenType('variable', 'classAttribute');
+		}
+		elseif($sat)
+		{
+			$sat = false;
+			$this->_removeParsableTokenType('function');
+			$this->_removeParsableTokenType('variable');
+		}
 	}
 	
 	/**
