@@ -4,48 +4,33 @@
  * @author Martin Richard
  */
 
-///**
-// * An interface
-// */
-//interface MyClassInterface
-//{
-//}
-//
-///**
-// * An other interface
-// */
-//interface MyOtherClassInterface
-//{
-//	
-//}
-//
-///**
-// * An empty class
-// * @author Martin Richard
-// */
-//class MyClass
-//{
-//	
-//}
-//
-///**
-// * Other class extends MyClass.
-// * 
-// * @author martius
-// */
-//class MyOtherClass extends MyClass
-//{
-//	
-//}
-//
-///**
-// * Test implementation of interfaces
-// * @author martius
-// */
-//class MyThirdClass extends MyClass implements MyClassInterface, MyOtherClassInterface
-//{
-//	
-//}
+/**
+ * An empty class
+ * @author Martin Richard
+ */
+class MyClass
+{
+	
+}
+
+/**
+ * Other class extends MyClass.
+ * 
+ * @author martius
+ */
+class MyOtherClass extends MyClass
+{
+	
+}
+
+/**
+ * Test implementation of interfaces
+ * @author martius
+ */
+class MyThirdClass extends MyClass implements MyClassInterface, MyOtherClassInterface
+{
+	
+}
 
 /**
  * Now, a "full" class.

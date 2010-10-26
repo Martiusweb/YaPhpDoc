@@ -84,7 +84,7 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 			$this->_addParsableTokenType('global');
 			$this->_addParsableTokenType('function');
 			$this->_addParsableTokenType('class');
-			# TODO Parsable tokens in a namespace
+			$this->_addParsableTokenType('iterator');
 					
 			# Manage nested blocks if namespace is enclosed by brackets
 			if($token->getType() == '{')
