@@ -691,4 +691,19 @@ abstract class YaPhpDoc_Token_Abstract implements
 		$classname = $parser->getConfig()->class->get(self::FILE);
 		return new $classname($filename, $parent);
 	}
+	
+	/**
+	 * Returns a new instance of a root.
+	 * The token tpe is evaluated according to the configuration
+	 * (class/document node), there is no check of the correctness of the found
+	 * classname.
+	 * 
+	 * @param YaPhpDoc_Core_Parser $parser
+	 * @return YaPhpDoc_Token_Document
+	 */
+	public static function getDocumentToken(YaPhpDoc_Core_Parser $parser)
+	{
+		$classname = $parser->getConfig()->class->get('document');
+		return new $classname($parser);
+	}
 }

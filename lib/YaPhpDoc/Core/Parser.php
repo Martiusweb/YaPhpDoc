@@ -368,7 +368,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 		}
 		
 		# Create the root node
-		$this->_root = new YaPhpDoc_Token_Document($this);
+		$this->_root = YaPhpDoc_Token_Abstract::getDocumentToken($this);
 		
 		# Start parsing
 		foreach($files as $file)
