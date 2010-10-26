@@ -124,9 +124,9 @@ class YaPhpDoc_Tokenizer implements IteratorAggregate, Countable
 		return array_flip(array(
 			# Classic comments, html, & misc.
 			T_COMMENT, T_BAD_CHARACTER, T_INLINE_HTML, //T_WHITESPACE,
-			# all operators ("=" is not a typed parser token)
+			# all non affectation operators ("=" is not a typed parser token)
 			T_AND_EQUAL, T_BOOLEAN_AND, T_BOOLEAN_OR, T_CONCAT_EQUAL, T_DEC,
-			T_DIV_EQUAL, T_DOUBLE_ARROW, T_INC, T_IS_EQUAL,
+			T_DIV_EQUAL, /* T_DOUBLE_ARROW, */ T_INC, T_IS_EQUAL,
 			T_IS_GREATER_OR_EQUAL, T_IS_IDENTICAL, T_IS_NOT_EQUAL,
 			T_IS_NOT_IDENTICAL, T_IS_SMALLER_OR_EQUAL, T_LOGICAL_AND,
 			T_LOGICAL_OR, T_LOGICAL_XOR, T_MINUS_EQUAL, T_MOD_EQUAL,

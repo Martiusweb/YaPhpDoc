@@ -55,7 +55,7 @@ abstract class MyFullClass
 	/**
 	 * @var int
 	 */
-	public $param = 0;
+	public $param = 10;
 	
 	/**
 	 * @var int
@@ -65,7 +65,7 @@ abstract class MyFullClass
 	/**
 	 * @var array
 	 */
-	private $__param = array('foo', 'foo' => 'bar');
+	private $__param = array('val1', 'idx' => 'val2');
 	
 	/**
 	 * @var int

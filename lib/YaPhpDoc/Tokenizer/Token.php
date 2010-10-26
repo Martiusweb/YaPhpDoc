@@ -261,7 +261,7 @@ class YaPhpDoc_Tokenizer_Token
 	public function isConstantString()
 	{
 		return $this->_type == T_CONSTANT_ENCAPSED_STRING ||
-			($this->_type == T_STRING && $this->_content != 'define');
+			($this->_type == T_STRING && $this->_content !== 'define');
 	}
 	
 	/**
@@ -292,16 +292,25 @@ class YaPhpDoc_Tokenizer_Token
 	 */
 	public function isEvaluableStringDelimiter()
 	{
-		# TODO check this one... results are suprising
-		return $this->_type == '`';
+		return $this->_type === '`';
 	}
 	
 	/**
 	 * Returns true if the token is an array
+	 * @return bool
 	 */	
 	public function isArray()
 	{
 		return $this->_type == T_ARRAY;
+	}
+	
+	/**
+	 * Returns true if the token is a double arrow ("=>").
+	 * @return bool
+	 */
+	public function isDoubleArrow()
+	{
+		return $this->_type == T_DOUBLE_ARROW;
 	}
 	
 	/**

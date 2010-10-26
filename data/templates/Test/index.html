@@ -165,6 +165,12 @@
 		<li>
 			<h5><code>{{attr.type}}</code> {{attr.name}}</h5>
 			<p>{{attr.description}}</p>
+			<p>Attention si defaultValue == 0 ou equivalent à false,
+			le test ci dessous vaut faux !</p>
+			{% if attr.defaultValue %}
+			<p>Default value : <code>{{attr.defaultValue}}</code></p>
+			{% endif %}
+			<p></p>
 		</li>
 	{% endfor %}
 	</ul>

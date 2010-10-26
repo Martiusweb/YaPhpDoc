@@ -67,14 +67,23 @@ class YaPhpDoc_Token_Var extends YaPhpDoc_Token_Abstract
 	 */
 	protected function _parseValue(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		$token = $tokensIterator->current();
-		if($token->isConstantValue())
-				$this->_value = $token->getConstantContent();
-		elseif($token->isArray())
+		while($tokensIterator->valid())
 		{
-			$array = YaPhpDoc_Token_Abstract::getToken($this->getParser(), 'array', $this, $this->getName());
-			$array->parse($tokensIterator);
-			$this->_value = $array->getArrayString();
+			$token = $tokensIterator->current();
+			
+			if($token->isConstantValue())
+			{
+				$this->_value = $token->getConstantContent();
+				break;
+			}
+			elseif($token->isArray())
+			{
+				$array = YaPhpDoc_Token_Abstract::getToken($this->getParser(), 'array', $this, $this->getName());
+				$array->parse($tokensIterator);
+				$this->_value = $array->getArrayString();
+				break;
+			}
+			$tokensIterator->next();
 		}
 	}
 	

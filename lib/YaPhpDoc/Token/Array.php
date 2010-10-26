@@ -46,6 +46,10 @@ class YaPhpDoc_Token_Array extends YaPhpDoc_Token_Abstract
 					{
 						$representation .= ' ';
 					}
+					elseif($token->isDoubleArrow())
+					{
+						$representation .= ' => ';
+					}
 					elseif($token->getType() == ')')
 					{
 						--$nested;
