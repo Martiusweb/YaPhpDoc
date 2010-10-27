@@ -3,6 +3,12 @@
 class YaPhpDoc_Token_Array extends YaPhpDoc_Token_Abstract
 {
 	/**
+	 * Nested bracket "(" level.
+	 * @var int
+	 */
+	protected $_nested = 0;
+	
+	/**
 	 * Full declaration of the array.
 	 * @var string
 	 */
@@ -25,67 +31,58 @@ class YaPhpDoc_Token_Array extends YaPhpDoc_Token_Abstract
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		if($tokensIterator->current()->isArray())
-		{
-			$representation = '';
-			$in_def = false;
-			$nested = 0;
-			while($tokensIterator->valid())
-			{
-				$token = $tokensIterator->current();
-				/* @var $token YaPhpDoc_Tokenizer_Token */
-				
-				if($in_def)
-				{
-					if($token->getType() == '(')
-					{
-						++$nested;
-						$representation .= '(';
-					}
-					elseif($token->isWhitespace())
-					{
-						$representation .= ' ';
-					}
-					elseif($token->isDoubleArrow())
-					{
-						$representation .= ' => ';
-					}
-					elseif($token->getType() == ')')
-					{
-						--$nested;
-						$representation .= ')';
-						if($nested == 0)
-						{
-							$in_def = false;
-							break;
-						}
-					}
-					else
-					{
-						$content = $token->getContent();
-						if(empty($content))
-							$representation .= $token->getType();
-						else
-							$representation .= $token->getContent();
-						unset($content);
-					}
-					
-				}
-				elseif($token->isArray())
-				{
-					$representation .= $token->getContent();
-				}
-				elseif($token->getType() == '(')
-				{
-					$in_def = true;
-					$representation .= '(';
-					++$nested;
-				}
-				$tokensIterator->next();
-			}
-		}
-		$this->_array_string = $representation;
+		$this->_addTokenCallback('array', array($this, '_parseRepresentation'));
+		$this->_addTokenCallback('(', array($this, '_parseLeftBracket'));
+		
+		parent::parse($tokensIterator);
 		return $this;
+	}
+	
+	/**
+	 * Parse a token and add it to the array representation.
+	 * @param YaPhpDoc_Tokenizer_Token $token
+	 * @return void
+	 */
+	protected function _parseRepresentation(YaPhpDoc_Tokenizer_Token $token)
+	{
+		if($token->isWhitespace())
+			$this->_array_string .= ' ';
+		else
+		{
+			$content = $token->getContent();
+			if(!empty($content))
+				$this->_array_string .= $content;
+			else
+				$this->_array_string .= $token->getType();			
+		}
+	}
+	
+	/**
+	 * Parse a left bracket "(".
+	 * @return void
+	 */
+	protected function _parseLeftBracket()
+	{
+		++$this->_nested;
+		if($this->_nested == 1)
+		{
+			$this->_addTokenCallback(')', array($this, '_parseRightBracket'));
+			$this->_addTokenCallback('*', array($this, '_parseRepresentation'));
+		}
+		$this->_array_string .= '(';
+	}
+	
+	/**
+	 * Parse a right bracket ")".
+	 * @return void
+	 */
+	protected function _parseRightBracket()
+	{
+		$this->_array_string .= ')';
+		--$this->_nested;
+		
+		if($this->_nested == 0)
+			$this->_breakParsing();
 	}
 	
 	/**

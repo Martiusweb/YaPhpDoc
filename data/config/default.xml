@@ -44,7 +44,7 @@
 			<class>YaPhpDoc_Token_Class</class> <!-- Class for a class -->
 			<method>YaPhpDoc_Token_Method</method> <!-- Class for a method -->
 			<classAttribute>YaPhpDoc_Token_ClassAttribute</classAttribute> <!-- Class for a class attribute (or property) -->
-			<interface>YaPhpDoc_Token_Intefarce</interface> <!-- Class for an interface -->
+			<interface>YaPhpDoc_Token_Interface</interface> <!-- Class for an interface -->
 		</class>
 	</parser>
 </yaphpdoc>

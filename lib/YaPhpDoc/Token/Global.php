@@ -28,63 +28,49 @@ class YaPhpDoc_Token_Global extends YaPhpDoc_Token_Var
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		if($tokensIterator->current()->isGlobal())
-		{
-			$tokensIterator->next();
-			
-			$in_global_index = false;
-			$in_global_value = false;
-			while($tokensIterator->valid())
-			{
-				$token = $tokensIterator->current();
-				/* @var $token YaPhpDoc_Tokenizer_Token */
-				if($token->isWhitespace())
-				{
-					$tokensIterator->next();
-					continue;
-				}
-				
-				if($token->getType() == '[')
-				{
-					$in_global_index = true;
-				}
-				elseif($in_global_index)
-				{
-					if($token->isConstantValue())
-						$this->_name = $token->getConstantContent();
-					elseif($token->getType() == ']')
-						$in_global_index = false;
-				}
-				elseif($token->isVariable())
-				{
-					$this->_name = substr($token->getContent(), 1);
-				}
-				elseif($token->getType() == '=')
-				{
-					$in_global_value = true;
-				}
-				elseif($in_global_value)
-				{
-					if($token->isConstantValue())
-						$this->_value = $token->getConstantContent();
-					elseif($token->isArray())
-					{
-						$array = YaPhpDoc_Token_Abstract::getToken(
-							$this->getParser(), 'array', $this);
-						$array->parse($tokensIterator);
-						$this->_value = $array->getArrayString();
-						unset($array);	
-					}
-					elseif($token->getType() == ';')
-					{
-						break;
-					}
-				}
-				
-				$tokensIterator->next();
-			}
-		}
+		$this->_addTokenCallback('[', array($this, '_parseLeftSquareBrace'));
+		$this->_addTokenCallback('variable', array($this, '_parseName'));
+		$this->_addTokenCallback(';', array($this, '_breakParsing'));
+		$this->_addTokensIteratorCallback('=', array($this, '_parseValue'));
+		
+		parent::parse($tokensIterator);
 		
 		return $this;
+	}
+	
+	/**
+	 * Parses a left square brace '[' (in global name definition).
+	 * @return void
+	 */
+	protected function _parseLeftSquareBrace()
+	{
+		$this->_addTokenCallback('constantString', array($this, '_parseName'));
+		$this->_addTokenCallback('constantValue', array($this, '_parseName'));
+		$this->_addTokenCallback(']', array($this, '_parseRightSquareBrace'));
+	}
+	
+	/**
+	 * The name may have been found.
+	 * @return void
+	 */
+	protected function _parseRightSquareBrace()
+	{
+		$this->_removeTokenCallback('constantString');
+		$this->_removeTokenCallback('constantValue');
+		$this->_removeTokenCallback('[');
+		$this->_removeTokenCallback(']');
+	}
+	
+	/**
+	 * Parses the global name (can't find an evaluated name with concatenation.
+	 * @todo Manage concatenation, maybe.
+	 * @return void
+	 */
+	protected function _parseName(YaPhpDoc_Tokenizer_Token $token)
+	{
+		if($token->isVariable())
+			$this->_name = substr($token->getContent(), 1);
+		else
+		$this->_name = $token->getConstantContent();
 	}
 }

@@ -277,15 +277,28 @@ abstract class YaPhpDoc_Token_Abstract implements
 	}
 	
 	/**
-	 * Adds a callback according to the token type.
+	 * Adds a callback according to the token type. You can use de wildcard *
+	 * type for all types (called if a specific callback is not defined).
 	 *  
 	 * @param string $token_type
 	 * @param callback $callback
-	 * @return YaPhpDoc_Token_Structure_Abstract
+	 * @return YaPhpDoc_Token_Abstract
 	 */
 	protected final function _addTokenCallback($token_type, $callback)
 	{
 		$this->_tokenCallbacks[$token_type] = $callback;
+		
+		return $this;
+	}
+	
+	/**
+	 * Removes a token callback.
+	 * @param string $token_type
+	 * @return YaPhpDoc_Token_Abstract
+	 */
+	protected final function _removeTokenCallback($token_type)
+	{
+		unset($this->_tokenCallbacks[$token_type]);
 		
 		return $this;
 	}
@@ -299,7 +312,11 @@ abstract class YaPhpDoc_Token_Abstract implements
 	protected function _getTokenCallback($token_type)
 	{
 		if(!isset($this->_tokenCallbacks[$token_type]))
+		{
+			if(isset($this->_tokenCallbacks['*']))
+				return $this->_tokenCallbacks['*'];
 			return null;
+		}
 		
 		return $this->_tokenCallbacks[$token_type];
 	}
@@ -308,7 +325,7 @@ abstract class YaPhpDoc_Token_Abstract implements
 	 * Calls a callback function or method according to the token type.
 	 * 
 	 * @param YaPhpDoc_Tokenizer_Token $token
-	 * @return YaPhpDoc_Token_Structure_Abstract
+	 * @return YaPhpDoc_Token_Abstract
 	 */
 	protected final function _tokenCallback(YaPhpDoc_Tokenizer_Token $token)
 	{
@@ -356,7 +373,7 @@ abstract class YaPhpDoc_Token_Abstract implements
 	 *  
 	 * @param string $token_type
 	 * @param callback $callback
-	 * @return YaPhpDoc_Token_Structure_Abstract
+	 * @return YaPhpDoc_Token_Abstract
 	 */
 	protected final function _addTokensIteratorCallback($token_type, $callback)
 	{
@@ -364,6 +381,20 @@ abstract class YaPhpDoc_Token_Abstract implements
 		
 		return $this;
 	}
+	
+	/**
+	 * Removes a tokens iterator callback.
+	 * 
+	 * @param string $token_type
+	 * @return YaPhpDoc_Token_Abstract
+	 */
+	protected final function _removeTokensIteratorCallback($token_type)
+	{
+		unset($this->_tokensIteratorCallbacks[$token_type]);
+		
+		return $this;
+	}
+	
 	
 	/**
 	 * Returns (if defined) the callback sat for the given type of tokens for
@@ -375,18 +406,23 @@ abstract class YaPhpDoc_Token_Abstract implements
 	protected function _getTokensIteratorCallback($token_type)
 	{
 		if(!isset($this->_tokensIteratorCallbacks[$token_type]))
+		{
+			if(isset($this->_tokensIteratorCallbacks['*']))
+				return $this->_tokensIteratorCallbacks['*'];
 			return null;
+		}
 		
 		return $this->_tokensIteratorCallbacks[$token_type];
 	}
 	
 	/**
 	 * Calls a callback function or method according to the token type, providing
-	 * the tokens iterator for sub-parsing.
+	 * the tokens iterator for sub-parsing. You can use de wildcard type for all
+	 * types (called if a specific callback is not defined).
 	 * 
 	 * @param YaPhpDoc_Tokenizer_Token $token
 	 * @param YaPhpDoc_Tokenizer_Iterator $tokensIterator
-	 * @return YaPhpDoc_Token_Structure_Abstract
+	 * @return YaPhpDoc_Token_Abstract
 	 */
 	protected final function _tokensIteratorCallback(
 		YaPhpDoc_Tokenizer_Token $token,
