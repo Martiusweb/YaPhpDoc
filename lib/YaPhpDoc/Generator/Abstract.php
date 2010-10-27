@@ -225,6 +225,66 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 	}
 	
 	/**
+	 * Copy $src to $dest in the destination directory.
+	 * Create directories under the destination if they don't exist.
+	 * 
+	 * @param string $src
+	 * @param string $dest
+	 * @return YaPhpDoc_Generator_Absctract
+	 */
+	protected function _copy($src, $dest)
+	{
+		$dest = $this->_destination.DIRECTORY_SEPARATOR.$dest;
+		
+		$this->_mkDirIfNotExists(dirname($dest));
+		
+		if(!copy($src, $dest))
+		{
+			throw new YaPhpDoc_Generator_Exception(sprintf(
+				$this->l10n('generator')->_('Unable to write file %s'), $dest
+			));
+		}
+		
+		return $this;
+	}
+	
+	/**
+	 * Copy $src directory into $dest directory (under the destination directory).
+	 * $dest is optional, the root of the destination directory is the copied content
+	 * destination.
+	 * 
+	 * @param string $src
+	 * @param string $dest Optional
+	 * @return YaPhpDoc_Generator_Abstract
+	 */
+	protected function _copyDir($src, $dest = '')
+	{
+		try
+		{
+			$dirIterator = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator($src));
+			
+			while($dirIterator->valid())
+			{
+				if(!$dirIterator->isDot())
+				{
+					$this->_copy($dirIterator->key(),
+						$dest.DIRECTORY_SEPARATOR.$dirIterator->getSubPathName()
+					);	
+				}
+				
+				$dirIterator->next();
+			}
+		}
+		catch(UnexpectedValueException $e)
+		{	
+			throw new YaPhpDoc_Generator_Exception(sprintf(
+				$this->l10n('generator')->_('Unable to read %s'), $dest
+			));
+		}
+	}
+	
+	/**
 	 * Creates a directory if this one does not exist. Directories are created
 	 * recursively.
 	 *  

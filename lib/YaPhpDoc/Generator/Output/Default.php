@@ -25,6 +25,12 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	private $_theme = 'HtmlDefault';
 	
 	/**
+	 * Theme templates directory.
+	 * @var string
+	 */
+	protected $_themeDir = '';
+	
+	/**
 	 * Twig environment object.
 	 * @var Twig_Environment
 	 */
@@ -46,9 +52,11 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		$this->out()->verbose(sprintf($this->l10n()->getTranslation('generator')
 			->_('Generating documentation with theme %s'), $this->_theme),
 		false);
+		
+		$this->_themeDir = $this->_dataDir.'/templates/'.$this->_theme;
+		
 		try {
-			$loader = new Twig_Loader_Filesystem($this->_dataDir.'/templates/'.
-				$this->_theme);
+			$loader = new Twig_Loader_Filesystem($this->_themeDir);
 			$this->_twig = new Twig_Environment($loader, array(
 				'debug' => true,
 				'strict_variables' => true
@@ -102,7 +110,8 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	protected function _build()
 	{
 		try {
-			$this->_buildIndex();
+			$this->_copyResources()
+				->_buildIndex();
 		}
 		catch(YaPhpDoc_Core_Exception $e)
 		{
@@ -117,10 +126,40 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		}
 	}
 	
+	/**
+	 * Copy resources in the destination directory.
+	 * @throws YaPhpDoc_Generator_Exception
+	 * @return YaPhpDoc_Generator_Output_Default
+	 */
+	protected function _copyResources()
+	{
+		$resources = $this->getGeneratorConfig()->get('resources', null);
+		
+		if($resources !== null)
+		{
+			$this->out()->verbose('Copying theme resources', true, 'generator');
+			
+			if(is_dir($this->_themeDir.DIRECTORY_SEPARATOR.$resources))
+				$method = '_copyDir';
+			else
+				$method = '_copy';
+			$this->$method($this->_themeDir.DIRECTORY_SEPARATOR.$resources,
+					$resources);
+		}
+		
+		return $this;
+	}
+	
+	/**
+	 * @todo to be done.
+	 * @return YaPhpDoc_Generator_Output_Default
+	 */
 	protected function _buildIndex()
 	{
 		$template = $this->_twig->loadTemplate('index.html');
 		$this->_write('index.html', $this->_render($template));
+		
+		return $this;
 	}
 	
 	/**

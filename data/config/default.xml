@@ -24,7 +24,9 @@
 			specific configuration keys.
 		-->
 		<default> <!-- "default" generator specific configuration -->
-			<theme>Test</theme> <!-- TODO switch to HtmlDefault -->
+			<theme>HtmlDefault</theme>
+<!--			<theme>Test</theme>-->
+			<resources>inc</resources>
 		</default>
 	</generator>
 	

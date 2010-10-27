@@ -2,6 +2,8 @@
 "%s is not a writable directory","%s is not a writable directory"
 "Destination directory did not exist and has been created","Destination directory did not exist and has been created"
 "Unable to write file %s","Unable to write file %s"
+"Unable to read %s","Unable to read %s"
 "Unable to create directory %s","Unable to create directory %s"
 "Compilation failed","Compilation failed"
 "Generating documentation with theme %s","Generating documentation with theme %s"
+"Copying theme resources","Copying theme resources"
