@@ -1,3 +1,2 @@
 * Delete Zend from repo
 * Update tests to PHPUnit 3.5, push them when ready.
-* Refactor Tokens : Global
