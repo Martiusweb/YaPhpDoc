@@ -25,6 +25,13 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 	private $_nested = 0;
 	
 	/**
+	 * True if this namespace is a merge of all objects representing parts of
+	 * the same namespace.
+	 * @var bool
+	 */
+	protected $merged = false;
+	
+	/**
 	 * Constructor of a namespace.
 	 * @param YaPhpDoc_Token_File $parent
 	 */
@@ -132,5 +139,14 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 		--$this->_nested;
 		if($this->_nested == 0)
 			$this->_breakParsing();
+	}
+	
+	/* @todo code this method */
+	/**
+	 * @return YaPhpDoc_Token_Namespace
+	 */
+	public function merge(YaPhpDoc_Token_Namespace $namespace)
+	{
+		return $this;
 	}
 }

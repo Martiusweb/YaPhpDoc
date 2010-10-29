@@ -6,3 +6,5 @@
 "Parsing %s","Parsing %s"
 "Configuration is missing.","Configuration is missing."
 "Unknown doc tag %s","Unknown doc tag %s"
+"Unable to find a class for the token type %s","Unable to find a class for the token type %s"
+"Unable to find a class for the collection of type %s","Unable to find a class for the collection of type %s"

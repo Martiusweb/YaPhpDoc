@@ -121,6 +121,12 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	protected $_private = false;
 	
 	/**
+	 * Collections of tokens.
+	 * @var YaPhpDoc_Token_Collection_Abstract
+	 */
+	protected $_collections = array();
+	
+	/**
 	 * Constructor of the parser.
 	 * 
 	 * @param YaPhpDoc_Core_OutputManager_Interface $ouputManager
@@ -516,6 +522,33 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	public function getRoot()
 	{
 		return $this->_root;
+	}
+	
+	/**
+	 * Returns true if the collection for tokens of type $type already exists.
+	 * @param string $type
+	 * @return bool
+	 */
+	public function hasCollection($type)
+	{
+		return isset($this->_collections[$type]);
+	}
+	
+	/**
+	 * Returns a collection of token of type $type.
+	 * 
+	 * @param string $type
+	 * @return YaPhpDoc_Token_Structure_Collection_Abstract
+	 */
+	public function getCollection($type)
+	{
+		if(!isset($this->_collections[$type]))
+		{
+			$this->_collections[$type] =
+				YaPhpDoc_Token_Structure_Collection_Abstract
+					::getCollection($this, $type);
+		}
+		return $this->_collections[$type];
 	}
 	
 	/**

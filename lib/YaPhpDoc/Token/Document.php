@@ -34,4 +34,21 @@ class YaPhpDoc_Token_Document extends YaPhpDoc_Token_Structure_Abstract
 	{
 		return $this->_parser;
 	}
+	
+	/**
+	 * Returns a collection stored by the parser if this one exists or returns
+	 * children. This new behaviour is used, for instance, to get a collection
+	 * of merged namespaces.
+	 * 
+	 * @see YaPhpDoc/Token/Structure/YaPhpDoc_Token_Structure_Abstract#getChildrenByType($type)
+	 */
+	public function getChildrenByType($type)
+	{
+		if($this->getParser()->hasCollection($type))
+		{
+			return $this->getParser()->getCollection($type);
+		}
+		else
+			return parent::getChildrenByType($type);
+	}
 }

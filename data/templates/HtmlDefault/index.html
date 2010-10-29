@@ -22,10 +22,12 @@
 			<div id="idx_doc" class="navigation">
 				<h2>{{config.document.project}} API</h2>
 				<ul>
-					<li>Home</li>
-					<li>Index</li>
+					<li><a href="index.html">Home</a></li>
+					<li><a href="toc.html">Index</a></li>
 					<li>Tutorials</li>
-					<li>Project home</li>
+					{% if config.document.homepage %}
+					<li><a href="{{config.document.homepage}}">Project home</a></li>
+					{% endif %}
 				</ul>
 			</div>
 			<form id="search">
@@ -34,14 +36,16 @@
 				<input type="text" />
 			</div>
 			</form>
+			{% if code.allNamespaces %}
 			<div id="idx_namespaces" class="index">
 				<h2>Index of namespaces</h2>
 				<ul>
 					{% for ns in code.allNamespaces %}
-					<li>{{ns.name}}</li>
+					<li>{{ns.fullName}}</li>
 					{% endfor %}
 				</ul>
 			</div>
+			{% endif %}
 			<div id="idx_files" class="index">
 				<h2>Index of files</h2>
 				<ul>

@@ -698,7 +698,7 @@ abstract class YaPhpDoc_Token_Abstract implements
 	public static function getToken(YaPhpDoc_Core_Parser $parser, $type,
 		YaPhpDoc_Token_Abstract $parent, $name = 'unknown')
 	{
-		$classname = $parser->getConfig()->class->get($type, null);
+		$classname = $parser->getConfig()->class->get($type);
 		
 		if($classname === null)
 		{

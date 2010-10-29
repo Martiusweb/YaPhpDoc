@@ -18,6 +18,7 @@
 		<document> <!-- Generated document configuration keys -->
 			<project>YaPhpDoc</project>	<!-- Project name -->
 			<title>Documentation generated with YaPhpDoc</title> <!-- Page title suffix -->
+			<homepage>http://www.martiusweb.net/YaPhpDoc/</homepage> <!-- Home page of the project -->
 		</document>
 		<!--
 			For each generator format supported, we can add a node with
