@@ -1,0 +1,83 @@
+{% extends "_layout.html" %}
+{% block _breadcrumbs %}
+	<li>Table of contents</li>
+{% endblock %}
+{% block _content %}
+<div class="page_toc">
+	<h2>Table of contents</h2>
+	<ol>
+		{% if code.namespaces %}<li><a href="#toc_namespaces">Namespaces</a></li>{% endif %}
+		{% if code.allClasses %}<li><a href="#toc_classes">Classes</a></li>{% endif %}
+		{% if code.allInterfaces %}<li><a href="#toc_interfaces">Interfaces</a></li>{% endif %}
+		{% if code.allFiles %}<li><a href="#toc_files">Files</a></li>{% endif %}
+		{% if code.allFunctions %}<li><a href="#toc_functions">Functions</a></li>{% endif %}
+		{% if code.allConstants %}<li><a href="#toc_constants">Constants</a></li>{% endif %}
+	</ol>
+</div>
+
+{% if code.namespaces %}
+<div id="toc_namespaces">
+	<h3>Namespaces</h3>
+	<ul>
+		{% for namespace in code.namespaces %}
+			<li>{{namespace.fullName}}</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+{% if code.allClasses %}
+<div id="toc_classes">
+	<h3>Classes</h3>
+	<ul>
+		{% for class in code.allClasses %}
+		<li>{{class.fullName}}</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+{% if code.allInterfaces %}
+<div id="toc_interfaces">
+<h3>Interfaces</h3>
+	<ul>
+		{% for interface in code.allInterfaces %}
+		<li>{{interface.name}}</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+{% if code.allFiles %}
+<div id="toc_files">
+	<h3>Files</h3>
+	<ul>
+		{% for file in code.files %}
+			<li>{{file.filename}}</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+{% if code.allFunctions %}
+<div id="toc_functions">
+	<h3>Functions</h3>
+	<ul>
+	{% for function in code.allFunctions %}
+		<li>{{function.name}}</li>
+	{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+{% if code.allConstants %}
+<div id="toc_constants">
+	<h3>Constants</h3>
+	<ul>
+		{% for constant in code.allConstants %}
+		<li>{{constant.name}}</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+{% endblock %}

@@ -117,6 +117,13 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	{
 		$type = lcfirst($type);
 		$descendant = $this->getChildrenByType($type);
+		
+		# if descendant is a collection get the array
+		if(!is_array($descendant))
+		{
+			$descendant = $descendant->toArray();
+		}
+		
 		foreach($this->_childrenByTokenType['_structure'] as $child)
 		{
 			/* @var $child YaPhpDoc_Token_Structure_Abstract */

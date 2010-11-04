@@ -1,0 +1,35 @@
+<div id="idx_doc" class="navigation">
+	<h2>{{config.document.project}} API</h2>
+	<ul>
+		<li><a href="index.html">Home</a></li>
+		<li><a href="toc.html">Index</a></li>
+		<li>Tutorials</li>
+		{% if config.document.homepage %}
+		<li><a href="{{config.document.homepage}}">Project home</a></li>
+		{% endif %}
+	</ul>
+</div>
+<form id="search">
+<div>
+	<h2>Search into the API index</h2>
+	<input type="text" />
+</div>
+</form>
+{% if code.namespaces %}
+<div id="idx_namespaces" class="index">
+	<h2>Index of namespaces</h2>
+	<ul>
+		{% for ns in code.namespaces %}
+		<li>{{ns.fullName}}</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+<div id="idx_files" class="index">
+	<h2>Index of files</h2>
+	<ul>
+		{% for file in code.files %}
+		<li>{{file.filename}}</li>
+		{% endfor %}
+	</ul>
+</div>

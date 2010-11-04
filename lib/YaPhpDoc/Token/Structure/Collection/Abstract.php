@@ -47,7 +47,7 @@ abstract class YaPhpDoc_Token_Structure_Collection_Abstract
 	 */
 	protected function _initialize($type)
 	{
-		$this->_type = $ype;
+		$this->_type = $type;
 	}
 	
 	/**
@@ -56,14 +56,14 @@ abstract class YaPhpDoc_Token_Structure_Collection_Abstract
 	 * created.
 	 * 
 	 * @param string $name
-	 * @return YaPhpDoc_Token_Namespace
+	 * @return YaPhpDoc_Token_Structure_Abstract
 	 */
 	public function getByName($name)
 	{
 		# Structure doesn't exists yet, create it.
 		if(!isset($this->_structures[$name]))
 		{
-			$this->add(YaPhpDoc_Token_Abstract::getToken( $this->_parser,
+			$this->add(YaPhpDoc_Token_Abstract::getToken($this->_parser,
 				$this->_type, $this->_parser->getRoot(), $name));
 		}
 		
@@ -92,11 +92,21 @@ abstract class YaPhpDoc_Token_Structure_Collection_Abstract
 	
 	/**
 	 * Returns an iterator of the elements in the collection.
-	 * @return ArrayIterator
+	 * @return Iterator
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator($this->_structures);	
+		return new ArrayIterator($this->_structures);
+	}
+	
+	/**
+	 * Returns the set of structures as an array.
+	 * 
+	 * @return array
+	 */
+	public function toArray()
+	{
+		return $this->_structures;
 	}
 	
 	/**

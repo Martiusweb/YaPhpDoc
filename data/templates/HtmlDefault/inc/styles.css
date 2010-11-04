@@ -19,27 +19,26 @@ div#wrapper
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
-
 div#breadcrumbs
 {
 	border-bottom: 1px #CCCCCC solid;
 }
-
+div#main
+{
+	display: table-row;
+}
 div#index
 {
 	width: 22%;
-	margin-right: 10px;
-	padding-left: 10px;
-	float: left;
-	position: relative;
+	padding: 0 10px;
+	display: table-cell;
 	border-right: 1px #CCCCCC solid;
 }
-
 div#content
 {
-	margin: 0 10px;
+	display: table-cell;
+	padding: 0 10px;
 }
-
 div#footer
 {
 	text-align: center;
@@ -58,6 +57,19 @@ div#footer
 #breadcrumbs li:before
 {
 	content: "\00BB \0020";
+}
+#breadcrumbs a  
+{
+	text-decoration: none;
+	font-weight: bold;
+}
+#breadcrumbs a:visited
+{
+	color: #333333;
+}	
+#breadcrumbs a:hover
+{
+	color: #666666;
 }
 
 /* Side */

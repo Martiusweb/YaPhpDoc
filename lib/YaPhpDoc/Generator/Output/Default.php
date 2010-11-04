@@ -14,6 +14,20 @@
  * You can create a new theme based on the HtmlDefault one if you don't have
  * specifics needs here.
  * 
+ * Each file in the theme directory, except those which begin by an underscore
+ * "_" or located under the resources directory ("inc/" in HtmlDefault) are
+ * rendered with twig.
+ * 
+ * Each template using the standard layout must start by
+ * <code>{% extends "_layout.html" %}</code>.
+ * 
+ *  This template will so includes parts of the layout, described into block
+ *  markups :
+ *    * its content between {% block _content %} and {% endblock %} markups.
+ *    * its breadcrumbs is between {% block _breadcrumbs %} and {% endblock %}
+ * 
+ * @todo Create a custom translation module.
+ *  
  * @author Martin Richard
  */
 class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
@@ -61,6 +75,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 				'debug' => true,
 				'strict_variables' => true
 			));
+			$this->_twig->addFilter('l10n', new Twig_Filter_Function('strtolower'));
 		}
 		catch(Exception $e)
 		{
@@ -68,7 +83,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		}
 		
 		$this->_globalContext['config'] = $this->_config;
-		# TODO decorates the root with an object translating values in HTML
+		# TODO (option) decorates the root with an object translating values in HTML
 		$this->_globalContext['code']	= $this->_root;
 	}
 	
@@ -110,8 +125,10 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	protected function _build()
 	{
 		try {
-			$this->_copyResources()
-				->_buildIndex();
+			$this->_copyResources();
+			
+			# Explore theme directory and build all files.
+			$this->_buildDirectory();
 		}
 		catch(YaPhpDoc_Core_Exception $e)
 		{
@@ -154,11 +171,29 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	 * @todo to be done.
 	 * @return YaPhpDoc_Generator_Output_Default
 	 */
-	protected function _buildIndex()
+	protected function _buildDirectory()
 	{
-		$template = $this->_twig->loadTemplate('index.html');
-		$this->_write('index.html', $this->_render($template));
-		
+		$dirIterator = new FilesystemIterator($this->_themeDir);
+		$resources_dir = $this->getGeneratorConfig()->get('resources', null);
+		while($dirIterator->valid())
+		{
+			$current = $dirIterator->current();
+			/* @var $current SplFileInfo */
+			$filename = $current->getFilename();
+			if($current->isDir())
+			{
+				// Build sub directory
+				if($filename != $resources_dir)
+					$this->_buildDirectory($dirIterator->key());	
+			}
+			elseif($filename[0] != '_')
+			{
+				$template = $this->_twig->loadTemplate($filename);
+				$this->_write($filename, $this->_render($template));
+			}
+			
+			$dirIterator->next();
+		}
 		return $this;
 	}
 	
@@ -173,5 +208,12 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	protected function _render($template, $context = array())
 	{
 		return $template->render(array_merge($context, $this->_globalContext));
+	}
+	
+	protected function _test()
+	{
+		ob_start();
+		var_dump(func_get_args());
+		return ob_get_clean();
 	}
 }

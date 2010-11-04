@@ -29,15 +29,16 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 	 * the same namespace.
 	 * @var bool
 	 */
-	protected $merged = false;
+	protected $_merged = false;
 	
 	/**
 	 * Constructor of a namespace.
 	 * @param YaPhpDoc_Token_File $parent
+	 * @param string $name optional
 	 */
-	public function __construct(YaPhpDoc_Token_Structure_Abstract $parent)
+	public function __construct(YaPhpDoc_Token_Structure_Abstract $parent, $name = 'unknown')
 	{
-		parent::__construct($parent, 'namespace', 'unknown');
+		parent::__construct($parent, 'namespace', $name);
 	}
 	
 	/**
@@ -60,7 +61,7 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 	 */
 	public function parse(YaPhpDoc_Tokenizer_Iterator $tokensIterator)
 	{
-		if($tokensIterator->current()->isNamespace())
+		if(!$this->_merged && $tokensIterator->current()->isNamespace())
 		{
 			$tokensIterator->next();
 			
@@ -102,6 +103,10 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 			
 			# Parse content
 			parent::parse($tokensIterator);
+			$merged = $this->getParser()->getCollection('namespace')
+				->getByName($this->getFullName());
+			/* @var $marged YaPhpDoc_Token_Namespace */
+			$merged->merge($this);
 		}
 		
 		return $this;
@@ -147,6 +152,10 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 	 */
 	public function merge(YaPhpDoc_Token_Namespace $namespace)
 	{
+		foreach($namespace->_children as $child)
+			$this->addChild($child);
+		
+		$this->_merged = true;
 		return $this;
 	}
 }

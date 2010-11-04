@@ -162,7 +162,9 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 			$this->_implements[] = $token->getStringContent();
 		}
 		else
+		{
 			$this->_name = $token->getStringContent();
+		}
 	}
 	
 	/**
@@ -195,7 +197,7 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 	protected function _parseLeftBrace(YaPhpDoc_Tokenizer_Token $token)
 	{
 		++$this->_nested;
-		
+		$this->_removeTokenCallback('constantString');
 		$this->_setParsableTokens();
 	}
 	
@@ -252,6 +254,20 @@ class YaPhpDoc_Token_Class extends YaPhpDoc_Token_Structure_Abstract
 		return $this;
 	}
 	
+	/**
+	 * Returns the class name prefixed by the namespace.
+	 * @return string
+	 */
+	public function getFullName()
+	{
+		$name = '';
+		if($this->getParent() instanceof YaPhpDoc_Token_Namespace)
+		{
+			$name = $this->getParent()->getFullName()
+				. YaPhpDoc_Token_Namespace::NS_SEPARATOR;
+		}
+		return $name . $this->getName();
+	}
 	/**
 	 * Returns true if the class is abstract.
 	 * @return bool

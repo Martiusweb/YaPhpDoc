@@ -25,9 +25,9 @@
 			specific configuration keys.
 		-->
 		<default> <!-- "default" generator specific configuration -->
-			<theme>HtmlDefault</theme>
+			<theme>HtmlDefault</theme> <!-- Theme name -->
 <!--			<theme>Test</theme>-->
-			<resources>inc</resources>
+			<resources>inc</resources> <!-- Resources directory (without trailing "/") -->
 		</default>
 	</generator>
 	
