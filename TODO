@@ -1,2 +1,2 @@
 * Delete Zend from repo
-* Update tests to PHPUnit 3.5, push them when ready.
+* uniformize YaPhpDoc & Twig packages i18n strategy

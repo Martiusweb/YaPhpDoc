@@ -26,7 +26,9 @@
  *    * its content between {% block _content %} and {% endblock %} markups.
  *    * its breadcrumbs is between {% block _breadcrumbs %} and {% endblock %}
  * 
- * @todo Create a custom translation module.
+ * Since Twig only supports gettext as translation tool, documentation
+ * translations catalogs are using this format. 
+ * @todo Uniformize translation with YaPhpDoc core
  *  
  * @author Martin Richard
  */
@@ -69,19 +71,23 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		
 		$this->_themeDir = $this->_dataDir.'/templates/'.$this->_theme;
 		
+		# Load twig
 		try {
 			$loader = new Twig_Loader_Filesystem($this->_themeDir);
 			$this->_twig = new Twig_Environment($loader, array(
 				'debug' => true,
 				'strict_variables' => true
 			));
-			$this->_twig->addFilter('l10n', new Twig_Filter_Function('strtolower'));
+			
+			# i18n support
+			$this->_twig->addExtension(new Twig_Extension_I18n());
 		}
 		catch(Exception $e)
 		{
 			throw new YaPhpDoc_Generator_Exception($e->getMessage());
 		}
 		
+		# Set twig templates context
 		$this->_globalContext['config'] = $this->_config;
 		# TODO (option) decorates the root with an object translating values in HTML
 		$this->_globalContext['code']	= $this->_root;
@@ -208,12 +214,5 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	protected function _render($template, $context = array())
 	{
 		return $template->render(array_merge($context, $this->_globalContext));
-	}
-	
-	protected function _test()
-	{
-		ob_start();
-		var_dump(func_get_args());
-		return ob_get_clean();
 	}
 }
