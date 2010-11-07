@@ -89,12 +89,22 @@ try
 		$ypd->setDestination($_SERVER['PWD'].DIRECTORY_SEPARATOR.'doc');
 	
 	# Configuration file
+	$default_config = $ypd->getDataDirectory().DIRECTORY_SEPARATOR
+			.'config'.DIRECTORY_SEPARATOR.'default.xml';
+	
 	if($cfg = $options->getOption('config'))
-		$ypd->setConfig($cfg, $ypd->getDataDirectory().DIRECTORY_SEPARATOR
-			.'config'.DIRECTORY_SEPARATOR.'default.xml');
+	{
+		$ypd->setConfig($cfg, $default_config);
+	}
+	elseif(file_exists($_SERVER['PWD'].DIRECTORY_SEPARATOR.'YaPhpDoc.xml'))
+	{
+		$ypd->setConfig($_SERVER['PWD'].DIRECTORY_SEPARATOR.'YaPhpDoc.xml',
+			$default_config);
+	}
 	else
-		$ypd->setConfig($ypd->getDataDirectory().DIRECTORY_SEPARATOR.'config'
-			.DIRECTORY_SEPARATOR.'default.xml');
+	{
+		$ypd->setConfig($default_config);
+	}
 }
 catch(Zend_Console_Getopt_Exception $e)
 {
