@@ -11,6 +11,9 @@
  *  leading and trailing blank characters into configuration values. Else, it
  *  will cause fatal error when trying to use a value as a PHP symbol (such as
  *  class names in the parser/class node).
+ *
+ *  This file is fully documented and can be used as a reference for the all
+ *  the standard configuration keys.
  */
 -->
 <yaphpdoc>
@@ -21,13 +24,20 @@
 			<homepage>http://www.martiusweb.net/YaPhpDoc/</homepage> <!-- Home page of the project -->
 		</document>
 		<!--
+			TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			For each generator format supported, we can add a node with
 			specific configuration keys.
 		-->
 		<default> <!-- "default" generator specific configuration -->
 			<theme>HtmlDefault</theme> <!-- Theme name -->
-<!--			<theme>Test</theme>-->
 			<resources>inc</resources> <!-- Resources directory (without trailing "/") -->
+			<decorator>YaPhpDoc_Generator_Decorator_Html</decorator> <!-- Decorator for default -->
+			
+<!-- Note: The default generator allows to override every configuration keys for a specific theme -->
+<!--			<HtmlDefault>-->
+<!--				<resources></resources>-->
+<!--				<decorator></decorator>	-->
+<!--			</HtmlDefault>-->
 		</default>
 	</generator>
 	

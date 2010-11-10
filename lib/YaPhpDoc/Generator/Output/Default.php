@@ -89,8 +89,9 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		
 		# Set twig templates context
 		$this->_globalContext['config'] = $this->_config;
-		# TODO (option) decorates the root with an object translating values in HTML
-		$this->_globalContext['code']	= $this->_root;
+		$decorated = YaPhpDoc_Generator_Decorator_Abstract
+			::getDecorator($this->getDecoratorType(), $this->_root);
+		$this->_globalContext['code']	= $decorated;
 	}
 	
 	/**
@@ -126,6 +127,20 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	}
 	
 	/**
+	 * Returns the decorator type guessed according to the chosen theme or
+	 * if not defined for the theme, according to this generator
+	 * configuration.
+	 * 
+	 * The configuration key must exists (this is not checked).
+	 * 
+	 * @return string
+	 */
+	public function getDecoratorType()
+	{
+		return $this->_getConfigKey('decorator');
+	}
+	
+	/**
 	 * @see YaPhpDoc/Generator/YaPhpDoc_Generator_Abstract#build()
 	 */
 	protected function _build()
@@ -156,7 +171,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	 */
 	protected function _copyResources()
 	{
-		$resources = $this->getGeneratorConfig()->get('resources', null);
+		$resources = $this->_getConfigKey('resources');
 		
 		if($resources !== null)
 		{
@@ -180,7 +195,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	protected function _buildDirectory()
 	{
 		$dirIterator = new FilesystemIterator($this->_themeDir);
-		$resources_dir = $this->getGeneratorConfig()->get('resources', null);
+		$resources_dir = $this->_getConfigKey('resources');
 		while($dirIterator->valid())
 		{
 			$current = $dirIterator->current();
@@ -214,5 +229,28 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	protected function _render($template, $context = array())
 	{
 		return $template->render(array_merge($context, $this->_globalContext));
+	}
+	
+	/**
+	 * Returns a config key according to the selected theme or the key defined
+	 * for the generator scope if not overriden.
+	 * 
+	 * If the key is not defined for the both scopes, $default is returned.
+	 * 
+	 * @param string $key
+	 * @param mixed $default  
+	 * @return mixed
+	 */
+	protected function _getConfigKey($key, $default = null)
+	{
+		$cfg = $this->getGeneratorConfig();
+		$theme_cfg = $cfg->get($this->_theme);
+		
+		if(($theme_cfg) !== null && ($value = $theme_cfg->get($key)) !== null)
+		{
+			return $value;
+		}
+		
+		return $cfg->get($key, $default);
 	}
 }
