@@ -23,11 +23,6 @@
 			<title>Documentation generated with YaPhpDoc</title> <!-- Page title suffix -->
 			<homepage>http://www.martiusweb.net/YaPhpDoc/</homepage> <!-- Home page of the project -->
 		</document>
-		<!--
-			TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			For each generator format supported, we can add a node with
-			specific configuration keys.
-		-->
 		<default> <!-- "default" generator specific configuration -->
 			<theme>HtmlDefault</theme> <!-- Theme name -->
 			<resources>inc</resources> <!-- Resources directory (without trailing "/") -->

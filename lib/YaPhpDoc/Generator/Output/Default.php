@@ -89,7 +89,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		
 		# Set twig templates context
 		$this->_globalContext['config'] = $this->_config;
-		$decorated = YaPhpDoc_Generator_Decorator_Abstract
+		$decorated = YaPhpDoc_Generator_Decorator_Token
 			::getDecorator($this->getDecoratorType(), $this->_root);
 		$this->_globalContext['code']	= $decorated;
 	}

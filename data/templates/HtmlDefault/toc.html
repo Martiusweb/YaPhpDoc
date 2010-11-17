@@ -20,7 +20,7 @@
 	<h3>Namespaces</h3>
 	<ul>
 		{% for namespace in code.namespaces %}
-			<li>{{namespace.fullName}}</li>
+			<li><a href="{{namespace.Url}}">{{namespace.fullName}}</a></li>
 		{% endfor %}
 	</ul>
 </div>

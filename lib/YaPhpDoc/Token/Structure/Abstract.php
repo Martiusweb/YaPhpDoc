@@ -68,7 +68,7 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	
 	/**
 	 * Returns an iterator on the children tokens.
-	 * @return ArrayIterator
+	 * @return Iterator
 	 */
 	public function getIterator()
 	{
@@ -82,15 +82,6 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 	public function count()
 	{
 		return count($this->_children);
-	}
-	
-	/**
-	 * Returns an Iterator on Use tokens.
-	 * @return ArrayIterator
-	 */
-	public function getUseIterator()
-	{
-		return new ArrayIterator($this->_uses);
 	}
 	
 	/**
