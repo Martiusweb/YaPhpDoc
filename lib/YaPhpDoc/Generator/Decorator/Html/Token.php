@@ -22,7 +22,6 @@ class YaPhpDoc_Generator_Decorator_Html_Token
 	 */
 	public function getUrl(YaPhpDoc_Token_Abstract $token)
 	{
-		// TODO
 		return $token->getName();
 	}
 }

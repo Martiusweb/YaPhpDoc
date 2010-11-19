@@ -92,7 +92,10 @@ class YaPhpDoc_Generator_Decorator_Token
 		{
 			// Adds the token as first parameter
 			array_unshift($args, $this->_token);
-			return call_user_func_array(array($this->_modifier, $func), $args);
+			
+			return $this->_modifier->afterCall(
+				call_user_func_array(array($this->_modifier, $func), $args)
+			);
 		}
 		
 		try {

@@ -24,4 +24,15 @@
  */
 abstract class YaPhpDoc_Generator_Decorator_Modifier
 {
+	/**
+	 * This method is called after the modifier and allow to perform generic
+	 * decoration after any call.
+	 *  
+	 * @param mixed $value
+	 * @return mixed
+	 */
+	public function afterCall($value)
+	{
+		return $value;
+	}
 }
