@@ -155,7 +155,7 @@ abstract class YaPhpDoc_Token_Abstract implements
 	 */
 	public function getTokenType()
 	{
-		$this->_tokenType;
+		return $this->_tokenType;
 	}
 	
 	/**

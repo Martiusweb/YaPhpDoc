@@ -6,28 +6,24 @@
  */
 
 /**
- * Implements the decorator for any tokens for the HTML format.
+ * Implements the decorator for namespaces for the HTML format.
  * 
  * @author Martin Richard
  */
-class YaPhpDoc_Generator_Decorator_Html_Token
-	extends YaPhpDoc_Generator_Decorator_Modifier
+class YaPhpDoc_Generator_Decorator_Html_Namespace
+	extends YaPhpDoc_Generator_Decorator_Html_Token
 {
 	/**
 	 * Returns an URL of the html page containing the documentation of the
-	 * token.
+	 * namespace.
 	 * 
 	 * @param YaPhpDoc_Token_Abstract $token
 	 * @return string
 	 */
 	public function getUrl(YaPhpDoc_Token_Abstract $token)
 	{
-		
-		return preg_replace(
-				array('`\W+`', '`\s+`'),
-				array('_', '-'),
-				$token->getName()
-			)
+		return 'namespaces/'
+			.str_replace('\\', '/', $token->getName())
 			.'.html';
 	}
 }
