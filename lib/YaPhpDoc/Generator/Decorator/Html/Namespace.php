@@ -17,10 +17,10 @@ class YaPhpDoc_Generator_Decorator_Html_Namespace
 	 * Returns an URL of the html page containing the documentation of the
 	 * namespace.
 	 * 
-	 * @param YaPhpDoc_Token_Abstract $token
+	 * @param YaPhpDoc_Token_Namespace $token
 	 * @return string
 	 */
-	public function getUrl(YaPhpDoc_Token_Abstract $token)
+	public function getUrl(YaPhpDoc_Token_Namespace $token)
 	{
 		return 'namespaces/'
 			.str_replace('\\', '/', $token->getName())
