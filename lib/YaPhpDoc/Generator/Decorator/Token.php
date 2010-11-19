@@ -85,6 +85,9 @@ class YaPhpDoc_Generator_Decorator_Token
 	 */
 	public function __call($func, $args)
 	{
+		if(substr($func, 0, 3) != 'get')
+			$func = 'get'.$func;
+		
 		if(is_callable(array($this->_modifier, $func)))
 		{
 			// Adds the token as first parameter
@@ -92,7 +95,12 @@ class YaPhpDoc_Generator_Decorator_Token
 			return call_user_func_array(array($this->_modifier, $func), $args);
 		}
 		
-		return call_user_func_array(array($this->_token, $func), $args);	
+		try {
+			return call_user_func_array(array($this->_token, $func), $args);
+		} catch(YaPhpDoc_Core_Parser_Exception $e)
+		{
+			return call_user_func_array(array($this->_token, 'get'.$func), $args);
+		}	
 	}
 	
 	/**
@@ -127,11 +135,11 @@ class YaPhpDoc_Generator_Decorator_Token
 	 */
 	private function _loadModifier()
 	{
-		$modifier = $this->_type.'_'.ucfirst($this->_token->getTokenType());		
+		$modifier = $this->_type.'_'.ucfirst($this->_token->getTokenType());
 		if(!YaPhpDoc_Tool_Loader::classExists($modifier))
 		{
 			$modifier = $this->_type.'_Token';
 		}
-		$this->_modifier = $modifier;
+		$this->_modifier = new $modifier();
 	}
 }

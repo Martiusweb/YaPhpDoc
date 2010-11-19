@@ -216,8 +216,8 @@ abstract class YaPhpDoc_Generator_Abstract implements YaPhpDoc_Core_OutputManage
 		
 		if(!file_put_contents($filename, $content, LOCK_EX))
 		{
-			throw new YaPhpDoc_Generator_Exception(sprintf(
-				$this->l10n('generator')->_('Unable to write file %s'), $filename
+			throw new YaPhpDoc_Generator_Exception(sprintf($this->l10n()->
+				getTranslation('generator')->_('Unable to write file %s'), $filename
 			));
 		}
 		
