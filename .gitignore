@@ -2,4 +2,5 @@
 .project
 .buildpath
 lib/Twig
+lib/Zend
 doc/
