@@ -146,7 +146,6 @@ class YaPhpDoc_Token_Namespace extends YaPhpDoc_Token_Structure_Abstract
 			$this->_breakParsing();
 	}
 	
-	/* @todo code this method */
 	/**
 	 * @return YaPhpDoc_Token_Namespace
 	 */

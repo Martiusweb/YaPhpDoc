@@ -56,16 +56,18 @@ class YaPhpDoc_Generator_Decorator_Token
 	 * "YaPhpDoc_Generator_Decorator_Html" or "MyExtension_Decorator_Latex".
 	 * 
 	 * @param string $type
-	 * @param YaPhpDoc_Token_Abstract $token
+	 * @param YaPhpDoc_Token_Abstract|YaPhpDoc_Token_Structure_Collection_Abstract $token
 	 * @return YaPhpDoc_Generator_Decorator_Token
 	 */
-	public static function getDecorator($type, YaPhpDoc_Token_Abstract $token)
+	public static function getDecorator($type, $token)
 	{
 		if($token instanceof YaPhpDoc_Token_Structure_Abstract)
 			$classname = 'YaPhpDoc_Generator_Decorator_Structure';
 		elseif($token instanceof YaPhpDoc_Token_Abstract)
 			$classname = 'YaPhpDoc_Generator_Decorator_Token';
-
+		elseif($token instanceof YaPhpDoc_Token_Structure_Collection_Abstract)
+			$classname = 'YaPhpDoc_Generator_Decorator_Collection';
+		
 		$decorator = new $classname($type, $token);
 		
 		return $decorator;

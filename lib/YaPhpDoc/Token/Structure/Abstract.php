@@ -179,6 +179,7 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 		}
 	}
 	
+	// TODO Do we need these methods ? Will we keep them for perfs ?
 	/**
 	 * Returns an array of child classes.
 	 * @return YaPhpDoc_Token_Class[]
