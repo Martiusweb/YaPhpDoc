@@ -55,6 +55,9 @@ class YaPhpDoc_Generator_Decorator_Token
 	 * A decorator type is the namespace of the decorator, for instance :
 	 * "YaPhpDoc_Generator_Decorator_Html" or "MyExtension_Decorator_Latex".
 	 * 
+	 * If a decorator can't be found (because of the type of $token), the object
+	 * will be returned without modification.
+	 * 
 	 * @param string $type
 	 * @param YaPhpDoc_Token_Abstract|YaPhpDoc_Token_Structure_Collection_Abstract $token
 	 * @return YaPhpDoc_Generator_Decorator_Token
@@ -67,10 +70,23 @@ class YaPhpDoc_Generator_Decorator_Token
 			$classname = 'YaPhpDoc_Generator_Decorator_Token';
 		elseif($token instanceof YaPhpDoc_Token_Structure_Collection_Abstract)
 			$classname = 'YaPhpDoc_Generator_Decorator_Collection';
+		else
+			return $token;
 		
 		$decorator = new $classname($type, $token);
 		
 		return $decorator;
+	}
+	
+	/**
+	 * Returns the decorator type of the current token.
+	 * The type returned is a class name.
+	 * 
+	 * @return string
+	 */
+	public function getDecoratorType()
+	{
+		return $this->_type;
 	}
 	
 	/**
@@ -86,24 +102,19 @@ class YaPhpDoc_Generator_Decorator_Token
 	public function __call($func, $args)
 	{
 		if(substr($func, 0, 3) != 'get')
-			$func = 'get'.$func;
+			$func = 'get'.lcfirst($func);
 		
 		if(is_callable(array($this->_modifier, $func)))
 		{
 			// Adds the token as first parameter
 			array_unshift($args, $this->_token);
-			
 			return $this->_modifier->afterCall(
 				call_user_func_array(array($this->_modifier, $func), $args)
 			);
 		}
 		
-		try {
-			return call_user_func_array(array($this->_token, $func), $args);
-		} catch(YaPhpDoc_Core_Parser_Exception $e)
-		{
-			return call_user_func_array(array($this->_token, 'get'.$func), $args);
-		}	
+		// TODO va planter là :D
+		return call_user_func_array(array($this->_token, $func), $args);
 	}
 	
 	/**

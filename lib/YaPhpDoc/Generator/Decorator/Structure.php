@@ -12,7 +12,7 @@
  * @author Martin Richard
  */
 class YaPhpDoc_Generator_Decorator_Structure extends
-	YaPhpDoc_Generator_Decorator_Token
+	YaPhpDoc_Generator_Decorator_Token implements IteratorAggregate
 {
 	/**
 	 * @see YaPhpDoc_Token_Structure_Abstract#getIterator()
@@ -21,7 +21,7 @@ class YaPhpDoc_Generator_Decorator_Structure extends
 	public function getIterator()
 	{
 		return new YaPhpDoc_Generator_Decorator_Iterator(
-			$this->_getType(), $this->_token->getIterator());
+			$this->getDecoratorType(), $this->_token->getIterator());
 	}
 	
 	// TODO Implements children getters

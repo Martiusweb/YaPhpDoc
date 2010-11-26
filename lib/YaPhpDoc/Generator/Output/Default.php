@@ -53,6 +53,12 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	protected $_twig;
 	
 	/**
+	 * Root of the parsed tokens.
+	 * @var YaPhpDoc_Generator_Decorator_Structure
+	 */
+	protected $_decoratedRoot;
+	
+	/**
 	 * Global context for twig rendering.
 	 * @var array
 	 */
@@ -87,11 +93,12 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 			throw new YaPhpDoc_Generator_Exception($e->getMessage());
 		}
 		
+		$this->_decoratedRoot = YaPhpDoc_Generator_Decorator_Token
+			::getDecorator($this->getDecoratorType(), $this->_root);
+		
 		# Set twig templates context
 		$this->_globalContext['config'] = $this->_config;
-		$decorated = YaPhpDoc_Generator_Decorator_Token
-			::getDecorator($this->getDecoratorType(), $this->_root);
-		$this->_globalContext['code']	= $decorated;
+		$this->_globalContext['code']	= $this->_decoratedRoot;
 	}
 	
 	/**
@@ -150,6 +157,23 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 			
 			# Explore theme directory and build all files.
 			$this->_buildDirectory();
+			
+			# Explore tokens and build them
+			foreach($this->_decoratedRoot as $token)
+			{
+				$filename = $token->getUrl();
+				
+				$this->out()->verbose(sprintf(
+					$this->l10n()->getTranslation("generator")->_(
+					'Writing file %s'), $filename), false);
+				
+				# TODO exclude tokens from some types ? Blacklist ? Whitelist ?
+				# Configuration : template name, if empty, skip this token type.
+				# Load the template matching the token type.
+				$template = $this->_twig->loadTemplate($token->getTokenType());
+				# render and save the file.
+				$this->_write($filename, $this->_render($template));
+			}
 		}
 		catch(YaPhpDoc_Core_Exception $e)
 		{
@@ -209,6 +233,10 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 			}
 			elseif($filename[0] != '_')
 			{
+				$this->out()->verbose(sprintf(
+					$this->l10n()->getTranslation("generator")->_(
+					'Writing file %s'),$filename), false);
+				
 				$template = $this->_twig->loadTemplate($filename);
 				$this->_write($filename, $this->_render($template));
 			}
