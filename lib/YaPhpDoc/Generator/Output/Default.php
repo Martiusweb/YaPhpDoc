@@ -167,7 +167,10 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 					$this->l10n()->getTranslation("generator")->_(
 					'Writing file %s'), $filename), false);
 				
-				if(($tpl_file = $this->_getTemplateFile($token->getTokenType())) !== null)
+				# If the file name is not found or empty, we skip
+				# the tests allow empty template filenames in the context of a theme. 
+				$tpl_file = $this->_getTemplateFile($token->getTokenType());
+				if(!empty($tpl_file))
 				{
 					# Load the template matching the token type.
 					$template = $this->_twig->loadTemplate($tpl_file);
