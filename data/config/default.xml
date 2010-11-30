@@ -27,11 +27,14 @@
 			<theme>HtmlDefault</theme> <!-- Theme name -->
 			<resources>inc</resources> <!-- Resources directory (without trailing "/") -->
 			<decorator>YaPhpDoc_Generator_Decorator_Html</decorator> <!-- Decorator for default -->
-			
+			<templates>
+				<file>file.html</file>
+			</templates>
 <!-- Note: The default generator allows to override every configuration keys for a specific theme -->
 <!--			<HtmlDefault>-->
 <!--				<resources></resources>-->
 <!--				<decorator></decorator>	-->
+<!-- 				<extension>.html</extension> -->
 <!--			</HtmlDefault>-->
 		</default>
 	</generator>

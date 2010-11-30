@@ -167,12 +167,17 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 					$this->l10n()->getTranslation("generator")->_(
 					'Writing file %s'), $filename), false);
 				
-				# TODO exclude tokens from some types ? Blacklist ? Whitelist ?
-				# Configuration : template name, if empty, skip this token type.
-				# Load the template matching the token type.
-				$template = $this->_twig->loadTemplate($token->getTokenType());
-				# render and save the file.
-				$this->_write($filename, $this->_render($template));
+				if(($tpl_file = $this->_getTemplateFile($token->getTokenType())) !== null)
+				{
+					# Load the template matching the token type.
+					$template = $this->_twig->loadTemplate($tpl_file);
+					
+					# render and save the file.
+					$this->_write($filename, $this->_render(
+						$template,
+						array('base_url' => $this->_findBaseUrl($filename))
+					));
+				}
 			}
 		}
 		catch(YaPhpDoc_Core_Exception $e)
@@ -238,7 +243,10 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 					'Writing file %s'),$filename), false);
 				
 				$template = $this->_twig->loadTemplate($filename);
-				$this->_write($filename, $this->_render($template));
+				$this->_write($filename, $this->_render(
+					$template,
+					array('base_url' => $this->_findBaseUrl($filename))
+				));
 			}
 			
 			$dirIterator->next();
@@ -256,7 +264,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	 */
 	protected function _render($template, $context = array())
 	{
-		return $template->render(array_merge($context, $this->_globalContext));
+		return $template->render(array_merge($this->_globalContext, $context));
 	}
 	
 	/**
@@ -274,11 +282,49 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		$cfg = $this->getGeneratorConfig();
 		$theme_cfg = $cfg->get($this->_theme);
 		
-		if(($theme_cfg) !== null && ($value = $theme_cfg->get($key)) !== null)
+		if($theme_cfg !== null && ($value = $theme_cfg->get($key)) !== null)
 		{
 			return $value;
 		}
 		
 		return $cfg->get($key, $default);
+	}
+	
+	/**
+	 * Find the name of the template to use for a token type.
+	 * 
+	 * @param string $token_type
+	 * @return string|null
+	 */
+	protected function _getTemplateFile($token_type)
+	{
+		$cfg = $this->getGeneratorConfig();
+		if(
+			($theme_cfg = $cfg->get($this->_theme)) !== null
+		 && ($tpl_cfg = $theme_cfg->get('templates')) !== null
+		 && ($template = $tpl_cfg->get($token_type)) !== null
+		)
+		{
+			return $template;
+		}
+		
+		return $cfg->get('templates')->get($token_type);
+	}
+	
+	/**
+	 * Try to determinates the base url of included resources according to
+	 * the depth of the file location.
+	 * 
+	 * @param string $filename
+	 * @return string
+	 */
+	protected function _findBaseUrl($filename, $ds = '/')
+	{
+		if(strpos($filename, $ds) !== false 
+		 && ($depth = substr_count($filename, $ds, 1, strlen($filename)-1)) > 0)
+		{
+			return str_repeat('..'.$ds, $depth);
+		}
+		return '';
 	}
 }
