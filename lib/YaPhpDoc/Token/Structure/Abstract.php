@@ -53,12 +53,11 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 		elseif($child instanceof YaPhpDoc_Token_Abstract)
 		{
 			array_push($this->_children, $child);
-			$type = lcfirst(YaPhpDoc_Tool_Loader::getLocalClassname(get_class($child)));
 			
-			if(!isset($this->_childrenByTokenType[$type]))
-				$this->_childrenByTokenType[$type] = array();
+			if(!isset($this->_childrenByTokenType[$child->_tokenType]))
+				$this->_childrenByTokenType[$child->_tokenType] = array();
 			
-			array_push($this->_childrenByTokenType[$type], $child);
+			array_push($this->_childrenByTokenType[$child->_tokenType], $child);
 			
 			if($child instanceof YaPhpDoc_Token_Structure_Abstract)
 				array_push($this->_childrenByTokenType['_structure'], $child);
@@ -121,6 +120,8 @@ class YaPhpDoc_Token_Structure_Abstract extends YaPhpDoc_Token_Abstract
 			$descendant = array_merge($descendant,
 				$child->getDescendantsByType($type));
 		}
+		static $t = false;
+		
 		return $descendant;
 	}
 	

@@ -56,7 +56,7 @@ class YaPhpDoc_Token_Function extends YaPhpDoc_Token_Abstract
 	 */
 	public function __construct(YaPhpDoc_Token_Abstract $parent)
 	{
-		parent::__construct($parent, 'unknown', 'function');
+		parent::__construct($parent, 'function', 'unknown');
 	}
 	
 	/**

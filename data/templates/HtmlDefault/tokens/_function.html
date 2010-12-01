@@ -1,0 +1,13 @@
+<h4><code>{{function.return}}</code> {{function.name}}</h4>
+<p>{{function.description}}</p>
+<ul>
+{% for param in function.params %}
+	<li><code>{{param.type}}</code> {{param.name}}
+	{% if param.defaultValue %}({{param.defaultValue}}){% endif %}
+	{% if param.description %}<p>{{param.description}}</p>{% endif %}
+	</li>
+{% endfor %}
+{% if function.isOpenParams %}
+	<li>...</li>
+{% endif %}
+</ul>

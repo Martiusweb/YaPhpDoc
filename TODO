@@ -1,2 +1,3 @@
-* Delete Zend from repo
 * uniformize YaPhpDoc & Twig packages i18n strategy
+* I think it does not support closures yet 
+* Tests : use statement parsing (no "use" in the documentation)

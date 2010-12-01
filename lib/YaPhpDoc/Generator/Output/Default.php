@@ -162,11 +162,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 			foreach($this->_decoratedRoot as $token)
 			{
 				$filename = $token->getUrl();
-				
-				$this->out()->verbose(sprintf(
-					$this->l10n()->getTranslation("generator")->_(
-					'Writing file %s'), $filename), false);
-				
+
 				# If the file name is not found or empty, we skip
 				# the tests allow empty template filenames in the context of a theme. 
 				$tpl_file = $this->_getTemplateFile($token->getTokenType());
@@ -185,7 +181,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		}
 		catch(Exception $e)
 		{
-			var_dump($e->getTraceAsString()); 
+			echo $e->getTraceAsString()."\n"; 
 			$this->getOutputManager()->error('(Twig) '.$e->getMessage());
 			
 			# TODO : Hide twig & compilation exceptions

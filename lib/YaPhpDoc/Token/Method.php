@@ -43,6 +43,7 @@ class YaPhpDoc_Token_Method extends YaPhpDoc_Token_Function
 	public function __construct(YaPhpDoc_Token_Class $parent)
 	{
 		parent::__construct($parent);
+		$this->_tokenType = 'method';
 	}
 	
 	/**
