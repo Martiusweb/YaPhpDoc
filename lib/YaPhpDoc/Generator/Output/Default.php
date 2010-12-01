@@ -156,7 +156,7 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 			$this->_copyResources();
 			
 			# Explore theme directory and build all files.
-			$this->_buildDirectory();
+			$this->_buildDirectory($this->_themeDir);
 			
 			# Explore tokens and build them
 			foreach($this->_decoratedRoot as $token)
@@ -172,13 +172,9 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 				$tpl_file = $this->_getTemplateFile($token->getTokenType());
 				if(!empty($tpl_file))
 				{
-					# Load the template matching the token type.
-					$template = $this->_twig->loadTemplate($tpl_file);
-					
-					# render and save the file.
-					$this->_write($filename, $this->_render(
-						$template,
-						array('base_url' => $this->_findBaseUrl($filename))
+					$this->_process($tpl_file, $filename, array(
+						'base_url'	=> $this->_findBaseUrl($filename),
+						'token'		=> $token
 					));
 				}
 			}
@@ -189,7 +185,9 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		}
 		catch(Exception $e)
 		{
-			$this->getOutputManager()->error($e->getMessage());
+			var_dump($e->getTraceAsString()); 
+			$this->getOutputManager()->error('(Twig) '.$e->getMessage());
+			
 			# TODO : Hide twig & compilation exceptions
 			throw new YaPhpDoc_Generator_Exception($this->l10n()->getTranslation('generator')->_(
 				'Compilation failed'));
@@ -221,35 +219,46 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	}
 	
 	/**
-	 * @todo to be done.
+	 * Parses each file of the directory which name does not begin by "_"
+	 * or is contained in the ressources or tokens directory.
+	 * 
+	 * @param string $directory directory containing templates files to parse 
+	 * @param bool $exclude if true, ressources and tokens directory are ignored
 	 * @return YaPhpDoc_Generator_Output_Default
 	 */
-	protected function _buildDirectory()
+	protected function _buildDirectory($directory = null, $exclude_dirs = true)
 	{
-		$dirIterator = new FilesystemIterator($this->_themeDir);
-		$resources_dir = $this->_getConfigKey('resources');
+		$dirIterator = new FilesystemIterator($directory);
+		
+		if($exclude_dirs)
+		{
+			$resources_dir = $this->_getConfigKey('resources');
+			$tokens_dir = $this->_getConfigKey('tokens');
+		}
+		
 		while($dirIterator->valid())
 		{
 			$current = $dirIterator->current();
 			/* @var $current SplFileInfo */
-			$filename = $current->getFilename();
+			$filename = str_replace($this->_themeDir, '',
+				$directory.DIRECTORY_SEPARATOR.$current->getFilename());
+			
 			if($current->isDir())
 			{
 				// Build sub directory
-				if($filename != $resources_dir)
-					$this->_buildDirectory($dirIterator->key());	
+				if($exclude_dirs)
+					$exclude = ($filename != $resources_dir && $filename != $tokens_dir);
+				
+				if(!$exclude)
+					$this->_buildDirectory($dirIterator->key(), false);	
 			}
 			elseif($filename[0] != '_')
 			{
-				$this->out()->verbose(sprintf(
-					$this->l10n()->getTranslation("generator")->_(
-					'Writing file %s'),$filename), false);
-				
-				$template = $this->_twig->loadTemplate($filename);
-				$this->_write($filename, $this->_render(
-					$template,
+				$this->_process(
+					$filename,
+					$filename,
 					array('base_url' => $this->_findBaseUrl($filename))
-				));
+				);
 			}
 			
 			$dirIterator->next();
@@ -268,6 +277,28 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 	protected function _render($template, $context = array())
 	{
 		return $template->render(array_merge($this->_globalContext, $context));
+	}
+	
+	/**
+	 * Processes the template conversion.
+	 * 
+	 * @param string $tpl_file template filename
+	 * @param string $filename generated filename
+	 * @param array $context context variables for template engine
+	 * 
+	 * @throws Twig_Error
+	 * @return void
+	 */
+	protected function _process($tpl_file, $filename, $context)
+	{
+		$this->out()->verbose(sprintf($this->l10n()
+			->getTranslation("generator")->_('Writing file %s'),$filename), false);
+					
+		# Load the template matching the token type.
+		$template = $this->_twig->loadTemplate($tpl_file);
+		
+		# render and save the file.
+		$this->_write($filename, $this->_render($template, $context));
 	}
 	
 	/**
@@ -308,10 +339,12 @@ class YaPhpDoc_Generator_Output_Default extends YaPhpDoc_Generator_Abstract
 		 && ($template = $tpl_cfg->get($token_type)) !== null
 		)
 		{
-			return $template;
+			$file = $template;
 		}
+		else
+			$file = $cfg->get('templates')->get($token_type);
 		
-		return $cfg->get('templates')->get($token_type);
+		return $this->_getConfigKey('tokens').DIRECTORY_SEPARATOR.$file;
 	}
 	
 	/**

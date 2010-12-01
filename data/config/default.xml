@@ -26,6 +26,7 @@
 		<default> <!-- "default" generator specific configuration -->
 			<theme>HtmlDefault</theme> <!-- Theme name -->
 			<resources>inc</resources> <!-- Resources directory (without trailing "/") -->
+			<tokens>tokens</tokens>
 			<decorator>YaPhpDoc_Generator_Decorator_Html</decorator> <!-- Decorator for default -->
 			<templates>
 				<file>file.html</file>
