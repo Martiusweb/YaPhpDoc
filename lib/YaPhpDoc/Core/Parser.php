@@ -6,11 +6,20 @@
  */
 
 /**
- * Documents parser, parses each file using token_get_all().
+ * The documents parser controls the parser execution.
+ * 
+ * It selects the files to be parsed and holds the parse data : parsed tokens
+ * collections and general modifiers states like class member access state. 
+ * 
+ * The parser also manages interactions between the in-parser operations and the
+ * outside world by providing access to outputManager (messages displaying),
+ * translation tools for internationalization of the messages and the
+ * application configuration.
  * 
  * @author Martin Richard
  */
-class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaPhpDoc_Core_TranslationManager_Aggregate
+class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
+	YaPhpDoc_Core_TranslationManager_Aggregate
 {
 	/**
 	 * Output manager object.
@@ -131,10 +140,10 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate, YaP
 	 * 
 	 * @param YaPhpDoc_Core_OutputManager_Interface $ouputManager
 	 * @param YaPhpDoc_Core_TranslationManager_Interface $translationManager
-	 * @param string|array	$dirs  directory(ies) to explore - optionnal
-	 * @param string|array	$files file(s) to parse - optionnal
-	 * @param string		$include_pattern Pattern of files to parse - optionnal
-	 * @param string		$exlude_pattern  Pattern of files to exclude - optionnal
+	 * @param string|array	$dirs  directory(ies) to explore - optional
+	 * @param string|array	$files file(s) to parse - optional
+	 * @param string		$include_pattern Pattern of files to parse - optional
+	 * @param string		$exlude_pattern  Pattern of files to exclude - optional
 	 */
 	public function __construct(YaPhpDoc_Core_OutputManager_Interface $ouputManager, YaPhpDoc_Core_TranslationManager_Interface $translationManager, $dirs = null, $files = null, $include_pattern = null, $exclude_pattern = null)
 	{
