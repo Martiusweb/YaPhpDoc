@@ -1,0 +1,130 @@
+{% extends "_layout.html" %}
+{% block _breadcrumbs %}
+	<li>Namespace</li>
+	<li>{{token.name}}</li>
+{% endblock %}
+{% block _content %}
+<div class="page_toc">
+	<h2>File {{token.filename}}</h2>
+	<ol>
+		{% if token.description %}<li><a href="#toc_desc">Description</a></li>{% endif %}
+		{% if token.functions %}<li><a href="#toc_functions">Functions</a></li>{% endif %}
+		{% if token.allConsts %}<li><a href="#toc_consts">Constants</a></li>{% endif %}
+		{% if token.globals %}<li><a href="#toc_globals">Globals</a></li>{% endif %}
+	</ol>
+</div>
+
+<div id="toc_metadata">
+	<ul>
+		{% if token.author %}
+		<li>Authors:
+			<ul>
+				{% for author in token.author %}
+				<li>{{author}}</li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% endif %}
+		{% if token.license %}
+		<li>License:
+			<ul>
+				{% for license in token.license %}
+				<li>{{license}}</li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% endif %}
+		{% if token.copyright %}
+		<li>Copyright:
+			<ul>
+				{% for copyright in token.copyright %}
+					<li>{{copyright}}</li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% endif %}
+		{%if token.deprecated %}
+		<li>This file is deprecated</li>
+		{% endif %}
+		{% if token.since %}
+		<li>Since: {{token.since}}</li>
+		{% endif %}
+		{% if token.see %}
+		<li>See:
+			<ul>
+				{% for see in token.see %}
+				<li>{{see}}</li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% endif %}
+		{% if token.version %}
+		<li>Version: {{token.version}}</li>
+		{% endif %}
+	</ul>
+</div>
+
+{% if token.description %}
+<div id="toc_desc">
+	<h3>Description</h3>
+	{{token.description}}
+</div>
+{% endif %}
+
+{% if token.functions %}
+<div id="toc_functions">
+	<h3>Functions</h3>
+	<ul>
+		{% for function in token.functions %}
+		<li>
+			{% include "tokens/_function.html" %}
+		</li>
+		{% endfor %}
+		{% for namespace in token.namespaces %}
+		{% for function in namespace.functions %}
+		<li>
+			{% include "tokens/_function.html" %}
+		</li>
+		{% endfor %}
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+{% if token.allConsts %}
+<div id="toc_consts">
+	<h3>Constants</h3>
+	<ul>
+		{% for const in token.consts %}
+		<li>
+			{% include "tokens/_const.html" %}
+		</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+{% if token.globals %}
+<div id="toc_globals">
+	<h3>Globals</h3>
+	<ul>
+		{% for global in token.globals %}
+		<li>
+			{% include "tokens/_global.html" %}
+		</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+{% if token.allUses %}
+<div id="toc_uses">
+	<h3>Use statements</h3>
+	<ul>
+		{% for use in token.allUses %}
+		<li>{{use.name}}{% if use.alias %}used as {{use.alias}}{% endif %}</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endif %}
+{% endblock %}

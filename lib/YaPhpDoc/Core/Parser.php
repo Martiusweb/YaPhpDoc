@@ -168,13 +168,21 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	
 	/**
 	 * Adds a directory to explore.
+	 * 
+	 * The trailing directory separator of a directory path is removed.
+	 * 
+	 * There is no check for doubles.
+	 * 
 	 * @param string|array $dir directory(ies) to explore
 	 * @return YaPhpDoc_Core_Parser 
 	 */
 	public function addDirectory($dir)
 	{
 		if(is_array($dir))
-			$this->_directories = array_merge($this->_directories, $dir);
+		{
+			foreach($dir as $e)
+				$this->addDirectory($e);
+		}
 		else
 		{
 			if($dir[strlen($dir)-1] == DIRECTORY_SEPARATOR)
@@ -200,8 +208,9 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	}
 	
 	/**
-	 * Returns the directories where the parser looks for
-	 * source.
+	 * Returns the directories where the parser looks for source.
+	 * Elements are not sorted.
+	 * 
 	 * @return array
 	 */
 	public function getDirectories()
