@@ -7,6 +7,7 @@
 
 require_once __DIR__.'/../../../../util.php';
 require_once 'YaPhpDoc/Core/TranslationManager/Interface.php';
+require_once 'Zend/Translate.php';
 
 class YaPhpDoc_Core_TranslationManager_InterfaceImpl
 	implements YaPhpDoc_Core_TranslationManager_Interface
@@ -17,7 +18,7 @@ class YaPhpDoc_Core_TranslationManager_InterfaceImpl
 		if(self::$_translate == null)
 			self::$_translate = new Zend_Translate(array(
 				'adapter'	=> 'array',
-				'content'	=> array(),
+				'content'	=> array('dummy' => 'dummy'),
 				'locale'	=> 'en'
 			));
 		return self::$_translate;

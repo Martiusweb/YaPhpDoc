@@ -58,10 +58,22 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	protected $_includePattern;
 	
 	/**
+	 * IncludePattern is a regex.
+	 * @var bool
+	 */
+	protected $_includePatternRegex = true;
+	
+	/**
 	 * Files matching this pattern will be excluded
 	 * @var string
 	 */
 	protected $_excludePattern;
+	
+	/**
+	 * ExcludePattern is a regex.
+	 * @var bool
+	 */
+	protected $_excludePatternRegex = true;
 	
 	/**
 	 * Root element
@@ -180,8 +192,8 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	{
 		if(is_array($dir))
 		{
-			foreach($dir as $e)
-				$this->addDirectory($e);
+			foreach($dir as $cur)
+				$this->addDirectory($cur);
 		}
 		else
 		{
@@ -200,7 +212,10 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	public function addFile($file)
 	{
 		if(is_array($file))
-			$this->_files = array_merge($this->_files, $file);
+		{
+			foreach($file as $cur)
+				$this->addFile($cur);
+		}
 		else
 			array_push($this->_files, $file);
 		
@@ -222,21 +237,28 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	 * Sets the pattern of included files.
 	 * 
 	 * The file (absolute or relative path and name of the file) following
-	 * this pattern will be included in parsing
+	 * this pattern will be included in parsing.
 	 * 
-	 * @param string $pattern
+	 * If $regex is true, the pattern will be evaluated as a regular expression,
+	 * else, it will be evaluated as a shell pattern.
+	 * 
+	 * Shell pattern requires the php fnmatch() function, and can't be used on
+	 * windows before PHP 5.3.
+	 * 
+	 * @param string	$pattern
+	 * @param bool		$regex		(optional, default to true)
 	 * @return YaPhpDoc_Core_Parser
 	 */
-	public function setIncludePattern($pattern)
+	public function setIncludePattern($pattern, $regex = true)
 	{
-		if(($error = $this->_testRegex($pattern)) !== false)
+		if($regex && ($error = $this->_testRegex($pattern)) !== false)
 		{
 			throw new YaPhpDoc_Core_Parser_Exception(sprintf(
 				$this->l10n()->getTranslation('parser')
 				->_('Wrong Include Pattern : %s')
 			, $error));
 		}
-		
+		$this->_includePatternRegex = $regex;
 		$this->_includePattern = $pattern;
 		return $this;
 	}
@@ -248,12 +270,19 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	 * this pattern will be excluded of parsing. This pattern is prior to
 	 * include pattern.
 	 * 
-	 * @param string $pattern
+	 * If $regex is true, the pattern will be evaluated as a regular expression,
+	 * else, it will be evaluated as a shell parttern.
+	 * 
+	 * Sheel pattern requires the php fnmatch() function, and can't be used on
+	 * windows before PHP 5.3.
+	 * 
+	 * @param string	$pattern
+	 * @param bool		$regex		(optional, default to true)
 	 * @return YaPhpDoc_Core_Parser
 	 */	
-	public function setExcludePattern($pattern)
+	public function setExcludePattern($pattern, $regex = true)
 	{
-	if(($error = $this->_testRegex($pattern)) !== false)
+		if($regex && ($error = $this->_testRegex($pattern)) !== false)
 		{
 			throw new YaPhpDoc_Core_Parser_Exception(sprintf(
 				$this->l10n()->getTranslation('parser')
@@ -261,6 +290,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 			, $error));
 		}
 		
+		$this->_excludePatternRegex = $regex;
 		$this->_excludePattern = $pattern;
 		return $this;
 	}
@@ -337,20 +367,35 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 		return $files;
 	}
 	/**
-	 * Tests if the file matches the include pattern and does
-	 * not matchs exclude pattern.
+	 * Tests if the file matches the include pattern and does not matchs exclude
+	 * pattern.
+	 * 
+	 * Use regular expressions or fnmatch() function, which requires PHP 5.3
+	 * on windows.
+	 * 
 	 * @param string $filename
 	 * @return bool
 	 */
 	protected function _isFilenameToParse($filename)
 	{
-		# TODO Refactor and use fnmatch instead (PHP 5.3.0 only on windows)
-		# To include ?
-		return (empty($this->_includePattern) || 
-				preg_match('`'.$this->_includePattern.'`', $filename))
-		# To exclude ?
-		 	&& (empty($this->_excludePattern) || 
-			!preg_match('`'.$this->_excludePattern.'`', $filename));
+		if(empty($this->_includePattern))
+			$include = true;
+		elseif($this->_includePatternRegex)
+			$include = preg_match('`'.$this->_includePattern.'`', $filename);
+		else
+			$include = fnmatch($this->_includePattern, $filename);
+		
+		if(!$include)
+			return false;
+		
+		if(empty($this->_excludePattern))
+			$exclude = false;
+		elseif($this->_excludePatternRegex)
+			$exclude = preg_match('`'.$this->_excludePattern.'`', $filename);
+		else
+			$exclude = fnmatch($this->_excludePattern, $filename);
+		
+		return $include && !$exclude;
 	}
 	
 	/**
@@ -369,6 +414,10 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	 * Parses the selected code snippets and generate the documentation tokens
 	 * tree.
 	 * 
+	 * Throws an excepetion if there is no source file to parse.
+	 * 
+	 * @throws YaPhpDoc_Core_Parser_Exception
+	 * 
 	 * @return YaPhpDoc_Core_Parser
 	 */
 	public function parseAll()
@@ -380,7 +429,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 				->_('Configuration is missing.')
 			);
 		}
-			
+
 		$files = $this->getFilesToParse();
 		
 		if(empty($files))
@@ -393,7 +442,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 		
 		# Create the root node
 		$this->_root = YaPhpDoc_Token_Abstract::getDocumentToken($this);
-		
+
 		# Start parsing
 		foreach($files as $file)
 		{
@@ -438,7 +487,6 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 		$tokens = new YaPhpDoc_Tokenizer($file_content);
 		$tokensIterator = $tokens->getIterator();
 		
-		$inPhp = false;
 		if($tokensIterator->valid())
 		{
 			$file->parse($tokensIterator);
@@ -578,32 +626,32 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 		return $this->_current_file;
 	}
 	
-	/**
-	 * Returns current namespace.
-	 * @return string
-	 */
-	public function getCurrentNamespace()
-	{
-		return $this->_current_namespace;
-	}
-	
-	/**
-	 * Returns current package.
-	 * @return string
-	 */
-	public function getCurrentPackage()
-	{
-		return $this->_current_package;
-	}
-	
-	/**
-	 * Returns current class.
-	 * @return string|NULL
-	 */
-	public function getCurrentClass()
-	{
-		return $this->_current_class;
-	}
+//	/**
+//	 * Returns current namespace.
+//	 * @return string
+//	 */
+//	public function getCurrentNamespace()
+//	{
+//		return $this->_current_namespace;
+//	}
+//	
+//	/**
+//	 * Returns current package.
+//	 * @return string
+//	 */
+//	public function getCurrentPackage()
+//	{
+//		return $this->_current_package;
+//	}
+//	
+//	/**
+//	 * Returns current class.
+//	 * @return string|NULL
+//	 */
+//	public function getCurrentClass()
+//	{
+//		return $this->_current_class;
+//	}
 	
 	/**
 	 * Sets the Final flag.
@@ -689,7 +737,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	 */
 	public function setPublic($flag = true)
 	{
-		$this->_public = true;
+		$this->_public = $flag;
 		return $this;
 	}
 	
@@ -715,7 +763,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	 */
 	public function setProtected($flag = true)
 	{
-		$this->_protected = true;
+		$this->_protected = $flag;
 		return $this;
 	}
 	
@@ -741,7 +789,7 @@ class YaPhpDoc_Core_Parser implements YaPhpDoc_Core_OutputManager_Aggregate,
 	 */
 	public function setPrivate($flag = true)
 	{
-		$this->_private = true;
+		$this->_private = $flag;
 		return $this;
 	}
 	
