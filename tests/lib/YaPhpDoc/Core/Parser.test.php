@@ -11,12 +11,14 @@ require_once 'YaPhpDoc/Core/TranslationManager/Aggregate.php';
 require_once 'YaPhpDoc/Core/Parser.php';
 require_once 'YaPhpDoc/Core/Exception.php';
 require_once 'YaPhpDoc/Core/Parser/Exception.php';
+require_once 'YaPhpDoc/Tokenizer.php';
+require_once 'YaPhpDoc/Tokenizer/Token.php';
+require_once 'YaPhpDoc/Tokenizer/Iterator.php';
 require_once 'Zend/Config.php';
 require_once __DIR__.'/OutputManager/AggregateImpl.php';
 require_once __DIR__.'/TranslationManager/AggregateImpl.php';
 require_once __DIR__.'/../Token/Document.php';
 require_once __DIR__.'/../Token/File.php';
-require_once __DIR__.'/../Tokenizer.php';
 @include_once 'vfsStream/vfsStream.php';
 
 
@@ -281,7 +283,10 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		vfsStreamWrapper::register();
 		$root = new vfsStreamDirectory('src');
 		vfsStreamWrapper::setRoot($root);
-		vfsStream::newFile('test.php')->at($root);
+		
+		$file = vfsStream::newFile('test.php')->at($root);
+		/* @var $file vfsStreamFile */
+		$file->setContent('<?php');
 		
 		$this->_parser->setConfig($cfg);
 		$this->_parser->addFile(vfsStream::url('src/test.php'));
